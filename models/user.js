@@ -2,24 +2,28 @@ const { Schema, model } = require('mongoose');
 const Joi = require('joi');
 const {handleMongooseError} = require('../helpers');
 
-const emailRegexp = /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/;
+const { emailRegexp, dateRegexp, stringRegexp, phoneRegexp } = require("../utils");
 
 const userSchema = new Schema({
-    password: {
+    name: {
+        type: String,
+        required: [true, 'Вкажіть імя користувача'],
+      },
+      password: {
         type: String,
         minlength: 6,
-        required: [true, 'Set password for user'],
+        required: [true, 'Встановіть пароль довжиною не менше 6 символів'],
       },
       email: {
         type: String,
         match: emailRegexp,
-        required: [true, 'Email is required'],
+        required: [true, 'Введіть ваш Email'],
         unique: true,
       },
-      subscription: {
+      status: {
         type: String,
-        enum: ["starter", "pro", "business"],
-        default: "starter",
+        enum: ["user", "admin"],
+        default: "user",
       },
       avatarURL: {
         type: String,
@@ -39,8 +43,8 @@ const userSchema = new Schema({
 userSchema.post('save', handleMongooseError);
 
 const registerSchema = Joi.object({
-    name: Joi.string().required(),
-    password: Joi.string().min(6).required(),
+    name: Joi.string().min(2).max(30).pattern(stringRegexp).required(),
+    password: Joi.string().min(6).max(30).required(),
     email: Joi.string().pattern(emailRegexp).required(),
 });
 
@@ -49,18 +53,18 @@ const emailSchema = Joi.object({
 });
 
 const loginSchema = Joi.object({
-  password: Joi.string().min(6).required(),
+  password: Joi.string().min(6).max(30).required(),
   email: Joi.string().pattern(emailRegexp).required(),
 });
 
-const updateSubscriptionSchema = Joi.object({
-  subscription: Joi.string().valid("starter", "pro", "business").required(),
+const updateStatusSchema = Joi.object({
+  status: Joi.string().valid("user", "admin").required(),
 })
 
 const schemas = {
     registerSchema,
     loginSchema,
-    updateSubscriptionSchema,
+    updateStatusSchema,
     emailSchema,
 };
 

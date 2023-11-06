@@ -18,7 +18,7 @@ const register = async (req, res) => {
     const user = await User.findOne({email});
 
     if (user) {
-       throw HttpError(409, "Provided email already exists");
+       throw HttpError(409, "Вказана електронна адреса вже використовується");
     }
 
     const hasPassword = await bcrypt.hash(password, 10);
@@ -37,7 +37,7 @@ const register = async (req, res) => {
     res.status(201).json({
         user: {
             email: newUser.email,
-            subscription: "starter",
+            status: "user",
           }
     })
 };
@@ -107,14 +107,15 @@ const login = async (req, res) => {
     const payload = {
         id: user._id,
     }
-    const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '23h'});
+    const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
     await User.findByIdAndUpdate(user._id, {token});
 
     return res.json({
         token: token,
         user: {
+            id: user._id,
             email: user.email,
-            subscription: user.subscription,
+            status: user.status,
           }
     })
 };
@@ -135,7 +136,7 @@ const logout = async (req, res) => {
     res.status(204).json();
 };
 
-const updateSubscription = async (req, res) => {
+const updateStatus = async (req, res) => {
     const {_id} = req.user;
     const result = await User.findByIdAndUpdate(_id, req.body, {new: true});
 
@@ -161,7 +162,7 @@ module.exports = {
     login: ctrlWrapper(login),
     getCurrent: ctrlWrapper(getCurrent),
     logout: ctrlWrapper(logout),
-    updateSubscription: ctrlWrapper(updateSubscription),
+    updateStatus: ctrlWrapper(updateStatus),
     updateAvatar: ctrlWrapper(updateAvatar),
     verifyEmail: ctrlWrapper(verifyEmail),
     resendVerifyEmail: ctrlWrapper(resendVerifyEmail),

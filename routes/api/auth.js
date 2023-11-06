@@ -20,7 +20,7 @@ router.get("/current", authenticate, ctrl.getCurrent);
 
 router.post("/logout", authenticate, ctrl.logout);
 
-router.patch("/subscription", authenticate, validateBody(schemas.updateSubscriptionSchema), ctrl.updateSubscription);
+router.patch("/status", authenticate, validateBody(schemas.updateStatusSchema), ctrl.updateStatus);
 
 router.patch("/avatars", authenticate, upload.single("avatar"), resizesAvatar, ctrl.updateAvatar);
 
