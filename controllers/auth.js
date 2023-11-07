@@ -14,6 +14,7 @@ const {SECRET_KEY, BASE_URL} = process.env;
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
 const register = async (req, res) => {
+    const {inviterId = '65490a0ad1e6aba532545823'} = req.params;
     const {email, password} = req.body;
     const user = await User.findOne({email});
 
@@ -25,7 +26,13 @@ const register = async (req, res) => {
     const avatarURL = gravavatar.url(email);
     const verificationToken = nanoid();
 
-    const newUser = await User.create({...req.body, password: hasPassword, avatarURL, verificationToken});
+    const newUser = await User.create({
+        ...req.body, 
+        password: hasPassword, 
+        avatarURL, 
+        verificationToken, 
+        inviterId
+    });
     const verifyEmail = {
         to: email,
         subject: 'Verify email',
@@ -121,11 +128,11 @@ const login = async (req, res) => {
 };
 
 const getCurrent = async (req, res) => {
-    const {email, subscription} = req.user;
+    const {email, status} = req.user;
 
     res.json({
         email,
-        subscription,
+        status,
     })
 };
 

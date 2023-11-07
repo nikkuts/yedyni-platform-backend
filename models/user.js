@@ -38,6 +38,11 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'Verify token is required'],
       },
+      inviterId: {
+        type: Schema.Types.ObjectId,
+        ref: 'users',
+        required: true,
+      },
 }, {versionKey: false, timestamps: true});
 
 userSchema.post('save', handleMongooseError);
