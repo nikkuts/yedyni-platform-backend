@@ -38,9 +38,9 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'Verify token is required'],
       },
-      inviterId: {
+      inviter: {
         type: Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'user',
         required: true,
       },
 }, {versionKey: false, timestamps: true});

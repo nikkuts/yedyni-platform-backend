@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const {User} = require('../models/user');
 const jwt = require('jsonwebtoken');
@@ -14,7 +15,18 @@ const {SECRET_KEY, BASE_URL} = process.env;
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
 const register = async (req, res) => {
-    const {inviterId = '65490a0ad1e6aba532545823'} = req.params;
+    const {inviterId = '65490a0ad1e6aba532545823'} = req.query;
+    
+    if (!mongoose.Types.ObjectId.isValid(inviterId)) {
+        throw HttpError(400, "Помилка у запрошувальному покликанні");
+    }
+
+    const inviter = await User.findById(inviterId);
+    
+    if (!inviter) {
+        throw HttpError(400, "Помилка у запрошувальному покликанні");
+    }
+
     const {email, password} = req.body;
     const user = await User.findOne({email});
 
@@ -31,20 +43,21 @@ const register = async (req, res) => {
         password: hasPassword, 
         avatarURL, 
         verificationToken, 
-        inviterId
+        inviter: inviterId
     });
     const verifyEmail = {
         to: email,
-        subject: 'Verify email',
-        html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click verify email</a>`
+        subject: 'Підтвердження адреси електронної пошти',
+        html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Натисніть тут для підтвердження адреси вашої електронної пошти</a>`
     };
 
-    await sendEmail(verifyEmail);
+    // await sendEmail(verifyEmail);
 
     res.status(201).json({
         user: {
             email: newUser.email,
             status: "user",
+            inviter: newUser.inviter,
           }
     })
 };
@@ -95,15 +108,15 @@ const resendVerifyEmail = async (req, res) => {
 
 const login = async (req, res) => {
     const {email, password} = req.body;
-    const user = await User.findOne({email});
+    const user = await User.findOne({email}).populate("inviter", "name email");
    
     if (!user) {
        throw HttpError(401, "Email or password is wrong");
     }
 
-    if (!user.verify) {
-        throw HttpError(401, "Email not verified");
-    }
+    // if (!user.verify) {
+    //     throw HttpError(401, "Email not verified");
+    // }
     
     const passwordCompare = await bcrypt.compare(password, user.password);
    
@@ -121,8 +134,10 @@ const login = async (req, res) => {
         token: token,
         user: {
             id: user._id,
+            name: user.name,
             email: user.email,
             status: user.status,
+            inviter: user.inviter,
           }
     })
 };

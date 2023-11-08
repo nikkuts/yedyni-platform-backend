@@ -10,8 +10,6 @@ const router = express.Router();
 
 router.post("/register", validateBody(schemas.registerSchema), ctrl.register);
 
-router.post("/register/:inviterId", validateBody(schemas.registerSchema), ctrl.register);
-
 router.get("/verify/:verificationToken", ctrl.verifyEmail);
 
 router.post("/verify", validateBody(schemas.emailSchema), ctrl.resendVerifyEmail);
