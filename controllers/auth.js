@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const {isValidObjectId} = require('mongoose');
 const bcrypt = require('bcrypt');
 const {User} = require('../models/user');
 const jwt = require('jsonwebtoken');
@@ -17,7 +17,7 @@ const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 const register = async (req, res) => {
     const {inviterId = '65490a0ad1e6aba532545823'} = req.query;
     
-    if (!mongoose.Types.ObjectId.isValid(inviterId)) {
+    if (!isValidObjectId(inviterId)) {
         throw HttpError(400, "Помилка у запрошувальному покликанні");
     }
 
