@@ -55,8 +55,8 @@ const register = async (req, res) => {
 
     res.status(201).json({
         user: {
+            name: newUser.name,
             email: newUser.email,
-            status: "user",
             inviter: newUser.inviter,
           }
     })
@@ -136,7 +136,6 @@ const login = async (req, res) => {
             id: user._id,
             name: user.name,
             email: user.email,
-            status: user.status,
             inviter: user.inviter,
           }
     })
