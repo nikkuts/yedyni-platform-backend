@@ -27,7 +27,6 @@ const register = async (req, res) => {
         throw HttpError(400, "Помилка у запрошувальному покликанні");
     }
 
-    // const {email, password} = req.body;
     const user = await User.findOne({email});
 
     if (user) {
@@ -40,7 +39,6 @@ const register = async (req, res) => {
     
 
     const newUser = await User.create({
-        // ...req.body,
         name,
         email, 
         password: hasPassword, 
@@ -149,11 +147,13 @@ const login = async (req, res) => {
 };
 
 const getCurrent = async (req, res) => {
-    const {email, status} = req.user;
+    const {id, name, email, inviter} = req.user;
 
     res.json({
+        id,
+        name,
         email,
-        status,
+        inviter,
     })
 };
 
