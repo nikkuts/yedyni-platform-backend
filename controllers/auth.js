@@ -15,7 +15,7 @@ const {SECRET_KEY, BASE_URL} = process.env;
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
 const register = async (req, res) => {
-    const {inviterId = '65490a0ad1e6aba532545823'} = req.query;
+    const {name, email, password, inviterId = '65490a0ad1e6aba532545823'} = req.body;
     
     if (!isValidObjectId(inviterId)) {
         throw HttpError(400, "Помилка у запрошувальному покликанні");
@@ -27,7 +27,7 @@ const register = async (req, res) => {
         throw HttpError(400, "Помилка у запрошувальному покликанні");
     }
 
-    const {email, password} = req.body;
+    // const {email, password} = req.body;
     const user = await User.findOne({email});
 
     if (user) {
@@ -37,9 +37,12 @@ const register = async (req, res) => {
     const hasPassword = await bcrypt.hash(password, 10);
     const avatarURL = gravavatar.url(email);
     const verificationToken = nanoid();
+    
 
     const newUser = await User.create({
-        ...req.body, 
+        // ...req.body,
+        name,
+        email, 
         password: hasPassword, 
         avatarURL, 
         verificationToken, 
@@ -53,8 +56,14 @@ const register = async (req, res) => {
 
     // await sendEmail(verifyEmail);
 
+    const payload = {id: newUser._id,};
+    const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
+    await User.findByIdAndUpdate(newUser._id, {token});
+
     res.status(201).json({
+        token: token,
         user: {
+            id: newUser._id,
             name: newUser.name,
             email: newUser.email,
             inviter: newUser.inviter,
@@ -124,9 +133,7 @@ const login = async (req, res) => {
         throw HttpError(401, "Email or password is wrong");
     }
 
-    const payload = {
-        id: user._id,
-    }
+    const payload = {id: user._id,};
     const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
     await User.findByIdAndUpdate(user._id, {token});
 
