@@ -51,6 +51,7 @@ const registerSchema = Joi.object({
     name: Joi.string().min(2).max(30).pattern(stringRegexp).required(),
     password: Joi.string().min(6).max(30).required(),
     email: Joi.string().pattern(emailRegexp).required(),
+    inviterId: Joi.string(),
 });
 
 const emailSchema = Joi.object({
