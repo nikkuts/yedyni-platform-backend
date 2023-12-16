@@ -37,9 +37,9 @@ const createPayment = async (req, res) => {
           data: data,
           signature: signature,
         });
-    console.log(liqpayResponse.data);
+    console.log(liqpayResponse);
         // Надсилаємо відповідь клієнту
-        res.json(liqpayResponse.data);
+        res.json(liqpayResponse);
       } 
       catch (error) {
         console.error('Error sending request to LiqPay:', error.message);
