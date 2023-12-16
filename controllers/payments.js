@@ -1,3 +1,4 @@
+const axios = require('axios');
 const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
 const enc = require('crypto-js/enc-utf8');
