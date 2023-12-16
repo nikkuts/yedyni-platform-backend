@@ -6,9 +6,8 @@ const gravavatar = require('gravatar');
 const path = require('path');
 const fs = require('fs/promises');
 const {nanoid} = require('nanoid');
-require('dotenv').config();
-
 const {HttpError, ctrlWrapper, sendEmail} = require('../helpers');
+require('dotenv').config();
 
 const {SECRET_KEY, BASE_URL} = process.env;
 
