@@ -146,10 +146,10 @@ const login = async (req, res) => {
 };
 
 const getCurrent = async (req, res) => {
-    const {id, name, email, inviter} = req.user;
+    const {_id, name, email, inviter} = req.user;
 
     res.json({
-        id,
+        id: _id,
         name,
         email,
         inviter,

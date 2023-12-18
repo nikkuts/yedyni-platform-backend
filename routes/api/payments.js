@@ -8,7 +8,7 @@ const {authenticate, validateBody, isValidId} = require('../../middlewares');
 
 const router = express.Router();
 
-router.post('/donat', ctrl.createPayment);
+router.post('/donat', authenticate, ctrl.createPayment);
 
 router.post('/callback', ctrl.processesPayment);
 

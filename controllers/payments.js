@@ -1,4 +1,3 @@
-// const axios = require('axios');
 const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
 const enc = require('crypto-js/enc-utf8');
@@ -6,12 +5,13 @@ const { v4: uuidv4 } = require('uuid');
 const {HttpError, ctrlWrapper} = require('../helpers');
 require('dotenv').config();
 
-const {PUBLIC_KEY, PRIVATE_KEY} = process.env;
+const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
+const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
 
 const createPayment = async (req, res) => {
-    const {amount, userId} = req.body;
+    const {_id} = req.user;
+    const {amount} = req.body;
     const orderId = uuidv4();
-    // const apiEndpoint = 'https://www.liqpay.ua/api/request';
 
     // Кодуємо дані JSON у рядок та потім у Base64
     const dataString = JSON.stringify({ 
@@ -24,35 +24,18 @@ const createPayment = async (req, res) => {
       order_id: orderId,
       result_url: 'https://nikkuts.github.io/bonus-programm-react/',
       server_url: 'https://bonus-programm-backend.onrender.com/api/payments/callback',
-      customer: userId,
+      customer: _id,
     });
     const data = Base64.stringify(enc.parse(dataString));
 
     // Створюємо підпис
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
     const signature = Base64.stringify(hash);
-console.log({
-  data,
-  signature,
-});
+
     res.json({
       data,
       signature,
-  })
-    
-    // try {
-    //     const liqpayResponse = await axios.post(apiEndpoint, {
-    //       data: data,
-    //       signature: signature,
-    //     });
-    // console.log(liqpayResponse);
-    //     // Надсилаємо відповідь клієнту
-    //     res.json(liqpayResponse);
-    //   } 
-    //   catch (error) {
-    //     console.error('Error sending request to LiqPay:', error.message);
-    //     res.status(500).send('Internal Server Error');
-    //   }
+    })
 };
 
 const processesPayment = async (req, res) => {
