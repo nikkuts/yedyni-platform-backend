@@ -1,4 +1,4 @@
-const axios = require('axios');
+// const axios = require('axios');
 const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
 const enc = require('crypto-js/enc-utf8');
@@ -11,7 +11,7 @@ const {PUBLIC_KEY, PRIVATE_KEY} = process.env;
 const createPayment = async (req, res) => {
     const {amount, userId} = req.body;
     const orderId = uuidv4();
-    const apiEndpoint = 'https://www.liqpay.ua/api/request';
+    // const apiEndpoint = 'https://www.liqpay.ua/api/request';
 
     // Кодуємо дані JSON у рядок та потім у Base64
     const dataString = JSON.stringify({ 
@@ -31,20 +31,28 @@ const createPayment = async (req, res) => {
     // Створюємо підпис
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
     const signature = Base64.stringify(hash);
+console.log({
+  data,
+  signature,
+});
+    res.json({
+      data,
+      signature,
+  })
     
-    try {
-        const liqpayResponse = await axios.post(apiEndpoint, {
-          data: data,
-          signature: signature,
-        });
-    console.log(liqpayResponse);
-        // Надсилаємо відповідь клієнту
-        res.json(liqpayResponse);
-      } 
-      catch (error) {
-        console.error('Error sending request to LiqPay:', error.message);
-        res.status(500).send('Internal Server Error');
-      }
+    // try {
+    //     const liqpayResponse = await axios.post(apiEndpoint, {
+    //       data: data,
+    //       signature: signature,
+    //     });
+    // console.log(liqpayResponse);
+    //     // Надсилаємо відповідь клієнту
+    //     res.json(liqpayResponse);
+    //   } 
+    //   catch (error) {
+    //     console.error('Error sending request to LiqPay:', error.message);
+    //     res.status(500).send('Internal Server Error');
+    //   }
 };
 
 const processesPayment = async (req, res) => {
