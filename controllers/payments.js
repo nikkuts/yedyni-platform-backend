@@ -52,7 +52,7 @@ const processesPayment = async (req, res) => {
     const result = JSON.parse(dataString);
 
     await User.findByIdAndUpdate(
-      result.customer, 
+      '65525966f3a872944a34ae68', 
       { $push: { donats: result } },
       { new: true }
     );
