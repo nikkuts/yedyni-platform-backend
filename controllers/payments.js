@@ -40,7 +40,7 @@ const createPayment = async (req, res) => {
 };
 
 const processesPayment = async (req, res) => {
-    const {data, signature} = req.body;
+    const {data, signature} = req.body.notify;
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
     const sign = Base64.stringify(hash);
 
@@ -52,7 +52,7 @@ const processesPayment = async (req, res) => {
     const result = JSON.parse(dataString);
 
     await User.findByIdAndUpdate(
-      '65525966f3a872944a34ae68', 
+      result.customer, 
       { $push: { donats: result } },
       { new: true }
     );
