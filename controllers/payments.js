@@ -24,7 +24,7 @@ const createPayment = async (req, res) => {
       description: 'Підтримка проєкту',
       order_id: orderId,
       result_url: 'https://nikkuts.github.io/bonus-programm-react/',
-      server_url: 'https://bonus-programm-backend.onrender.com/api/payments/callback',
+      server_url: 'https://bonus-programm-backend.onrender.com/api/payments/process',
       customer: _id,
     });
     const data = Base64.stringify(Utf8.parse(dataString));
@@ -40,7 +40,7 @@ const createPayment = async (req, res) => {
 };
 
 const processesPayment = async (req, res) => {
-    const {data, signature} = req.body.notify;
+    const {data, signature} = req.body;
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
     const sign = Base64.stringify(hash);
 
