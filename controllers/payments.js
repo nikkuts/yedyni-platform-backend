@@ -39,11 +39,11 @@ const createPayment = async (req, res) => {
 };
 
 const processesPayment = async (req, res) => {
-    console.log('processesPayment');
-    const {customer} = req.body;
+ 
+    // const {customer} = req.body;
 
     await User.findByIdAndUpdate(
-      customer, 
+      '658195c33c93a3e6b1952e8b', 
       { $push: { donats: req.body } },
       { new: true }
     );
