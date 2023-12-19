@@ -10,6 +10,6 @@ const router = express.Router();
 
 router.post('/donat', authenticate, validateBody(schemas.donatSchema), ctrl.createPayment);
 
-router.post('/callback', ctrl.processesPayment);
+router.post('/process', ctrl.processesPayment);
 
 module.exports = router;

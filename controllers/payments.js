@@ -2,6 +2,7 @@ const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
 const enc = require('crypto-js/enc-utf8');
 const { v4: uuidv4 } = require('uuid');
+const {User} = require('../models/user');
 const {HttpError, ctrlWrapper} = require('../helpers');
 require('dotenv').config();
 
@@ -40,13 +41,17 @@ const createPayment = async (req, res) => {
 
 const processesPayment = async (req, res) => {
  
-    // const {customer} = req.body;
+    const {customer} = req.body;
 
     await User.findByIdAndUpdate(
-      '658195c33c93a3e6b1952e8b', 
+      customer, 
       { $push: { donats: req.body } },
       { new: true }
     );
+
+    res.status(201).json({
+      message: 'success',
+  })
 };
 
 module.exports = {
