@@ -1,6 +1,6 @@
 const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
-const enc = require('crypto-js/enc-utf8');
+const Utf8 = require('crypto-js/enc-utf8');
 const { v4: uuidv4 } = require('uuid');
 const {User} = require('../models/user');
 const {HttpError, ctrlWrapper} = require('../helpers');
@@ -27,7 +27,7 @@ const createPayment = async (req, res) => {
       server_url: 'https://bonus-programm-backend.onrender.com/api/payments/callback',
       customer: _id,
     });
-    const data = Base64.stringify(enc.parse(dataString));
+    const data = Base64.stringify(Utf8.parse(dataString));
 
     // Створюємо підпис
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
@@ -40,12 +40,20 @@ const createPayment = async (req, res) => {
 };
 
 const processesPayment = async (req, res) => {
- 
-    const {customer} = req.body;
+    const {data, signature} = req.body;
+    const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
+    const sign = Base64.stringify(hash);
+
+    if (sign !== signature) {
+      throw HttpError(400, "Несправжня відповідь LiqPay");
+    }
+
+    const dataString = Utf8.stringify(Base64.parse(data));
+    const result = JSON.parse(dataString);
 
     await User.findByIdAndUpdate(
-      customer, 
-      { $push: { donats: req.body } },
+      result.customer, 
+      { $push: { donats: result } },
       { new: true }
     );
 
