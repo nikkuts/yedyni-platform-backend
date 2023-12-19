@@ -40,6 +40,13 @@ const createPayment = async (req, res) => {
 
 const processesPayment = async (req, res) => {
     console.log('processesPayment');
+    const {customer} = req.body;
+
+    await User.findByIdAndUpdate(
+      customer, 
+      { $push: { donats: req.body } },
+      { new: true }
+    );
 };
 
 module.exports = {

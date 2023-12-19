@@ -43,6 +43,10 @@ const userSchema = new Schema({
         ref: 'user',
         required: true,
       },
+      donats: {
+        type: Schema.Types.Array,
+        default: [],
+      },
 }, {versionKey: false, timestamps: true});
 
 userSchema.post('save', handleMongooseError);
