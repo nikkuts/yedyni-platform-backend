@@ -40,8 +40,8 @@ const createPayment = async (req, res) => {
 };
 
 const processesPayment = async (req, res) => {
-    const {data, signature} = req.body;
-    console.log(req.body);
+    const {data, signature} = req.query;
+    console.log(req);
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
     const sign = Base64.stringify(hash);
 
