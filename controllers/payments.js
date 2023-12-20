@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
 const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
+const {BASE_CLIENT_URL, BASE_SERVER_URL} = process.env;
 
 const createPayment = async (req, res) => {
     const {_id} = req.user;
@@ -23,8 +24,8 @@ const createPayment = async (req, res) => {
       currency: 'UAH',
       description: 'Підтримка проєкту',
       order_id: orderId,
-      result_url: 'https://nikkuts.github.io/bonus-programm-react/',
-      server_url: 'https://bonus-programm-backend.onrender.com/api/payments/process',
+      result_url: BASE_CLIENT_URL,
+      server_url: `${BASE_SERVER_URL}/api/payments/process`,
       customer: _id,
     });
     const data = Base64.stringify(Utf8.parse(dataString));
@@ -41,7 +42,9 @@ const createPayment = async (req, res) => {
 
 const processesPayment = async (req, res) => {
     const {data, signature} = req.query;
-    console.log(req);
+    console.log(req.body);
+    console.log(req.query);
+    console.log(req.params);
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
     const sign = Base64.stringify(hash);
 
