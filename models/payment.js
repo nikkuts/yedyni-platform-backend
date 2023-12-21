@@ -3,10 +3,10 @@ const Joi = require('joi');
 const {handleMongooseError} = require('../helpers');
 
 const paymentSchema = new Schema({
-    amount: {
-        type: Number,
-        required: [true, 'Сума повинна бути кратною 40'],
-      }
+    data: {
+        type: Schema.Types.Object,
+        required: true,
+    },
 }, {versionKey: false, timestamps: true});
 
 paymentSchema.post('save', handleMongooseError);

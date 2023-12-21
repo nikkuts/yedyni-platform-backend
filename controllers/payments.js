@@ -3,6 +3,7 @@ const SHA1 = require('crypto-js/sha1');
 const Utf8 = require('crypto-js/enc-utf8');
 const { v4: uuidv4 } = require('uuid');
 const {User} = require('../models/user');
+const {Payment} = require('../models/payment');
 const {HttpError, ctrlWrapper} = require('../helpers');
 require('dotenv').config();
 
@@ -51,12 +52,15 @@ const processesPayment = async (req, res) => {
 
     const dataString = Utf8.stringify(Base64.parse(data));
     const result = JSON.parse(dataString);
+    const payment = await Payment.create({data: result});
 
-    await User.findByIdAndUpdate(
-      result.customer, 
-      { $push: { donats: result } },
-      { new: true }
-    );
+    if (result.status === 'success') {
+      await User.findByIdAndUpdate(
+        result.customer, 
+        { $push: { donats: payment._id } },
+        { new: true }
+      );
+    }
 
     res.status(201).json({
       message: 'success',

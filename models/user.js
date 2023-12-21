@@ -44,8 +44,12 @@ const userSchema = new Schema({
         required: true,
       },
       donats: {
-        type: Schema.Types.Array,
-        default: [],
+        type: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: 'payment',
+          }
+        ],
       },
 }, {versionKey: false, timestamps: true});
 
