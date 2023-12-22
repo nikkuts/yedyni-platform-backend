@@ -34,7 +34,7 @@ const createPayment = async (req, res) => {
     // Створюємо підпис
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
     const signature = Base64.stringify(hash);
-console.log(data);
+
     res.json({
       data,
       signature,
