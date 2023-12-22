@@ -54,7 +54,7 @@ const processesPayment = async (req, res) => {
     const result = JSON.parse(dataString);
 
     const {order_id, status, customer} = result;
-    const payment = await Payment.findOne({order_id});
+    const payment = await Payment.findOne({'data.order_id': order_id});
 
     if (payment) {
       throw HttpError(409, "Платіж вже існує");
