@@ -52,12 +52,20 @@ const processesPayment = async (req, res) => {
 
     const dataString = Utf8.stringify(Base64.parse(data));
     const result = JSON.parse(dataString);
-    const payment = await Payment.create({data: result});
 
-    if (result.status === 'success') {
+    const {order_id, status, customer} = result;
+    const payment = await Payment.findOne({order_id});
+
+    if (payment) {
+      throw HttpError(409, "Платіж вже існує");
+    } 
+    
+    const newPayment = await Payment.create({data: result});
+
+    if (status === 'success') {
       await User.findByIdAndUpdate(
-        result.customer, 
-        { $push: { donats: payment._id } },
+        customer, 
+        { $push: { donats: newPayment._id } },
         { new: true }
       );
     }
