@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose');
+const autopopulate = require('mongoose-autopopulate');
 const Joi = require('joi');
 const {handleMongooseError} = require('../helpers');
 
@@ -40,20 +41,31 @@ const userSchema = new Schema({
       },
       inviter: {
         type: Schema.Types.ObjectId,
-        ref: 'user',
+        ref: 'User',
+        autopopulate: {
+          select: 'name email startBonusDate -_id',
+        },
         required: true,
       },
       donats: {
         type: [
           {
             type: Schema.Types.ObjectId,
-            ref: 'payment',
+            ref: 'Payment',
+            autopopulate: {
+              select: 'data.amount data.end_date -_id',
+            },
           }
         ],
+      },
+      startBonusDate: {
+        type: Date,
+        default: null,
       },
 }, {versionKey: false, timestamps: true});
 
 userSchema.post('save', handleMongooseError);
+userSchema.plugin(autopopulate);
 
 const registerSchema = Joi.object({
     name: Joi.string().min(2).max(30).pattern(stringRegexp).required(),
@@ -73,15 +85,20 @@ const loginSchema = Joi.object({
 
 const updateStatusSchema = Joi.object({
   status: Joi.string().valid("user", "admin").required(),
-})
+});
+
+const startDateSchema = Joi.object({
+  startDate: Joi.date().required(),
+});
 
 const schemas = {
     registerSchema,
     loginSchema,
     updateStatusSchema,
     emailSchema,
+    startDateSchema,
 };
 
-const User = model('user', userSchema);
+const User = model('User', userSchema);
 
 module.exports = {User, schemas};

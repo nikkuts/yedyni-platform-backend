@@ -19,6 +19,6 @@ const schemas = {
     donatSchema,
 };
 
-const Payment = model('payment', paymentSchema);
+const Payment = model('Payment', paymentSchema);
 
 module.exports = {Payment, schemas};

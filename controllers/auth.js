@@ -36,7 +36,6 @@ const register = async (req, res) => {
     const avatarURL = gravavatar.url(email);
     const verificationToken = nanoid();
     
-
     const newUser = await User.create({
         name,
         email, 
@@ -63,7 +62,14 @@ const register = async (req, res) => {
             id: newUser._id,
             name: newUser.name,
             email: newUser.email,
-            inviter: newUser.inviter,
+            inviter: {
+                name: inviter.name,
+                email: inviter.email,
+                donats: inviter.donats,
+                startBonusDate: inviter.startBonusDate,
+            },
+            // donats: newUser.donats,
+            // startBonusDate: newUser.startBonusDate,
           }
     })
 };
@@ -114,7 +120,7 @@ const resendVerifyEmail = async (req, res) => {
 
 const login = async (req, res) => {
     const {email, password} = req.body;
-    const user = await User.findOne({email}).populate("inviter", "name email");
+    const user = await User.findOne({email});
    
     if (!user) {
        throw HttpError(401, "Email or password is wrong");
@@ -141,18 +147,22 @@ const login = async (req, res) => {
             name: user.name,
             email: user.email,
             inviter: user.inviter,
+            donats: user.donats,
+            startBonusDate: user.startBonusDate,
           }
     })
 };
 
 const getCurrent = async (req, res) => {
-    const {_id, name, email, inviter} = req.user;
+    const {_id, name, email, inviter, donats, startBonusDate} = req.user;
 
     res.json({
         id: _id,
         name,
         email,
         inviter,
+        donats,
+        startBonusDate,
     })
 };
 
@@ -184,6 +194,13 @@ const updateAvatar = async (req, res) => {
     })
 };
 
+const addStartBonusDate = async (req, res) => {
+    const {_id} = req.user;
+    const result = await User.findByIdAndUpdate(_id, req.body, {new: true});
+
+    res.json(result);
+}
+
 module.exports = {
     register: ctrlWrapper(register),
     login: ctrlWrapper(login),
@@ -193,4 +210,5 @@ module.exports = {
     updateAvatar: ctrlWrapper(updateAvatar),
     verifyEmail: ctrlWrapper(verifyEmail),
     resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
+    addStartBonusDate: ctrlWrapper(addStartBonusDate),
 }
