@@ -52,16 +52,9 @@ const userSchema = new Schema({
           {
             type: Schema.Types.ObjectId,
             ref: 'Payment',
-            // autopopulate: {
-            //   select: 'data.amount data.end_date -_id',
-            // },
           }
         ],
       },
-      // startBonusDate: {
-      //   type: Date,
-      //   default: null,
-      // },
 }, {versionKey: false, timestamps: true});
 
 userSchema.post('save', handleMongooseError);

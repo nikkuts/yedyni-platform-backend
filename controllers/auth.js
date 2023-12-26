@@ -160,11 +160,9 @@ const login = async (req, res) => {
 };
 
 const getCurrent = async (req, res) => {
-    const {_id, name, email, inviter, createdAt} = req.user;
-    const user = await User.findById(_id)
-        .populate('donats', 'data.amount data.end_date -_id');
+    const {_id, name, email, inviter, donats, createdAt} = req.user;
 
-    const arrayDonats = user.donats.map(
+    const arrayDonats = donats.map(
         donat => {
             return {
                 amount: donat.data.amount,
