@@ -128,6 +128,14 @@ const login = async (req, res) => {
     //     throw HttpError(401, "Email not verified");
     // }
     
+    const arrayDonats = user.donats.map(
+        donat => {
+            return {
+                amount: donat.data.amount,
+                end_date: donat.data.end_date,
+            }
+        });
+
     const passwordCompare = await bcrypt.compare(password, user.password);
    
     if (!passwordCompare) {
@@ -145,24 +153,33 @@ const login = async (req, res) => {
             name: user.name,
             email: user.email,
             inviter: user.inviter,
-            donats: user.donats,
+            donats: arrayDonats,
             registerDate: user.createdAt,
           }
     })
 };
 
 const getCurrent = async (req, res) => {
-    const {_id, name, email, inviter, donats, createdAt} = req.user;
-    const arrayDonats = donats.data.forE;
+    const {_id, name, email, inviter, createdAt} = req.user;
+    const user = await User.findById(_id)
+        .populate('donats', 'data.amount data.end_date -_id');
+
+    const arrayDonats = user.donats.map(
+        donat => {
+            return {
+                amount: donat.data.amount,
+                end_date: donat.data.end_date,
+            }
+        });
 
     res.json({
         id: _id,
         name,
         email,
         inviter,
-        donats: donats.data,
+        donats: arrayDonats,
         registerDate: createdAt,
-    })
+    });
 };
 
 const logout = async (req, res) => {
