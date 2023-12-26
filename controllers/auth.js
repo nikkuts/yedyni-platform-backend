@@ -65,11 +65,9 @@ const register = async (req, res) => {
             inviter: {
                 name: inviter.name,
                 email: inviter.email,
-                donats: inviter.donats,
-                startBonusDate: inviter.startBonusDate,
             },
             // donats: newUser.donats,
-            // startBonusDate: newUser.startBonusDate,
+            registerDate: createAt,
           }
     })
 };

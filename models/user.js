@@ -43,7 +43,7 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         autopopulate: {
-          select: 'name email startBonusDate -_id',
+          select: 'name email -_id',
         },
         required: true,
       },
@@ -52,16 +52,16 @@ const userSchema = new Schema({
           {
             type: Schema.Types.ObjectId,
             ref: 'Payment',
-            autopopulate: {
-              select: 'data.amount data.end_date -_id',
-            },
+            // autopopulate: {
+            //   select: 'data.amount data.end_date -_id',
+            // },
           }
         ],
       },
-      startBonusDate: {
-        type: Date,
-        default: null,
-      },
+      // startBonusDate: {
+      //   type: Date,
+      //   default: null,
+      // },
 }, {versionKey: false, timestamps: true});
 
 userSchema.post('save', handleMongooseError);
