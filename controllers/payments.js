@@ -20,7 +20,7 @@ const createPayment = async (req, res) => {
     const dataString = JSON.stringify({ 
       public_key: PUBLIC_KEY, 
       version: '3',
-      action: 'paydonate',
+      action: 'pay',
       amount: amount,
       currency: 'UAH',
       description: 'Підтримка проєкту',
