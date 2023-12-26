@@ -67,7 +67,7 @@ const register = async (req, res) => {
                 email: inviter.email,
             },
             // donats: newUser.donats,
-            registerDate: createAt,
+            registerDate: newUser.createdAt,
           }
     })
 };
@@ -118,7 +118,8 @@ const resendVerifyEmail = async (req, res) => {
 
 const login = async (req, res) => {
     const {email, password} = req.body;
-    const user = await User.findOne({email});
+    const user = await User.findOne({email})
+        .populate(donats, 'data.amount data.end_date -_id');
    
     if (!user) {
        throw HttpError(401, "Email or password is wrong");
