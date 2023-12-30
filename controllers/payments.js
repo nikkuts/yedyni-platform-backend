@@ -111,8 +111,8 @@ const processesPayment = async (req, res) => {
         { $push: { donats: newPayment._id } },
         { new: true }
       );
-console.log(user.inviter, amount);
-      // await distributesBonuses (user.inviter, amount);
+
+      await distributesBonuses (user.inviter, amount);
     }
 
     res.status(200).json({
