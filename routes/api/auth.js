@@ -24,6 +24,6 @@ router.patch("/status", authenticate, validateBody(schemas.updateStatusSchema), 
 
 router.patch("/avatar", authenticate, upload.single("avatar"), resizesAvatar, ctrl.updateAvatar);
 
-router.patch("/start", authenticate, validateBody(schemas.startDateSchema), ctrl.addStartBonusDate);
+// router.patch("/start", authenticate, validateBody(schemas.startDateSchema), ctrl.addStartBonusDate);
 
 module.exports = router;

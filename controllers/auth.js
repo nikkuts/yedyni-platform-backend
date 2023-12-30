@@ -9,12 +9,12 @@ const {nanoid} = require('nanoid');
 const {HttpError, ctrlWrapper, sendEmail} = require('../helpers');
 require('dotenv').config();
 
-const {SECRET_KEY, BASE_URL} = process.env;
+const {SECRET_KEY, BASE_URL, MAIN_ID} = process.env;
 
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
 const register = async (req, res) => {
-    const {name, email, password, inviterId = '65490a0ad1e6aba532545823'} = req.body;
+    const {name, email, password, inviterId = MAIN_ID} = req.body;
     
     if (!isValidObjectId(inviterId)) {
         throw HttpError(400, "Помилка у запрошувальному покликанні");
@@ -208,12 +208,12 @@ const updateAvatar = async (req, res) => {
     })
 };
 
-const addStartBonusDate = async (req, res) => {
-    const {_id} = req.user;
-    const result = await User.findByIdAndUpdate(_id, req.body, {new: true});
+// const addStartBonusDate = async (req, res) => {
+//     const {_id} = req.user;
+//     const result = await User.findByIdAndUpdate(_id, req.body, {new: true});
 
-    res.json(result);
-}
+//     res.json(result);
+// }
 
 module.exports = {
     register: ctrlWrapper(register),
@@ -224,5 +224,5 @@ module.exports = {
     updateAvatar: ctrlWrapper(updateAvatar),
     verifyEmail: ctrlWrapper(verifyEmail),
     resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
-    addStartBonusDate: ctrlWrapper(addStartBonusDate),
+    // addStartBonusDate: ctrlWrapper(addStartBonusDate),
 }

@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const {User} = require('../models/user');
 const {Payment} = require('../models/payment');
 const {HttpError, ctrlWrapper} = require('../helpers');
+const levelSupport = require('../helpers/levelSupport');
 require('dotenv').config();
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
@@ -41,6 +42,48 @@ const createPayment = async (req, res) => {
     })
 };
 
+const distributesBonuses = async (id, amount) => {
+  const MAIN_ID = process.env.MAIN_ID; 
+  let bonus = amount * 0.45;
+  let inviterId = id;
+  let userId;
+  let bonusAccount;
+  let level;
+
+  for (let i = 1; i <= 8; i += 1) {       
+      do {
+          const user = await User.findById(inviterId);
+          userId = user._id.toString();
+
+          if (userId === MAIN_ID) {
+              bonusAccount = user.bonusAccount + bonus;
+              await User.findByIdAndUpdate(userId, {bonusAccount});
+              break;
+          }
+
+          inviterId = user.inviter;
+          bonusAccount = user.bonusAccount;
+          level = levelSupport(user);
+      } while (level < i);
+
+      if (userId === MAIN_ID) {
+          return { success: true, message: 'Main user reached' };
+      }
+
+      bonusAccount = i === 1 
+          ? bonusAccount + amount * 0.1
+          : bonusAccount + amount * 0.05;
+          
+      await User.findByIdAndUpdate(userId, {bonusAccount});
+      bonus = bonus - bonusAccount;
+
+      if (bonus <= 0) {
+          return { success: true, message: 'Bonus distribution completed' };
+      }
+  };
+  return { success: false, message: 'Bonus distribution not completed' };
+};
+
 const processesPayment = async (req, res) => {
     const {data, signature} = req.body;
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
@@ -53,7 +96,7 @@ const processesPayment = async (req, res) => {
     const dataString = Utf8.stringify(Base64.parse(data));
     const result = JSON.parse(dataString);
 
-    const {order_id, status, customer} = result;
+    const {order_id, status, amount, customer} = result;
     const payment = await Payment.findOne({'data.order_id': order_id});
 
     if (payment) {
@@ -63,11 +106,13 @@ const processesPayment = async (req, res) => {
     const newPayment = await Payment.create({data: result});
 
     if (status === 'success') {
-      await User.findByIdAndUpdate(
+      const user = await User.findByIdAndUpdate(
         customer, 
         { $push: { donats: newPayment._id } },
         { new: true }
       );
+console.log(user.inviter, amount);
+      // await distributesBonuses (user.inviter, amount);
     }
 
     res.status(200).json({

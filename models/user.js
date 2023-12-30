@@ -43,7 +43,7 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         autopopulate: {
-          select: 'name email -_id',
+          select: 'name email',
         },
         required: true,
       },
@@ -54,6 +54,10 @@ const userSchema = new Schema({
             ref: 'Payment',
           }
         ],
+      },
+      bonusAccount: {
+        type: Number,
+        default: 0,
       },
 }, {versionKey: false, timestamps: true});
 
@@ -80,16 +84,16 @@ const updateStatusSchema = Joi.object({
   status: Joi.string().valid("user", "admin").required(),
 });
 
-const startDateSchema = Joi.object({
-  startDate: Joi.date().required(),
-});
+// const startDateSchema = Joi.object({
+//   startDate: Joi.date().required(),
+// });
 
 const schemas = {
     registerSchema,
     loginSchema,
     updateStatusSchema,
     emailSchema,
-    startDateSchema,
+    // startDateSchema,
 };
 
 const User = model('User', userSchema);
