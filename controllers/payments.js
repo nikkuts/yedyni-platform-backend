@@ -63,7 +63,7 @@ const distributesBonuses = async (id, amount) => {
 
           inviterId = user.inviter;
           bonusAccount = user.bonusAccount;
-          level = levelSupport(user);
+          level = parseFloat(levelSupport(user));
       } while (level < i);
 
       if (userId === MAIN_ID) {
