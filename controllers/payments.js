@@ -81,7 +81,7 @@ const distributesBonuses = async (id, amount) => {
           return { success: true, message: 'Бонус повністю розподілено' };
       }
       if (bonus < 0) {
-        return { success: FontFaceSetLoadEvent, message: 'Розподілено більше допустимої суми бонусу' };
+        return { success: false, message: 'Розподілено більше допустимої суми бонусу' };
       }
   };
   return { success: false, message: 'Бонус не було розподілено' };
