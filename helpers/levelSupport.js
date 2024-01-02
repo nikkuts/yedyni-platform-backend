@@ -9,10 +9,10 @@ const levelSupport = (user) => {
 
     const totalDonat = user.donats.reduce(
       (total, donat) => {
-      return total = total + donat.amount;
+      return total = total + donat.data.amount;
       }, 0);
 
-    return ((totalDonat / 40) * (2419200 / totalTime)).toFixed(2);
+    return ((totalDonat / 40) * (2419200 / totalTime));
   };
 
   module.exports = levelSupport; 

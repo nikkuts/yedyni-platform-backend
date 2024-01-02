@@ -58,17 +58,17 @@ const distributesBonuses = async (id, amount) => {
           if (userId === MAIN_ID) {
               bonusAccount = user.bonusAccount + bonus;
               await User.findByIdAndUpdate(userId, {bonusAccount});
-              break;
+              return { success: true, message: 'Головний акаунт досягнуто' };
           }
 
           inviterId = user.inviter;
           bonusAccount = user.bonusAccount;
-          level = parseFloat(levelSupport(user));
+          level = levelSupport(user);
       } while (level < i);
 
-      if (userId === MAIN_ID) {
-          return { success: true, message: 'Main user reached' };
-      }
+      // if (userId === MAIN_ID) {
+      //     return { success: true, message: 'Main user reached' };
+      // }
 
       bonusAccount = i === 1 
           ? bonusAccount + amount * 0.1
@@ -77,11 +77,14 @@ const distributesBonuses = async (id, amount) => {
       await User.findByIdAndUpdate(userId, {bonusAccount});
       bonus = bonus - bonusAccount;
 
-      if (bonus <= 0) {
-          return { success: true, message: 'Bonus distribution completed' };
+      if (bonus === 0) {
+          return { success: true, message: 'Бонус повністю розподілено' };
+      }
+      if (bonus < 0) {
+        return { success: FontFaceSetLoadEvent, message: 'Розподілено більше допустимої суми бонусу' };
       }
   };
-  return { success: false, message: 'Bonus distribution not completed' };
+  return { success: false, message: 'Бонус не було розподілено' };
 };
 
 const processesPayment = async (req, res) => {
