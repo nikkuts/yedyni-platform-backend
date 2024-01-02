@@ -49,6 +49,9 @@ const userSchema = new Schema({
           {
             type: Schema.Types.ObjectId,
             ref: 'Payment',
+          //   autopopulate: {
+          //     select: 'data.amount data.end_date -_id',
+          // },
           }
         ],
       },

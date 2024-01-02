@@ -52,13 +52,15 @@ const distributesBonuses = async (id, amount) => {
 
   for (let i = 1; i <= 8; i += 1) {       
       do {
-          const user = await User.findById(inviterId);
+          const user = await User.findById(inviterId)
+          .populate('donats', 'data.amount');
+      
           userId = user._id.toString();
 
           if (userId === MAIN_ID) {
               bonusAccount = user.bonusAccount + bonus;
-              await User.findByIdAndUpdate(userId, {bonusAccount});
-              return { success: true, message: 'Головний акаунт досягнуто' };
+              await User.findByIdAndUpdate(MAIN_ID, {bonusAccount});
+              return console.log({ success: true, message: 'Головний акаунт досягнуто' });
           }
 
           inviterId = user.inviter;
@@ -70,21 +72,23 @@ const distributesBonuses = async (id, amount) => {
       //     return { success: true, message: 'Main user reached' };
       // }
 
-      bonusAccount = i === 1 
-          ? bonusAccount + amount * 0.1
-          : bonusAccount + amount * 0.05;
+      fee = i === 1 
+          ? amount * 0.1
+          : amount * 0.05;
+
+          bonusAccount = bonusAccount + fee;
           
       await User.findByIdAndUpdate(userId, {bonusAccount});
-      bonus = bonus - bonusAccount;
+      bonus = bonus - fee;
 
       if (bonus === 0) {
-          return { success: true, message: 'Бонус повністю розподілено' };
+          return console.log({ success: true, message: 'Бонус повністю розподілено' });
       }
       if (bonus < 0) {
-        return { success: false, message: 'Розподілено більше допустимої суми бонусу' };
+        return console.log({ success: false, message: 'Розподілено більше допустимої суми бонусу' });
       }
   };
-  return { success: false, message: 'Бонус не було розподілено' };
+  return console.log({ success: false, message: 'Бонус не було розподілено' });
 };
 
 const processesPayment = async (req, res) => {
