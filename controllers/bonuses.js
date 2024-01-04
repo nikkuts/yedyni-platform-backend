@@ -1,12 +1,23 @@
 const {User} = require('../models/user');
-
+const levelSupport = require('../helpers');
 const {HttpError, ctrlWrapper} = require('../helpers');
 
+const getIndicators = async (req, res) => {
+    const user = req.user;
+    const bonusAccount = user.bonusAccount;
+    const level = levelSupport(user);
+
+    res.json({
+        bonusAccount,
+        level,
+    });
+};
+
 const getFirstLinePartners = async (req, res) => {
-    const {_id: inviter} = req.user;
+    const {_id} = req.user;
     const {page = 1, limit = 10} = req.query;
     const skip = (page - 1) * limit;
-    const result = await User.find({inviter}, "_id name email avatarURL verify", {skip, limit});
+    const result = await User.find({inviter: _id}, "_id name email avatarURL verify", {skip, limit});
     res.json(result);
 };
 
@@ -29,6 +40,7 @@ const getPartnerStructure = async (req, res) => {
 };
 
 module.exports = {
+    getIndicators: ctrlWrapper(getIndicators),
     getFirstLinePartners: ctrlWrapper(getFirstLinePartners),
     getByIdPartner: ctrlWrapper(getByIdPartner),
     getPartnerStructure: ctrlWrapper(getPartnerStructure),

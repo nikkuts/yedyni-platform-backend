@@ -7,7 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 
 const authRouter = require('./routes/api/auth')
-const partnersRouter = require('./routes/api/partners')
+const bonusesRouter = require('./routes/api/bonuses')
 const paymentsRouter = require('./routes/api/payments')
 const contactsRouter = require('./routes/api/contacts')
 
@@ -22,7 +22,7 @@ app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRouter)
-app.use('/api/partners', partnersRouter)
+app.use('/api/bonuses', bonusesRouter)
 app.use('/api/payments', paymentsRouter)
 app.use('/api/contacts', contactsRouter)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
