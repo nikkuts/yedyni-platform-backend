@@ -17,13 +17,13 @@ const getFirstLinePartners = async (req, res) => {
     const {_id} = req.user;
     const {page = 1, limit = 10} = req.query;
     const skip = (page - 1) * limit;
-    const result = await User.find({inviter: _id}, "_id name email avatarURL verify", {skip, limit});
+    const result = await User.find({inviter: _id}, "_id name email", {skip, limit});
     res.json(result);
 };
 
 const getByIdPartner = async (req, res) => {
     const {partnerId} = req.params;
-    const result = await User.findOne({_id: partnerId});
+    const result = await User.findOne({_id: partnerId}, "_id name email avatarURL verify");
 
     if(!result) {
       throw HttpError (404, 'Not found')
@@ -35,7 +35,7 @@ const getPartnerStructure = async (req, res) => {
     const {partnerId} = req.params;
     const {page = 1, limit = 10} = req.query;
     const skip = (page - 1) * limit;
-    const result = await User.find({inviter: partnerId}, "_id name email avatarURL verify", {skip, limit});
+    const result = await User.find({inviter: partnerId}, "_id name email", {skip, limit});
     res.json(result);
 };
 
