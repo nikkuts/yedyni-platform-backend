@@ -1,5 +1,5 @@
 const {User} = require('../models/user');
-const levelSupport = require('../helpers');
+const levelSupport = require('../helpers/levelSupport');
 const {HttpError, ctrlWrapper} = require('../helpers');
 
 const getIndicators = async (req, res) => {
