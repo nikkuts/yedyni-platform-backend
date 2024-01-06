@@ -4,8 +4,7 @@ const Utf8 = require('crypto-js/enc-utf8');
 const { v4: uuidv4 } = require('uuid');
 const {User} = require('../models/user');
 const {Payment} = require('../models/payment');
-const {HttpError, ctrlWrapper} = require('../helpers');
-const levelSupport = require('../helpers/levelSupport');
+const {HttpError, ctrlWrapper, levelSupport} = require('../helpers');
 require('dotenv').config();
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
@@ -54,7 +53,7 @@ const distributesBonuses = async (id, amount) => {
       do {
           const user = await User.findById(inviterId)
           .populate('donats', 'data.amount');
-      
+        
           userId = user._id.toString();
 
           if (userId === MAIN_ID) {
