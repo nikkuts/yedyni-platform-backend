@@ -1,13 +1,23 @@
 const {User} = require('../models/user');
-const {HttpError, ctrlWrapper, levelSupport} = require('../helpers');
+const {
+    HttpError, 
+    ctrlWrapper,
+    currentCount,
+    totalCount, 
+    levelSupport
+} = require('../helpers');
 
 const getIndicators = async (req, res) => {
     const user = req.user;
     const bonusAccount = user.bonusAccount;
+    const current = currentCount(user);
+    const total = totalCount(user);
     const level = levelSupport(user);
 
     res.json({
         bonusAccount,
+        current,
+        total,
         level,
     });
 };
