@@ -4,8 +4,9 @@ const currentCount = (user) => {
 
     const currentDonat = user.donats.reduce(
       (current, donat) => {
-        return currentTimeUnix - donat.end_date <= 2419200 
-          ? current = current + donat.amount
+        const {end_date, amount} = donat.data;
+        return currentTimeUnix - end_date <= 2419200 
+          ? current = current + amount
           : current;
       }, 0);
 
