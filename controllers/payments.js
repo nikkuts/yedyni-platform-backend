@@ -42,7 +42,7 @@ const createPayment = async (req, res) => {
     })
 };
 
-const distributesBonuses = async (id, paymentId, amount) => {
+const distributesBonuses = async ({id, paymentId, amount}) => {
   let inviterId = id; 
   let bonus = amount * 0.45;
   let bonusAccount;
@@ -137,7 +137,11 @@ const processesPayment = async (req, res) => {
       );
 
       if (customer !== MAIN_ID) {
-        await distributesBonuses (user.inviter, newPayment._id, amount);
+        await distributesBonuses ({
+          id: user.inviter, 
+          paymentId: newPayment._id, 
+          amount,
+        });
       }
     }
 
