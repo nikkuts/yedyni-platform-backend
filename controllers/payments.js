@@ -47,18 +47,16 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
   let bonus = amount * 0.45;
   let bonusAccount;
   let userId;
-  let levelPartner;
+  let levelPartner = 1;
   let levelSupport;
   let fee;
 
-  for (let i = 1; i <= 8; i += 1) {
-    levelPartner = i;       
+  for (let i = 1; i <= 8; i += 1) {       
       do {
           const user = await User.findById(inviterId)
           .populate('donats', 'data.amount');
         
           userId = user._id;
-          inviterId = user.inviter;
           bonusAccount = user.bonusAccount;
           levelSupport = getLevelSupport(user);
 
@@ -77,6 +75,8 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
               );
               return console.log({ success: true, message: 'Головний акаунт досягнуто' });
           }
+          inviterId = user.inviter;
+          levelPartner += 1;
       } while (levelSupport < i);
 
       fee = i === 1 
