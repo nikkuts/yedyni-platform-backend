@@ -49,14 +49,14 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
   let userId;
   let levelPartner = 1;
   let levelSupport;
-  // let fee;
+  let fee;
 
   for (let i = 1; i <= 8; i += 1) {       
       do {
           const user = await User.findById(inviterId)
           .populate('donats', 'data.amount');
         
-          userId = user._id;
+          userId = user._id.toString();
           bonusAccount = user.bonusAccount;
           levelSupport = getLevelSupport(user);
 
@@ -84,7 +84,7 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
           ? amount * 0.1
           : amount * 0.05;
 
-          bonusAccount = bonusAccount + fee;
+      bonusAccount = bonusAccount + fee;
           
       await User.findByIdAndUpdate(userId, {bonusAccount});
       bonus = bonus - fee;
@@ -140,7 +140,7 @@ const processesPayment = async (req, res) => {
       if (customer !== MAIN_ID) {
         await distributesBonuses ({
           id: user.inviter, 
-          paymentId: newPayment._id, 
+          paymentId: newPayment._id.toString(), 
           amount,
         });
       }
