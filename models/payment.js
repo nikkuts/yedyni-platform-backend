@@ -7,6 +7,24 @@ const paymentSchema = new Schema({
         type: Schema.Types.Object,
         required: true,
     },
+    fees: {
+        type: [
+            {
+                userId: {
+                    type: String,
+                },
+                levelPartner: {
+                    type: Number,
+                },
+                levelSupport: {
+                    type: Number,
+                },
+                fee: {
+                    type: Number,
+                },
+            }
+        ],
+    },
 }, {versionKey: false, timestamps: true});
 
 paymentSchema.post('save', handleMongooseError);

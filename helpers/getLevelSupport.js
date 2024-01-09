@@ -1,4 +1,4 @@
-const levelSupport = (user) => {
+const getLevelSupport = (user) => {
     const currentTime = new Date();
     const currentTimeUnix = Math.floor(currentTime.getTime() / 1000);
 
@@ -16,4 +16,4 @@ const levelSupport = (user) => {
     return (totalDonat / 40) * (2419200 / totalTime);
   };
 
-  module.exports = levelSupport; 
+  module.exports = getLevelSupport; 

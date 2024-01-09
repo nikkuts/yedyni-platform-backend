@@ -1,4 +1,4 @@
-const totalCount = (user) => {
+const getTotalCount = (user) => {
     const currentTime = new Date();
     const currentTimeUnix = Math.floor(currentTime.getTime() / 1000);
 
@@ -13,4 +13,4 @@ const totalCount = (user) => {
     return totalDonat / 40;
   };
 
-  module.exports = totalCount;
+  module.exports = getTotalCount;
