@@ -49,7 +49,7 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
   let userId;
   let levelPartner = 1;
   let levelSupport;
-  let fee;
+  // let fee;
 
   for (let i = 1; i <= 8; i += 1) {       
       do {
@@ -75,6 +75,7 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
               );
               return console.log({ success: true, message: 'Головний акаунт досягнуто' });
           }
+
           inviterId = user.inviter;
           levelPartner += 1;
       } while (levelSupport < i);
