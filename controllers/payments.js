@@ -47,7 +47,7 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
   let bonus = amount * 0.45;
   let bonusAccount;
   let userId;
-  let levelPartner = 1;
+  let levelPartner = 0;
   let levelSupport;
   let fee;
 
@@ -58,6 +58,8 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
         
           userId = user._id.toString();
           bonusAccount = user.bonusAccount;
+          inviterId = user.inviter;
+          levelPartner += 1;
           levelSupport = getLevelSupport(user);
 
           if (userId === MAIN_ID) {
@@ -75,9 +77,6 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
               );
               return console.log({ success: true, message: 'Головний акаунт досягнуто' });
           }
-
-          inviterId = user.inviter;
-          levelPartner += 1;
       } while (levelSupport < i);
 
       fee = i === 1 

@@ -11,7 +11,8 @@ const paymentSchema = new Schema({
         type: [
             {
                 userId: {
-                    type: String,
+                    type: Schema.Types.ObjectId,
+                    ref: 'User',
                 },
                 levelPartner: {
                     type: Number,
