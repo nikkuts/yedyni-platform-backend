@@ -59,6 +59,35 @@ const userSchema = new Schema({
         type: Number,
         default: 0,
       },
+      historyBonusAccount: {
+        type: [
+          {
+            initialBalance: {
+              type: Number,
+            },
+            finalBalance: {
+              type: Number,
+            },
+            amountTransaction: {
+              type: Number,
+            },
+            dateTransaction: {
+              type: Date,
+              default: Date.now,
+            },
+            comment: {
+              type: String,
+              enum: ["бонус", "приз", "вивід"],
+            },
+            levelBonus: {
+              type: Number,
+            },
+            emailPartner: {
+              type: String,
+            },
+          }
+        ]
+      },
 }, {versionKey: false, timestamps: true});
 
 userSchema.post('save', handleMongooseError);

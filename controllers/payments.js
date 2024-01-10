@@ -42,10 +42,11 @@ const createPayment = async (req, res) => {
     })
 };
 
-const distributesBonuses = async ({id, paymentId, amount}) => {
-  let inviterId = id; 
+const distributesBonuses = async ({id, email, amount, paymentId}) => {
+  let inviterId = id;
   let bonus = amount * 0.45;
   let bonusAccount;
+  let historyBonusAccount;
   let userId;
   let levelPartner = 0;
   let levelBonus;
@@ -60,13 +61,26 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
         
           userId = user._id.toString();
           bonusAccount = user.bonusAccount;
+          historyBonusAccount = {
+            initialBalance: user.bonusAccount,
+            comment: "бонус",
+            levelBonus,
+            emailPartner: email,
+          };
+
           inviterId = user.inviter;
           levelPartner += 1;
           levelSupport = getLevelSupport(user);
 
           if (userId === MAIN_ID) {
               bonusAccount = bonusAccount + bonus;
-              await User.findByIdAndUpdate(MAIN_ID, {bonusAccount});
+              historyBonusAccount = {
+                ...historyBonusAccount,
+                finalBalance: bonusAccount,
+                amountTransaction: bonus,
+              };
+
+              await User.findByIdAndUpdate(MAIN_ID, {bonusAccount, historyBonusAccount});
               
               await Payment.findByIdAndUpdate(
                 paymentId, 
@@ -87,8 +101,13 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
           : amount * 0.05;
 
       bonusAccount = bonusAccount + fee;
+      historyBonusAccount = {
+        ...historyBonusAccount,
+        finalBalance: bonusAccount,
+        amountTransaction: fee,
+      };
           
-      await User.findByIdAndUpdate(userId, {bonusAccount});
+      await User.findByIdAndUpdate(userId, {bonusAccount, historyBonusAccount});
       bonus = bonus - fee;
 
       await Payment.findByIdAndUpdate(
@@ -124,7 +143,7 @@ const processesPayment = async (req, res) => {
     const dataString = Utf8.stringify(Base64.parse(data));
     const result = JSON.parse(dataString);
 
-    const {order_id, status, amount, customer} = result;
+    const {order_id, status, customer, amount} = result;
     const payment = await Payment.findOne({'data.order_id': order_id});
 
     if (payment) {
@@ -143,8 +162,9 @@ const processesPayment = async (req, res) => {
       if (customer !== MAIN_ID) {
         await distributesBonuses ({
           id: user.inviter, 
-          paymentId: newPayment._id.toString(), 
+          email: user.email, 
           amount,
+          paymentId: newPayment._id.toString(),
         });
       }
     }
