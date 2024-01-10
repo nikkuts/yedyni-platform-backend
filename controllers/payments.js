@@ -73,25 +73,30 @@ const distributesBonuses = async ({id, email, amount, paymentId}) => {
           levelSupport = handleIndicators(user).levelSupport;
 
           if (userId === MAIN_ID) {
-              bonusAccount = bonusAccount + bonus;
-              historyBonusAccount = {
-                ...historyBonusAccount,
-                finalBalance: bonusAccount,
-                amountTransaction: bonus,
-              };
+              bonusAccount += bonus;
 
-              await User.findByIdAndUpdate(MAIN_ID, {bonusAccount, historyBonusAccount});
+              await User.findByIdAndUpdate(MAIN_ID, {
+                $set: {bonusAccount}, 
+                $push: {
+                  historyBonusAccount: {
+                    ...historyBonusAccount,
+                  finalBalance: bonusAccount,
+                  amountTransaction: bonus,
+                  }
+                }
+              });
               
-              await Payment.findByIdAndUpdate(
-                paymentId, 
-                { $push: { fees: {
-                  userId,
-                  levelPartner,
-                  levelBonus,
-                  levelSupport,
-                  fee: bonus,
-                } } }
-              );
+              await Payment.findByIdAndUpdate(paymentId, { 
+                $push: { 
+                  fees: {
+                    userId,
+                    levelPartner,
+                    levelBonus,
+                    levelSupport,
+                    fee: bonus,
+                  } 
+                } 
+              });
               return console.log({ success: true, message: 'Головний акаунт досягнуто' });
           }
       } while (levelSupport < i);
@@ -100,26 +105,32 @@ const distributesBonuses = async ({id, email, amount, paymentId}) => {
           ? amount * 0.1
           : amount * 0.05;
 
-      bonusAccount = bonusAccount + fee;
-      historyBonusAccount = {
-        ...historyBonusAccount,
-        finalBalance: bonusAccount,
-        amountTransaction: fee,
-      };
+      bonusAccount += fee;
           
-      await User.findByIdAndUpdate(userId, {bonusAccount, historyBonusAccount});
+      await User.findByIdAndUpdate(userId, {
+        $set: {bonusAccount}, 
+          $push: {
+            historyBonusAccount: {
+              ...historyBonusAccount,
+              finalBalance: bonusAccount,
+              amountTransaction: fee,
+            }
+          }
+        });
+
       bonus = bonus - fee;
 
-      await Payment.findByIdAndUpdate(
-        paymentId, 
-        { $push: { fees: {
-          userId,
-          levelPartner,
-          levelBonus,
-          levelSupport,
-          fee,
-        } } }
-      );
+      await Payment.findByIdAndUpdate(paymentId, { 
+        $push: { 
+          fees: {
+            userId,
+            levelPartner,
+            levelBonus,
+            levelSupport,
+            fee,
+          } 
+        } 
+      });
 
       if (bonus === 0) {
           return console.log({ success: true, message: 'Бонус повністю розподілено' });
