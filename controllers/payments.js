@@ -48,10 +48,12 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
   let bonusAccount;
   let userId;
   let levelPartner = 0;
+  let levelBonus;
   let levelSupport;
   let fee;
 
-  for (let i = 1; i <= 8; i += 1) {       
+  for (let i = 1; i <= 8; i += 1) {
+    levelBonus = i;       
       do {
           const user = await User.findById(inviterId)
           .populate('donats', 'data.amount');
@@ -71,6 +73,7 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
                 { $push: { fees: {
                   userId,
                   levelPartner,
+                  levelBonus,
                   levelSupport,
                   fee: bonus,
                 } } }
@@ -93,6 +96,7 @@ const distributesBonuses = async ({id, paymentId, amount}) => {
         { $push: { fees: {
           userId,
           levelPartner,
+          levelBonus,
           levelSupport,
           fee,
         } } }

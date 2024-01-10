@@ -17,6 +17,9 @@ const paymentSchema = new Schema({
                 levelPartner: {
                     type: Number,
                 },
+                levelBonus: {
+                    type: Number,
+                },
                 levelSupport: {
                     type: Number,
                 },
