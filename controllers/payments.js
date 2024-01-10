@@ -70,7 +70,7 @@ const distributesBonuses = async ({id, email, amount, paymentId}) => {
 
           inviterId = user.inviter;
           levelPartner += 1;
-          levelSupport = getLevelSupport(user);
+          levelSupport = getLevelSupport(user).levelSupport;
 
           if (userId === MAIN_ID) {
               bonusAccount = bonusAccount + bonus;
@@ -128,7 +128,8 @@ const distributesBonuses = async ({id, email, amount, paymentId}) => {
         return console.log({ success: false, message: 'Розподілено більше допустимої суми бонусу' });
       }
   };
-  return console.log({ success: false, message: 'Бонус не було розподілено' });
+  console.log({ success: false, message: 'Бонус не було розподілено' });
+  throw HttpError(409, "Бонус не було розподілено");
 };
 
 const processesPayment = async (req, res) => {
