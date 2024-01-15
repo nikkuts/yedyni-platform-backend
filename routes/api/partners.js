@@ -8,10 +8,10 @@ const router = express.Router();
 
 router.get("/indicators", authenticate, ctrl.getIndicators);
 
-router.get("/", authenticate, ctrl.getFirstLinePartners);
+router.get("/", authenticate, ctrl.getPartners);
 
 router.get("/:partnerId", authenticate, isValidId, ctrl.getByIdPartner);
 
-router.get("/:partnerId/structure", authenticate, isValidId, ctrl.getPartnerStructure);
+router.get("/:partnerId/team", authenticate, isValidId, ctrl.getPartnerTeam);
 
 module.exports = router;

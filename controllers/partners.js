@@ -18,7 +18,7 @@ const getIndicators = async (req, res) => {
     });
 };
 
-const getFirstLinePartners = async (req, res) => {
+const getPartners = async (req, res) => {
     const {_id} = req.user;
     const {page = 1, limit = 10} = req.query;
     const skip = (page - 1) * limit;
@@ -36,7 +36,7 @@ const getByIdPartner = async (req, res) => {
     res.json(result);
 };
 
-const getPartnerStructure = async (req, res) => {
+const getPartnerTeam = async (req, res) => {
     const {partnerId} = req.params;
     const {page = 1, limit = 10} = req.query;
     const skip = (page - 1) * limit;
@@ -46,7 +46,7 @@ const getPartnerStructure = async (req, res) => {
 
 module.exports = {
     getIndicators: ctrlWrapper(getIndicators),
-    getFirstLinePartners: ctrlWrapper(getFirstLinePartners),
+    getPartners: ctrlWrapper(getPartners),
     getByIdPartner: ctrlWrapper(getByIdPartner),
-    getPartnerStructure: ctrlWrapper(getPartnerStructure),
+    getPartnerTeam: ctrlWrapper(getPartnerTeam),
 };
