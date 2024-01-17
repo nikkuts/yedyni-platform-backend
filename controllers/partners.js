@@ -26,10 +26,10 @@ const getIndicators = async (req, res) => {
 //     res.json(result);
 // };
 
-const getPartners = async (req, res) => {
+const getTeam = async (req, res) => {
     const {_id} = req.user;
     const result = await User.findById(_id, "_id name email team")
-    .populate('team', '_id name email team');
+    .populate('team', '_id createAt name email team');
     
     if(!result) {
         throw HttpError (404, 'Not found')
@@ -37,9 +37,10 @@ const getPartners = async (req, res) => {
     res.json(result);
 };
 
-const getByIdPartner = async (req, res) => {
+const getByIdPartnerTeam = async (req, res) => {
     const {partnerId} = req.params;
-    const result = await User.findOne({_id: partnerId}, "_id name email team");
+    const result = await User.findOne({_id: partnerId}, "_id name email team")
+    .populate('team', '_id createAt name email team');
 
     if(!result) {
       throw HttpError (404, 'Not found')
@@ -47,17 +48,8 @@ const getByIdPartner = async (req, res) => {
     res.json(result);
 };
 
-const getPartnerTeam = async (req, res) => {
-    const {partnerId} = req.params;
-    const {page = 1, limit = 10} = req.query;
-    const skip = (page - 1) * limit;
-    const result = await User.find({inviter: partnerId}, "_id name email", {skip, limit});
-    res.json(result);
-};
-
 module.exports = {
     getIndicators: ctrlWrapper(getIndicators),
-    getPartners: ctrlWrapper(getPartners),
-    getByIdPartner: ctrlWrapper(getByIdPartner),
-    getPartnerTeam: ctrlWrapper(getPartnerTeam),
+    getTeam: ctrlWrapper(getTeam),
+    getByIdPartnerTeam: ctrlWrapper(getByIdPartnerTeam),
 };
