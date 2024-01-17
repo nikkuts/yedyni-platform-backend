@@ -44,6 +44,17 @@ const userSchema = new Schema({
         ref: 'User',
         required: true,
       },
+      team: {
+        type: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+          //   autopopulate: {
+          //     select: '_id createdAt name email',
+          // },
+          }
+        ],
+      },
       donats: {
         type: [
           {

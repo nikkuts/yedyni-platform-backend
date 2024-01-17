@@ -18,17 +18,28 @@ const getIndicators = async (req, res) => {
     });
 };
 
+// const getPartners = async (req, res) => {
+//     const {_id} = req.user;
+//     const {page = 1, limit = 10} = req.query;
+//     const skip = (page - 1) * limit;
+//     const result = await User.find({inviter: _id}, "_id name email", {skip, limit});
+//     res.json(result);
+// };
+
 const getPartners = async (req, res) => {
     const {_id} = req.user;
-    const {page = 1, limit = 10} = req.query;
-    const skip = (page - 1) * limit;
-    const result = await User.find({inviter: _id}, "_id name email", {skip, limit});
+    const result = await User.findById(_id, "_id name email team")
+    .populate('team', '_id name email team');
+    
+    if(!result) {
+        throw HttpError (404, 'Not found')
+    }
     res.json(result);
 };
 
 const getByIdPartner = async (req, res) => {
     const {partnerId} = req.params;
-    const result = await User.findOne({_id: partnerId}, "_id name email avatarURL verify");
+    const result = await User.findOne({_id: partnerId}, "_id name email team");
 
     if(!result) {
       throw HttpError (404, 'Not found')

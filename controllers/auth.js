@@ -54,7 +54,15 @@ const register = async (req, res) => {
 
     const payload = {id: newUser._id,};
     const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
-    await User.findByIdAndUpdate(newUser._id, {token});
+    await User.findByIdAndUpdate(
+        newUser._id, 
+        {token}
+    );
+
+    await User.findByIdAndUpdate(
+        inviterId, 
+        { $push: { team: newUser._id } }
+    );
 
     res.status(201).json({
         token: token,
