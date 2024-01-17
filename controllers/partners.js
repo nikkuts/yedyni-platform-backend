@@ -29,7 +29,7 @@ const getIndicators = async (req, res) => {
 const getTeam = async (req, res) => {
     const {_id} = req.user;
     const result = await User.findById(_id, "_id name email team")
-    .populate('team', '_id createAt name email team');
+    .populate('team', '_id createdAt name email team');
     
     if(!result) {
         throw HttpError (404, 'Not found')
@@ -40,7 +40,7 @@ const getTeam = async (req, res) => {
 const getByIdPartnerTeam = async (req, res) => {
     const {partnerId} = req.params;
     const result = await User.findById(partnerId, "_id name email team")
-    .populate('team', '_id createAt name email team');
+    .populate('team', '_id createdAt name email team');
 
     if(!result) {
       throw HttpError (404, 'Not found')
