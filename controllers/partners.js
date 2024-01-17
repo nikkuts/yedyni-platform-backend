@@ -39,7 +39,7 @@ const getTeam = async (req, res) => {
 
 const getByIdPartnerTeam = async (req, res) => {
     const {partnerId} = req.params;
-    const result = await User.findOne({_id: partnerId}, "_id name email team")
+    const result = await User.findById(partnerId, "_id name email team")
     .populate('team', '_id createAt name email team');
 
     if(!result) {
