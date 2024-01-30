@@ -17,13 +17,13 @@ const register = async (req, res) => {
     const {name, email, password, inviterId = MAIN_ID} = req.body;
     
     if (!isValidObjectId(inviterId)) {
-        throw HttpError(400, "Помилка у запрошувальному посиланні");
+        throw HttpError(404, "Помилка у запрошувальному посиланні");
     }
 
     const inviter = await User.findById(inviterId);
     
     if (!inviter) {
-        throw HttpError(400, "Помилка у запрошувальному посиланні");
+        throw HttpError(404, "Помилка у запрошувальному посиланні");
     }
 
     const user = await User.findOne({email});
