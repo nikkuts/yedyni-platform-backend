@@ -3,7 +3,7 @@ const { Schema, model } = require('mongoose');
 const Joi = require('joi');
 const {handleMongooseError} = require('../helpers');
 
-const { emailRegexp, dateRegexp, stringRegexp, phoneRegexp, passwordRegex } = require("../utils");
+const { emailRegexp, dateRegexp, nameRegexp, phoneRegexp, passwordRegex } = require("../utils");
 
 const userSchema = new Schema({
     name: {
@@ -102,7 +102,7 @@ userSchema.post('save', handleMongooseError);
 // userSchema.plugin(autopopulate);
 
 const registerSchema = Joi.object({
-    name: Joi.string().min(2).max(30).pattern(stringRegexp).required(),
+    name: Joi.string().min(2).max(30).pattern(nameRegexp).required(),
     password: Joi.string().min(6).max(30).pattern(passwordRegex).required(),
     email: Joi.string().pattern(emailRegexp).required(),
     inviterId: Joi.string(),
