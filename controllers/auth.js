@@ -17,13 +17,13 @@ const register = async (req, res) => {
     const {name, email, password, inviterId = MAIN_ID} = req.body;
     
     if (!isValidObjectId(inviterId)) {
-        throw HttpError(400, "Помилка у запрошувальному покликанні");
+        throw HttpError(400, "Помилка у запрошувальному посиланні");
     }
 
     const inviter = await User.findById(inviterId);
     
     if (!inviter) {
-        throw HttpError(400, "Помилка у запрошувальному покликанні");
+        throw HttpError(400, "Помилка у запрошувальному посиланні");
     }
 
     const user = await User.findOne({email});
@@ -129,7 +129,7 @@ const login = async (req, res) => {
         .populate('donats', 'data.amount data.end_date -_id');
    
     if (!user) {
-       throw HttpError(401, "Email or password is wrong");
+       throw HttpError(401, "Недійсний Email");
     }
 
     // if (!user.verify) {
@@ -147,7 +147,7 @@ const login = async (req, res) => {
     const passwordCompare = await bcrypt.compare(password, user.password);
    
     if (!passwordCompare) {
-        throw HttpError(401, "Email or password is wrong");
+        throw HttpError(401, 'Недійсний пароль');
     }
 
     const payload = {id: user._id,};
