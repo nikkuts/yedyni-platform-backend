@@ -14,7 +14,7 @@ const MAIN_ID = process.env.MAIN_ID;
 
 const createPayment = async (req, res) => {
     const {_id} = req.user;
-    const {amount, comment} = req.body;
+    const {amount, comment = ''} = req.body;
     const orderId = uuidv4();
 
     // Кодуємо дані JSON у рядок та потім у Base64
