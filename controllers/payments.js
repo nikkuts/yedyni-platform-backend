@@ -14,7 +14,7 @@ const MAIN_ID = process.env.MAIN_ID;
 
 const createPayment = async (req, res) => {
     const {_id} = req.user;
-    const {amount} = req.body;
+    const {amount, comment} = req.body;
     const orderId = uuidv4();
 
     // Кодуємо дані JSON у рядок та потім у Base64
@@ -24,7 +24,7 @@ const createPayment = async (req, res) => {
       action: 'pay',
       amount: amount,
       currency: 'UAH',
-      description: 'Підтримка проєкту "Єдині": безповоротний благодійний внесок',
+      description: `${comment} / Підтримка проєкту "Єдині": безповоротний благодійний внесок`,
       order_id: orderId,
       result_url: BASE_CLIENT_URL,
       server_url: `${BASE_SERVER_URL}/api/payments/process`,
