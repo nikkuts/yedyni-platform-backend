@@ -37,6 +37,7 @@ const createPayment = async (req, res) => {
     if (subscribe) {
       const currentTimeUtc = new Date().toISOString();
       const formattedTimeUtc = currentTimeUtc.replace('T', ' ').substring(0, 19);
+      dataObj.action = 'subscribe';
       dataObj.subscribe = subscribe;
       dataObj.subscribe_date_start = formattedTimeUtc;
       dataObj.subscribe_periodicity = 'month';
@@ -178,7 +179,7 @@ const processesPayment = async (req, res) => {
     
     const newPayment = await Payment.create({data: result});
 
-    if (status === 'success') {
+    if (status === 'success' || status === 'subscribed') {
       const user = await User.findByIdAndUpdate(
         customer, 
         { $push: { donats: newPayment._id } },
