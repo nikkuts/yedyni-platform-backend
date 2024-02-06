@@ -17,7 +17,7 @@ const createPayment = async (req, res) => {
     const {amount, comment, subscribe} = req.body;
     const orderId = uuidv4();
 
-    let dataObj = {
+    const dataObj = {
       public_key: PUBLIC_KEY, 
       version: '3',
       action: 'pay',
@@ -28,17 +28,19 @@ const createPayment = async (req, res) => {
       result_url: BASE_CLIENT_URL,
       server_url: `${BASE_SERVER_URL}/api/payments/process`,
       customer: _id,
-      info: `${comment}`,
     };
+
+    if (comment) {
+      dataObj.info = comment;
+    }
 
     if (subscribe) {
       const currentTimeUtc = new Date().toISOString();
       const formattedTimeUtc = currentTimeUtc.replace('T', ' ').substring(0, 19);
-
       dataObj.subscribe = subscribe;
       dataObj.subscribe_date_start = formattedTimeUtc;
       dataObj.subscribe_periodicity = 'month';
-    };
+    }
 
     // Кодуємо дані JSON у рядок та потім у Base64
     const dataString = JSON.stringify(dataObj);
