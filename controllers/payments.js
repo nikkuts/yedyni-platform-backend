@@ -14,22 +14,30 @@ const MAIN_ID = process.env.MAIN_ID;
 
 const createPayment = async (req, res) => {
     const {_id} = req.user;
-    const {amount, comment} = req.body;
+    const {amount, comment, subscribe} = req.body;
     const orderId = uuidv4();
 
-    // Кодуємо дані JSON у рядок та потім у Base64
-    const dataString = JSON.stringify({ 
+    let dataObj = {
       public_key: PUBLIC_KEY, 
       version: '3',
       action: 'pay',
       amount: amount,
       currency: 'UAH',
-      description: `${comment} ! Підтримка проєкту "Єдині": безповоротний благодійний внесок`,
+      description: 'Підтримка проєкту "Єдині": безповоротний благодійний внесок',
       order_id: orderId,
       result_url: BASE_CLIENT_URL,
       server_url: `${BASE_SERVER_URL}/api/payments/process`,
       customer: _id,
-    });
+      info: `${comment}`,
+    };
+
+    if (subscribe) {
+      dataObj.subscribe = subscribe;
+      dataObj.subscribe_periodicity = 'month';
+    };
+
+    // Кодуємо дані JSON у рядок та потім у Base64
+    const dataString = JSON.stringify(dataObj);
     const data = Base64.stringify(Utf8.parse(dataString));
 
     // Створюємо підпис

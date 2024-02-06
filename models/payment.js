@@ -36,6 +36,7 @@ paymentSchema.post('save', handleMongooseError);
 const donatSchema = Joi.object({
     amount: Joi.number().multiple(40).required(),
     comment: Joi.string().max(30).allow(''),
+    subscribe: Joi.string().valid('1'),
 });
 
 const schemas = {
