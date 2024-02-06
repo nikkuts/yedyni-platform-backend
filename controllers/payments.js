@@ -171,30 +171,30 @@ const processesPayment = async (req, res) => {
     const result = JSON.parse(dataString);
 
     const {order_id, status, customer, amount} = result;
-    // const payment = await Payment.findOne({'data.order_id': order_id});
+    const payment = await Payment.findOne({'data.order_id': order_id});
 
-    // if (payment) {
-    //   throw HttpError(409, "Платіж вже існує");
-    // } 
+    if (payment) {
+      throw HttpError(409, "Платіж вже існує");
+    } 
     
     const newPayment = await Payment.create({data: result});
 
-    // if (status === 'success' || status === 'subscribed') {
-    //   const user = await User.findByIdAndUpdate(
-    //     customer, 
-    //     { $push: { donats: newPayment._id } },
-    //     { new: true }
-    //   );
+    if (status === 'success') {
+      const user = await User.findByIdAndUpdate(
+        customer, 
+        { $push: { donats: newPayment._id } },
+        { new: true }
+      );
 
-    //   if (customer !== MAIN_ID) {
-    //     await distributesBonuses ({
-    //       id: user.inviter, 
-    //       email: user.email, 
-    //       amount,
-    //       paymentId: newPayment._id.toString(),
-    //     });
-    //   }
-    // }
+      if (customer !== MAIN_ID) {
+        await distributesBonuses ({
+          id: user.inviter, 
+          email: user.email, 
+          amount,
+          paymentId: newPayment._id.toString(),
+        });
+      }
+    }
 
     res.status(200).json({
       message: 'success',
