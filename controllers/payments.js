@@ -32,7 +32,11 @@ const createPayment = async (req, res) => {
     };
 
     if (subscribe) {
+      const currentTimeUtc = new Date().toISOString();
+      const formattedTimeUtc = currentTimeUtc.replace('T', ' ').substring(0, 19);
+
       dataObj.subscribe = subscribe;
+      dataObj.subscribe_date_start = formattedTimeUtc;
       dataObj.subscribe_periodicity = 'month';
     };
 
