@@ -1,3 +1,4 @@
+const axios = require('axios');
 const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
 const Utf8 = require('crypto-js/enc-utf8');
@@ -50,6 +51,43 @@ const createPayment = async (req, res) => {
     // Створюємо підпис
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
     const signature = Base64.stringify(hash);
+
+    res.json({
+      data,
+      signature,
+    })
+};
+
+const deleteSubscribe = async (req, res) => {
+  const {_id} = req.user;
+    const {orderId} = req.body;
+
+    const payment = await Payment.findOne({
+      'data.order_id': orderId,
+      'data.status': 'subscribed'
+    });
+
+    if (payment.data.customer !== _id) {
+      throw HttpError(409, "Підписка не належить користувачеві");
+    } 
+
+    const dataObj = {
+      public_key: PUBLIC_KEY, 
+      version: '3',
+      action: 'unsubscribe',
+      order_id: orderId,
+    };
+
+    // Кодуємо дані JSON у рядок та потім у Base64
+    const dataString = JSON.stringify(dataObj);
+    const data = Base64.stringify(Utf8.parse(dataString));
+
+    // Створюємо підпис
+    const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
+    const signature = Base64.stringify(hash);
+
+    const responseLiqpay = await axios.post("https://www.liqpay.ua/api/request", {data, signature});
+    console.log(responseLiqpay);
 
     res.json({
       data,
@@ -171,13 +209,20 @@ const processesPayment = async (req, res) => {
     const result = JSON.parse(dataString);
 
     const {order_id, status, customer, amount} = result;
-    const payment = await Payment.findOne({'data.order_id': order_id});
+    // const payment = await Payment.findOne({'data.order_id': order_id});
 
-    if (payment) {
-      throw HttpError(409, "Платіж вже існує");
-    } 
+    // if (payment) {
+    //   throw HttpError(409, "Платіж вже існує");
+    // } 
     
     const newPayment = await Payment.create({data: result});
+
+    if (status === 'subscribed') {
+      await User.findByIdAndUpdate(
+        customer, 
+        { $push: { subscribes: newPayment._id } }
+      );
+    }
 
     if (status === 'success') {
       const user = await User.findByIdAndUpdate(
@@ -203,6 +248,7 @@ const processesPayment = async (req, res) => {
 
 module.exports = {
     createPayment: ctrlWrapper(createPayment),
+    deleteSubscribe: ctrlWrapper(deleteSubscribe),
     processesPayment: ctrlWrapper(processesPayment),
 };
 

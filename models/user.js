@@ -63,6 +63,14 @@ const userSchema = new Schema({
           }
         ],
       },
+      subscribes: {
+        type: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: 'Payment',
+          }
+        ],
+      },
       bonusAccount: {
         type: Number,
         default: 0,

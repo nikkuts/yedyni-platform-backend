@@ -39,8 +39,13 @@ const donatSchema = Joi.object({
     subscribe: Joi.string().valid('1'),
 });
 
+const unsubscribeSchema = Joi.object({
+    orderId: Joi.string().required(),
+});
+
 const schemas = {
     donatSchema,
+    unsubscribeSchema,
 };
 
 const Payment = model('Payment', paymentSchema);
