@@ -64,7 +64,7 @@ const deleteSubscribe = async (req, res) => {
 
     const payment = await Payment.findOne({
       'data.order_id': orderId,
-      'data.status': 'subscribed'
+      'data.status': 'subscribed',
     });
 
     if (payment.data.customer !== _id) {
@@ -211,7 +211,7 @@ const processesPayment = async (req, res) => {
     const {order_id, status, customer, amount} = result;
     const payment = await Payment.findOne({
       'data.order_id': order_id,
-      status
+      'data.status': status,
     });
 
     if (payment) {
