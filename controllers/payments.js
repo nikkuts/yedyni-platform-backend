@@ -215,7 +215,7 @@ const processesPayment = async (req, res) => {
     });
 
     if (payment) {
-      throw HttpError(409, "Платіж вже існує");
+      throw HttpError(418, "Платіж вже існує");
     } 
     
     const newPayment = await Payment.create({data: result});
