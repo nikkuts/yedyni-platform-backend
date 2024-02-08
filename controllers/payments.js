@@ -228,7 +228,7 @@ const processesPayment = async (req, res) => {
         'data.action': 'subscribe',
         'data.status': 'subscribed',
       });
-      subscribedUserId = payment.customer;
+      subscribedUserId = payment.data.customer;
     }
 
     const userId = customer || subscribedUserId;
