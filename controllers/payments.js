@@ -197,6 +197,7 @@ const distributesBonuses = async ({id, email, amount, paymentId}) => {
 };
 
 const processesPayment = async (req, res) => {
+    let subscribedUserId = '';
     const {data, signature} = req.body;
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
     const sign = Base64.stringify(hash);
@@ -208,33 +209,45 @@ const processesPayment = async (req, res) => {
     const dataString = Utf8.stringify(Base64.parse(data));
     const result = JSON.parse(dataString);
 
-    const {order_id, status, customer, amount} = result;
+    const {order_id, action, status, customer, amount} = result;
     const payment = await Payment.findOne({
       'data.order_id': order_id,
+      'data.action': action,
       'data.status': status,
     });
 
     if (payment) {
-      throw HttpError(418, "Платіж вже існує");
-    } 
-    
-    const newPayment = await Payment.create({data: result});
+      throw HttpError(301, "Платіж вже існує");
+    }
 
-    if (status === 'subscribed') {
+    const newPayment = await Payment.create({data: result});
+    
+    if (action === 'regular' || status === 'unsubscribed') {
+      const payment = await Payment.findOne({
+        'data.order_id': order_id,
+        'data.action': 'subscribe',
+        'data.status': 'subscribed',
+      });
+      subscribedUserId = payment.customer;
+    }
+
+    const userId = customer || subscribedUserId;
+    
+    if (status === 'subscribed' || status === 'unsubscribed') {
       await User.findByIdAndUpdate(
-        customer, 
+        userId, 
         { $push: { subscribes: newPayment._id } }
       );
     }
 
     if (status === 'success') {
       const user = await User.findByIdAndUpdate(
-        customer, 
+        userId, 
         { $push: { donats: newPayment._id } },
         { new: true }
       );
 
-      if (customer !== MAIN_ID) {
+      if (userId !== MAIN_ID) {
         await distributesBonuses ({
           id: user.inviter, 
           email: user.email, 
