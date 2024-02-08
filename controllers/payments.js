@@ -89,17 +89,20 @@ const deleteSubscribe = async (req, res) => {
 
     // Встановлюємо для даних очікуваний формат
     const params = querystring.stringify({ data, signature });
-    
-    await axios.post('https://www.liqpay.ua/api/request', params, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
 
-    res.json({
-      data,
-      signature,
-    })
+    try {
+      await axios.post('https://www.liqpay.ua/api/request', params, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+
+      res.json({ success: true, message: 'Підписку успішно скасовано' });
+    } 
+    catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Помилка при скасуванні підписки' });
+    }
 };
 
 const distributesBonuses = async ({id, email, amount, paymentId}) => {
@@ -229,7 +232,7 @@ const processesPayment = async (req, res) => {
 
     const newPayment = await Payment.create({data: result});
     
-    if (action === 'regular' || status === 'unsubscribed') {
+    if (action === 'regular') {
       const payment = await Payment.findOne({
         'data.order_id': order_id,
         'data.action': 'subscribe',
