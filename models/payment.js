@@ -29,6 +29,9 @@ const paymentSchema = new Schema({
             }
         ],
     },
+    dateLastSubscriptionPayment: {
+        type: Date,
+    },
 }, {versionKey: false, timestamps: true});
 
 paymentSchema.post('save', handleMongooseError);

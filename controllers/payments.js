@@ -219,7 +219,7 @@ const processesPayment = async (req, res) => {
     const dataString = Utf8.stringify(Base64.parse(data));
     const result = JSON.parse(dataString);
 
-    const {order_id, action, status, customer, amount} = result;
+    const {order_id, action, status, customer, amount, end_date} = result;
     const payment = await Payment.findOne({
       'data.order_id': order_id,
       'data.action': action,
@@ -233,11 +233,23 @@ const processesPayment = async (req, res) => {
     const newPayment = await Payment.create({data: result});
     
     if (action === 'regular') {
-      const payment = await Payment.findOne({
+      const filter = {
         'data.order_id': order_id,
         'data.action': 'subscribe',
         'data.status': 'subscribed',
-      });
+      };
+      
+      const update = {
+        $set: {
+          'dateLastSubscriptionPayment': end_date,
+        },
+      };
+
+      const options = {
+        new: true, 
+      };
+      
+      const payment = await Payment.findOneAndUpdate(filter, update, options);
       subscribedUserId = payment.data.customer;
     }
 
