@@ -1,4 +1,5 @@
 const axios = require('axios');
+const querystring = require('querystring');
 const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
 const Utf8 = require('crypto-js/enc-utf8');
@@ -67,7 +68,7 @@ const deleteSubscribe = async (req, res) => {
       'data.status': 'subscribed',
     });
 
-    if (payment.data.customer !== _id) {
+    if (payment.data.customer !== _id.toString()) {
       throw HttpError(409, "Підписка не належить користувачеві");
     } 
 
@@ -86,8 +87,14 @@ const deleteSubscribe = async (req, res) => {
     const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
     const signature = Base64.stringify(hash);
 
-    const responseLiqpay = await axios.post("https://www.liqpay.ua/api/request", {data, signature});
-    console.log(responseLiqpay);
+    // Встановлюємо для даних очікуваний формат
+    const params = querystring.stringify({ data, signature });
+    
+    await axios.post('https://www.liqpay.ua/api/request', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
 
     res.json({
       data,
