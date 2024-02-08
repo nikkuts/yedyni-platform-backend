@@ -11,7 +11,7 @@ require('dotenv').config();
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
 const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
-const {BASE_CLIENT_URL, BASE_SERVER_URL} = process.env;
+const {BASE_CLIENT_URL, BASE_SERVER_URL, API_LIQPAY_ENDPOINT} = process.env;
 const MAIN_ID = process.env.MAIN_ID;
 
 const createPayment = async (req, res) => {
@@ -60,16 +60,24 @@ const createPayment = async (req, res) => {
 };
 
 const deleteSubscribe = async (req, res) => {
-  const {_id} = req.user;
     const {orderId} = req.body;
 
-    const payment = await Payment.findOne({
+    const subscription = await Payment.findOne({
       'data.order_id': orderId,
       'data.status': 'subscribed',
     });
 
-    if (payment.data.customer !== _id.toString()) {
-      throw HttpError(409, "Підписка не належить користувачеві");
+    if (!subscription) {
+      throw HttpError(404, "Відсутні дані");
+    }
+
+    const unsubscribed = await Payment.findOne({
+      'data.order_id': orderId,
+      'data.status': 'unsubscribed',
+    });
+    
+    if (unsubscribed) {
+      throw HttpError(409, "Підписку вже скасовано");
     } 
 
     const dataObj = {
@@ -91,7 +99,7 @@ const deleteSubscribe = async (req, res) => {
     const params = querystring.stringify({ data, signature });
 
     try {
-      await axios.post('https://www.liqpay.ua/api/request', params, {
+      await axios.post(API_LIQPAY_ENDPOINT, params, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -238,7 +246,7 @@ const processesPayment = async (req, res) => {
         'data.action': 'subscribe',
         'data.status': 'subscribed',
       };
-      
+
       const update = {
         $set: {
           'dateLastSubscriptionPayment': end_date,
