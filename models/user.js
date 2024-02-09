@@ -63,7 +63,7 @@ const userSchema = new Schema({
           }
         ],
       },
-      subscribes: {
+      subscriptions: {
         type: [
           {
             type: Schema.Types.ObjectId,

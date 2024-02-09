@@ -4,7 +4,7 @@ const ctrl = require('../../controllers/payments');
 
 const ctrlFilter = require('../../controllers/paymentsFilter');
 
-const {authenticate, validateBody} = require('../../middlewares');
+const {authenticate, validateBody, isValidId} = require('../../middlewares');
 
 const {schemas} = require('../../models/payment');
 
@@ -18,6 +18,10 @@ router.post('/process', ctrl.processesPayment);
 
 router.get('/donats', authenticate, ctrlFilter.getDonats);
 
-router.get('/subscribes', authenticate, ctrlFilter.getSubscribes);
+router.get('/subscriptions', authenticate, ctrlFilter.getSubscriptions);
+
+router.get("/subscriptions/:subscriptionId", authenticate, isValidId, ctrlFilter.getByIdSubscription);
+
+// router.post("/subscriptions/:subscriptionId/unsubscribe", authenticate, isValidId, ctrlFilter.unSubscribes);
 
 module.exports = router;

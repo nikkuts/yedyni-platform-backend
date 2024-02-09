@@ -1,4 +1,5 @@
 const {User} = require('../models/user');
+const {Payment} = require('../models/payment');
 const {
     HttpError, 
     ctrlWrapper
@@ -23,11 +24,11 @@ const getDonats = async (req, res) => {
     res.json(result);
 };
 
-const getSubscribes = async (req, res) => {
+const getSubscriptions = async (req, res) => {
     const {_id} = req.user;
-    const result = await User.findById(_id, "subscribes")
-    .populate('subscribes', 
-        'data.order_id data.status data.amount data.end_date data.description data.info dateLastSubscriptionPayment -_id');
+    const result = await User.findById(_id, "subscriptions")
+    .populate('subscriptions', 
+        '_id data.order_id data.amount data.end_date data.description data.info subscription.dateLastPayment subscription.status');
     
     if(!result) {
         throw HttpError (404, 'Not found')
@@ -35,7 +36,21 @@ const getSubscribes = async (req, res) => {
     res.json(result);
 };
 
+const getByIdSubscription = async (req, res) => {
+    const {subscriptionId} = req.params;
+    const result = await Payment.findById(subscriptionId, 
+        "data.order_id data.amount data.end_date data.description data.info dateLastPayment subscription.regular subscription.dateLastPayment subscription.status")
+    .populate('subscription.regular', 'data.amount data.end_date data.description data.info data.action -_id');
+
+    if(!result) {
+      throw HttpError (404, 'Not found')
+    }
+    res.json(result);
+};
+
 module.exports = {
     getDonats: ctrlWrapper(getDonats),
-    getSubscribes: ctrlWrapper(getSubscribes),
+    getSubscriptions: ctrlWrapper(getSubscriptions),
+    getByIdSubscription: ctrlWrapper(getByIdSubscription),
+    // unSubscribes: ctrlWrapper(unSubscribes),
 };

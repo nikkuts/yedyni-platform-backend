@@ -247,10 +247,9 @@ const processesPayment = async (req, res) => {
         'data.status': 'subscribed',
       };
 
-      const update = {
-        $set: {
-          'dateLastSubscriptionPayment': end_date,
-        },
+      const update = { 
+        $push: { 'subscription.regular': newPayment._id },
+        $set: { 'subscription.dateLastPayment': end_date }, 
       };
 
       const options = {
@@ -261,12 +260,22 @@ const processesPayment = async (req, res) => {
       subscribedUserId = payment.data.customer;
     }
 
+    if (status === 'unsubscribed') {
+      await Payment.findOneAndUpdate({
+        'data.order_id': order_id,
+        'data.action': 'subscribe',
+        'data.status': 'subscribed',
+      }, 
+      { $set: { 'subscription.status': "cancelled" } }
+      );
+    }
+
     const userId = customer || subscribedUserId;
     
-    if (status === 'subscribed' || status === 'unsubscribed') {
+    if (status === 'subscribed') {
       await User.findByIdAndUpdate(
         userId, 
-        { $push: { subscribes: newPayment._id } }
+        { $push: { subscriptions: newPayment._id } }
       );
     }
 

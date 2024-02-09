@@ -29,9 +29,25 @@ const paymentSchema = new Schema({
             }
         ],
     },
-    dateLastSubscriptionPayment: {
-        type: Date,
-    },
+    subscription: {
+        type: {
+            regular: {
+                type: [
+                    {
+                      type: Schema.Types.ObjectId,
+                      ref: 'Payment',
+                    }
+                ],
+            },
+            dateLastPayment: {
+                type: Date,
+            },
+            status: {
+                type: String,
+                enum: ["cancelled"],
+            },
+        }
+      },
 }, {versionKey: false, timestamps: true});
 
 paymentSchema.post('save', handleMongooseError);
