@@ -15,7 +15,7 @@ const {
 
 const getDonats = async (req, res) => {
     const {_id} = req.user;
-    const result = await User.findById(_id, "donats")
+    const result = await User.findById(_id, "donats -_id")
     .populate('donats', 'data.amount data.end_date data.description data.info data.action -_id');
     
     if(!result) {

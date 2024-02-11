@@ -70,26 +70,6 @@ const userSchema = new Schema({
             ref: 'Payment',
           }
         ]
-        // type: [
-        //   {
-        //     subscribe: {
-        //       type: Schema.Types.ObjectId,
-        //       ref: 'Payment',
-        //     },
-        //     regular: {
-        //       type: [
-        //         {
-        //           type: Schema.Types.ObjectId,
-        //           ref: 'Payment',
-        //         }
-        //       ]
-        //     },
-        //     unsubscribe: {
-        //       type: Schema.Types.ObjectId,
-        //       ref: 'Payment',
-        //     },
-        //   }
-        // ],
       },
       bonusAccount: {
         type: Number,

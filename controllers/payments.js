@@ -59,7 +59,7 @@ const createPayment = async (req, res) => {
     })
 };
 
-const deleteSubscribe = async (req, res) => {
+const cancelSubscribe = async (req, res) => {
     const {orderId} = req.body;
 
     const subscription = await Payment.findOne({
@@ -303,7 +303,7 @@ const processesPayment = async (req, res) => {
 
 module.exports = {
     createPayment: ctrlWrapper(createPayment),
-    deleteSubscribe: ctrlWrapper(deleteSubscribe),
+    cancelSubscribe: ctrlWrapper(cancelSubscribe),
     processesPayment: ctrlWrapper(processesPayment),
 };
 
