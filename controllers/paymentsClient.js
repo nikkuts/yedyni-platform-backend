@@ -52,5 +52,4 @@ module.exports = {
     getDonats: ctrlWrapper(getDonats),
     getSubscriptions: ctrlWrapper(getSubscriptions),
     getByIdSubscription: ctrlWrapper(getByIdSubscription),
-    // unSubscribes: ctrlWrapper(unSubscribes),
 };

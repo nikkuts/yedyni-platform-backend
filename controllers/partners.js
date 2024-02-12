@@ -28,7 +28,7 @@ const getIndicators = async (req, res) => {
 
 const getTeam = async (req, res) => {
     const {_id} = req.user;
-    const result = await User.findById(_id, "_id name email team")
+    const result = await User.findById(_id, "name email team -_id")
     .populate('team', '_id createdAt name email team');
     
     if(!result) {
@@ -39,7 +39,7 @@ const getTeam = async (req, res) => {
 
 const getByIdPartnerTeam = async (req, res) => {
     const {partnerId} = req.params;
-    const result = await User.findById(partnerId, "_id name email team")
+    const result = await User.findById(partnerId, "name email team -_id")
     .populate('team', '_id createdAt name email team');
 
     if(!result) {

@@ -2,9 +2,9 @@ const express = require('express');
 
 const ctrl = require('../../controllers/payments');
 
-const ctrlFilter = require('../../controllers/paymentsFilter');
+const ctrlClient = require('../../controllers/paymentsClient');
 
-const {authenticate, validateBody, isValidId} = require('../../middlewares');
+const {authenticate, validateBody} = require('../../middlewares');
 
 const {schemas} = require('../../models/payment');
 
@@ -16,12 +16,10 @@ router.post('/unsubscribe', authenticate, validateBody(schemas.unsubscribeSchema
 
 router.post('/process', ctrl.processesPayment);
 
-router.get('/donats', authenticate, ctrlFilter.getDonats);
+router.get('/donats', authenticate, ctrlClient.getDonats);
 
-router.get('/subscriptions', authenticate, ctrlFilter.getSubscriptions);
+router.get('/subscriptions', authenticate, ctrlClient.getSubscriptions);
 
-router.get("/subscriptions/:subscriptionId", authenticate, isValidId, ctrlFilter.getByIdSubscription);
-
-// router.post("/subscriptions/:subscriptionId/unsubscribe", authenticate, isValidId, ctrlFilter.unSubscribes);
+router.get("/subscriptions/:subscriptionId", authenticate, ctrlClient.getByIdSubscription);
 
 module.exports = router;
