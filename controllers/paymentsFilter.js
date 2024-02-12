@@ -16,7 +16,7 @@ const {
 const getDonats = async (req, res) => {
     const {_id} = req.user;
     const result = await User.findById(_id, "donats -_id")
-    .populate('donats', 'data.amount data.end_date data.description data.info data.action -_id');
+    .populate('donats', '_id data.amount data.end_date data.description data.info data.action');
     
     if(!result) {
         throw HttpError (404, 'Not found')
@@ -26,7 +26,7 @@ const getDonats = async (req, res) => {
 
 const getSubscriptions = async (req, res) => {
     const {_id} = req.user;
-    const result = await User.findById(_id, "subscriptions")
+    const result = await User.findById(_id, "subscriptions -_id")
     .populate('subscriptions', 
         '_id data.order_id data.amount data.end_date data.description data.info subscription.dateLastPayment subscription.status');
     
