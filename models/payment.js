@@ -50,6 +50,7 @@ const paymentSchema = new Schema({
             },
         },
         default: {},
+        _id: false,
       },
 }, {versionKey: false, timestamps: true});
 
