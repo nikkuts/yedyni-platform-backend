@@ -48,7 +48,8 @@ const paymentSchema = new Schema({
                 enum: ["active", "cancelled"],
                 default: "active",
             },
-        }
+        },
+        default: {},
       },
 }, {versionKey: false, timestamps: true});
 
