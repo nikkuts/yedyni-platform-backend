@@ -41,10 +41,12 @@ const paymentSchema = new Schema({
             },
             dateLastPayment: {
                 type: Date,
+                default: null,
             },
             status: {
                 type: String,
-                enum: ["cancelled"],
+                enum: ["active", "cancelled"],
+                default: "active",
             },
         }
       },
