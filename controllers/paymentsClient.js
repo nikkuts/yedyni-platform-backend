@@ -24,11 +24,35 @@ const getDonats = async (req, res) => {
     res.json(result);
 };
 
+// const getSubscriptions = async (req, res) => {
+//     const {_id} = req.user;
+//     const result = await User.findById(_id, "subscriptions -_id")
+//     .populate('subscriptions', 
+//         '_id data.order_id data.amount data.end_date data.description data.info subscription.dateLastPayment subscription.status');
+    
+//     if(!result) {
+//         throw HttpError (404, 'Not found')
+//     }
+//     res.json(result);
+// };
+
+// const getByIdSubscription = async (req, res) => {
+//     const {subscriptionId} = req.params;
+//     const result = await Payment.findById(subscriptionId, 
+//         "data.order_id data.amount data.end_date data.description data.info dateLastPayment subscription.regular subscription.dateLastPayment subscription.status")
+//     .populate('subscription.regular', 'data.amount data.end_date data.description data.info data.action -_id');
+
+//     if(!result) {
+//       throw HttpError (404, 'Not found')
+//     }
+//     res.json(result);
+// };
+
 const getSubscriptions = async (req, res) => {
     const {_id} = req.user;
     const result = await User.findById(_id, "subscriptions -_id")
-    .populate('subscriptions', 
-        '_id data.order_id data.amount data.end_date data.description data.info subscription.dateLastPayment subscription.status');
+    .populate('subscriptions.objSub', 
+        '_id data.order_id data.amount data.end_date data.description data.info');
     
     if(!result) {
         throw HttpError (404, 'Not found')
@@ -37,15 +61,15 @@ const getSubscriptions = async (req, res) => {
 };
 
 const getByIdSubscription = async (req, res) => {
-    const {subscriptionId} = req.params;
-    const result = await Payment.findById(subscriptionId, 
-        "data.order_id data.amount data.end_date data.description data.info dateLastPayment subscription.regular subscription.dateLastPayment subscription.status")
-    .populate('subscription.regular', 'data.amount data.end_date data.description data.info data.action -_id');
+    // const {subscriptionId} = req.params;
+    // const result = await Payment.findById(subscriptionId, 
+    //     "data.order_id data.amount data.end_date data.description data.info dateLastPayment subscription.regular subscription.dateLastPayment subscription.status")
+    // .populate('subscription.regular', 'data.amount data.end_date data.description data.info data.action -_id');
 
-    if(!result) {
-      throw HttpError (404, 'Not found')
-    }
-    res.json(result);
+    // if(!result) {
+    //   throw HttpError (404, 'Not found')
+    // }
+    // res.json(result);
 };
 
 module.exports = {

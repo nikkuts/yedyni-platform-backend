@@ -66,8 +66,26 @@ const userSchema = new Schema({
       subscriptions: {
         type: [
           {
-            type: Schema.Types.ObjectId,
-            ref: 'Payment',
+            objSub: {
+              type: Schema.Types.ObjectId,
+              ref: 'Payment',
+            },
+            regularPayments: {
+              type: [
+                  {
+                    type: Schema.Types.ObjectId,
+                    ref: 'Payment',
+                  }
+              ],
+            },
+            lastPaymentDate: {
+                type: Date,
+                default: null,
+            },
+            unsubscribeStatus: {
+                type: Boolean,
+                default: false,
+            },            
           }
         ]
       },

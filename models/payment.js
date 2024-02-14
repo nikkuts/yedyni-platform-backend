@@ -29,29 +29,29 @@ const paymentSchema = new Schema({
             }
         ],
     },
-    subscription: {
-        type: {
-            regular: {
-                type: [
-                    {
-                      type: Schema.Types.ObjectId,
-                      ref: 'Payment',
-                    }
-                ],
-            },
-            dateLastPayment: {
-                type: Date,
-                default: null,
-            },
-            status: {
-                type: String,
-                enum: ["active", "cancelled"],
-                default: "active",
-            },
-        },
-        default: {},
-        _id: false,
-      },
+    // subscription: {
+    //     type: {
+    //         regular: {
+    //             type: [
+    //                 {
+    //                   type: Schema.Types.ObjectId,
+    //                   ref: 'Payment',
+    //                 }
+    //             ],
+    //         },
+    //         dateLastPayment: {
+    //             type: Date,
+    //             default: null,
+    //         },
+    //         status: {
+    //             type: String,
+    //             enum: ["active", "cancelled"],
+    //             default: "active",
+    //         },
+    //     },
+    //     default: {},
+    //     _id: false,
+    //   },
 }, {versionKey: false, timestamps: true});
 
 paymentSchema.post('save', handleMongooseError);
