@@ -69,6 +69,7 @@ const userSchema = new Schema({
             objSub: {
               type: Schema.Types.ObjectId,
               ref: 'Payment',
+              default: {},
             },
             regularPayments: {
               type: [
@@ -85,7 +86,8 @@ const userSchema = new Schema({
             unsubscribeStatus: {
                 type: Boolean,
                 default: false,
-            },            
+            },
+            _id: false,            
           }
         ]
       },
