@@ -281,7 +281,11 @@ const processesPayment = async (req, res) => {
 
     if (action === 'regular') {
       const filter = {
-        'subscriptions.objSub.data.order_id': order_id,
+        subscriptions: { // Фільтр для підмасиву subscriptions
+          $elemMatch: { // Пошук об'єкта, що містить вказаний order_id
+              'objSub.data.order_id': order_id
+          }
+        }
       };
 
       const update = { 
@@ -301,16 +305,23 @@ const processesPayment = async (req, res) => {
 
     if (status === 'unsubscribed') {
       await User.findOneAndUpdate({
-        'subscriptions.objSub.data.order_id': order_id,
+        _id: customer,
+        subscriptions: { 
+          $elemMatch: { 
+              'objSub.data.order_id': order_id
+          }
+        }
       }, 
-      { $set: { 'subscriptions.$.unsubscribeStatus': true } }
-      );
+      { $set: { 
+          'subscriptions.$.isUnsubscribe': true 
+        } 
+      });
     }
     
     if (status === 'subscribed') {
       await User.findByIdAndUpdate(
-        userId, 
-        { $push: { 'subscriptions': {objSub: newPayment._id} } }
+        customer, 
+        { $push: { subscriptions: {objSub: newPayment._id} } }
       );
     }
 

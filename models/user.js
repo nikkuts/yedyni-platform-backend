@@ -82,7 +82,7 @@ const userSchema = new Schema({
                 type: Date,
                 default: null,
             },
-            unsubscribeStatus: {
+            isUnsubscribe: {
                 type: Boolean,
                 default: false,
             },
