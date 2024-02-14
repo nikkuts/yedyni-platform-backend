@@ -69,7 +69,6 @@ const userSchema = new Schema({
             objSub: {
               type: Schema.Types.ObjectId,
               ref: 'Payment',
-              default: {},
             },
             regularPayments: {
               type: [

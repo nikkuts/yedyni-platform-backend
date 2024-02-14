@@ -310,7 +310,7 @@ const processesPayment = async (req, res) => {
     if (status === 'subscribed') {
       await User.findByIdAndUpdate(
         userId, 
-        { $push: { 'subscriptions.objSub': newPayment._id } }
+        { $push: { 'subscriptions': {objSub: newPayment._id} } }
       );
     }
 
