@@ -281,11 +281,12 @@ const processesPayment = async (req, res) => {
 
     if (action === 'regular') {
       const filter = {
-        subscriptions: { // Фільтр для підмасиву subscriptions
-          $elemMatch: { // Пошук об'єкта, що містить вказаний order_id
-              'objSub.data.order_id': order_id
-          }
-        }
+        // subscriptions: { // Фільтр для підмасиву subscriptions
+        //   $elemMatch: { // Пошук об'єкта, що містить вказаний order_id
+        //       'objSub.data.order_id': order_id
+        //   }
+        // }
+        'subscriptions.objSub.data.order_id': order_id
       };
 
       const update = { 
