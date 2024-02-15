@@ -60,6 +60,11 @@ const getSubscriptions = async (req, res) => {
     res.json(result);
 };
 
+// const getSub = async (req, res) => {
+//     const {_id} = req.user;
+//     const subscriptions = await Payment.
+// }
+
 const getByIdSubscription = async (req, res) => {
     // const {subscriptionId} = req.params;
     // const result = await Payment.findById(subscriptionId, 

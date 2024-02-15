@@ -280,26 +280,27 @@ const processesPayment = async (req, res) => {
     // }
 
     if (action === 'regular') {
+      const payment = await Payment.findOne({
+        'data.order_id': order_id,
+        'data.action': 'subscribe',
+      });
+
+      subscribedUserId = payment.data.customer;
+
       const filter = {
-        // subscriptions: { // Фільтр для підмасиву subscriptions
-        //   $elemMatch: { // Пошук об'єкта, що містить вказаний order_id
-        //       'objSub.data.order_id': order_id
-        //   }
-        // }
-        'subscriptions.objSub.data.order_id': order_id
+        _id: subscribedUserId
       };
 
       const update = { 
-        $push: { 'subscriptions.regularPayments': newPayment._id },
-        $set: { 'subscriptions.lastPaymentDate': end_date }, 
+        $push: { 'subscriptions.$[elem].regularPayments': newPayment._id },
+        $set: { 'subscriptions.$[elem].lastPaymentDate': end_date }, 
       };
 
       const options = {
-        new: true, 
+        arrayFilters: [{ 'elem.objSub.data.order_id': order_id }] 
       };
       
-      const user = await User.findOneAndUpdate(filter, update, options);
-      subscribedUserId = user._id;
+      await User.findOneAndUpdate(filter, update, options);
     }
 
     const userId = customer || subscribedUserId;
