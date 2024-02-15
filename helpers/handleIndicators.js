@@ -4,10 +4,10 @@ const {BASE_AMOUNT_SUPPORT, BASE_COURSE_TIME} = process.env;
 
 const handleIndicators = (user) => {
     const currentTime = new Date();
-    const currentTimeUnix = Math.floor(currentTime.getTime() / 1000);
+    const currentTimeUnix = Math.floor(currentTime.getTime());
 
     const registerTime = new Date(user.createdAt);
-    const registerTimeUnix = Math.floor(registerTime.getTime() / 1000);
+    const registerTimeUnix = Math.floor(registerTime.getTime());
 
     const totalTime = Math.max(currentTimeUnix - registerTimeUnix, BASE_COURSE_TIME);
 
