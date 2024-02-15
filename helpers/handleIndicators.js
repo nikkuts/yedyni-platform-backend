@@ -17,7 +17,7 @@ const handleIndicators = (user) => {
     user.donats.forEach((donat) => {
       const {end_date, amount} = donat.data;
 
-      if (currentTimeUnix - end_date / 1000 > BASE_COURSE_TIME) {
+      if (currentTimeUnix - (end_date / 1000) > BASE_COURSE_TIME) {
         pastDonat += amount;
       } else {
         currentDonat += amount;
