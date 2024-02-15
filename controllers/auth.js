@@ -126,7 +126,7 @@ const resendVerifyEmail = async (req, res) => {
 const login = async (req, res) => {
     const {email, password} = req.body;
     const user = await User.findOne({email})
-        .populate('donats', 'data.amount data.end_date -_id');
+        // .populate('donats', 'data.amount data.end_date -_id');
    
     if (!user) {
        throw HttpError(401, "Недійсний Email");
@@ -136,13 +136,13 @@ const login = async (req, res) => {
     //     throw HttpError(401, "Email not verified");
     // }
     
-    const arrayDonats = user.donats.map(
-        donat => {
-            return {
-                amount: donat.data.amount,
-                end_date: donat.data.end_date,
-            }
-        });
+    // const arrayDonats = user.donats.map(
+    //     donat => {
+    //         return {
+    //             amount: donat.data.amount,
+    //             end_date: donat.data.end_date,
+    //         }
+    //     });
 
     const passwordCompare = await bcrypt.compare(password, user.password);
    
@@ -161,7 +161,7 @@ const login = async (req, res) => {
             name: user.name,
             email: user.email,
             inviter: user.inviter,
-            donats: arrayDonats,
+            // donats: arrayDonats,
             registerDate: user.createdAt,
           }
     })
@@ -170,20 +170,20 @@ const login = async (req, res) => {
 const getCurrent = async (req, res) => {
     const {_id, name, email, inviter, donats, createdAt} = req.user;
 
-    const arrayDonats = donats.map(
-        donat => {
-            return {
-                amount: donat.data.amount,
-                end_date: donat.data.end_date,
-            }
-        });
+    // const arrayDonats = donats.map(
+    //     donat => {
+    //         return {
+    //             amount: donat.data.amount,
+    //             end_date: donat.data.end_date,
+    //         }
+    //     });
 
     res.json({
         id: _id,
         name,
         email,
         inviter,
-        donats: arrayDonats,
+        // donats: arrayDonats,
         registerDate: createdAt,
     });
 };

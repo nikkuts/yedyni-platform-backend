@@ -25,12 +25,12 @@ const handleIndicators = (user) => {
     });
 
     const totalDonat = pastDonat + currentDonat;
-
     const pastCount = pastDonat / BASE_AMOUNT_SUPPORT;
     const currentCount = currentDonat / BASE_AMOUNT_SUPPORT;
     const levelSupport = (totalDonat / BASE_AMOUNT_SUPPORT) * (BASE_COURSE_TIME / totalTime);
 
     return {
+      totalDonat,
       pastCount,
       currentCount,
       levelSupport,
