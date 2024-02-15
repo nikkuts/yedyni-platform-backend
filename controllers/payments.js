@@ -290,8 +290,8 @@ const processesPayment = async (req, res) => {
       };
 
       const update = { 
-        $push: { 'subscriptions.$.regularPayments': newPayment._id },
-        $set: { 'subscriptions.$.lastPaymentDate': end_date }, 
+        $push: { 'subscriptions.regularPayments': newPayment._id },
+        $set: { 'subscriptions.lastPaymentDate': end_date }, 
       };
 
       const options = {
@@ -314,7 +314,7 @@ const processesPayment = async (req, res) => {
         }
       }, 
       { $set: { 
-          'subscriptions.$.isUnsubscribe': true 
+          'subscriptions.isUnsubscribe': true 
         } 
       });
     }
