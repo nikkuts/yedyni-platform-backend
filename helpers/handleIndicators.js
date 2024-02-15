@@ -4,10 +4,10 @@ const {BASE_AMOUNT_SUPPORT, BASE_COURSE_TIME} = process.env;
 
 const handleIndicators = (user) => {
     const currentTime = new Date();
-    const currentTimeUnix = Math.floor(currentTime.getTime());
+    const currentTimeUnix = Math.floor(currentTime.getTime() / 1000);
 
     const registerTime = new Date(user.createdAt);
-    const registerTimeUnix = Math.floor(registerTime.getTime());
+    const registerTimeUnix = Math.floor(registerTime.getTime() / 1000);
 
     const totalTime = Math.max(currentTimeUnix - registerTimeUnix, BASE_COURSE_TIME);
 
@@ -17,7 +17,7 @@ const handleIndicators = (user) => {
     user.donats.forEach((donat) => {
       const {end_date, amount} = donat.data;
 
-      if (currentTimeUnix - end_date > BASE_COURSE_TIME) {
+      if (currentTimeUnix - end_date / 1000 > BASE_COURSE_TIME) {
         pastDonat += amount;
       } else {
         currentDonat += amount;
