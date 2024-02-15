@@ -240,93 +240,93 @@ const processesPayment = async (req, res) => {
 
     const newPayment = await Payment.create({data: result});
     
-    // if (action === 'regular') {
-    //   const filter = {
-    //     'data.order_id': order_id,
-    //     'data.action': 'subscribe',
-    //     'data.status': 'subscribed',
-    //   };
-
-    //   const update = { 
-    //     $push: { 'subscription.regular': newPayment._id },
-    //     $set: { 'subscription.dateLastPayment': end_date }, 
-    //   };
-
-    //   const options = {
-    //     new: true, 
-    //   };
-      
-    //   const payment = await Payment.findOneAndUpdate(filter, update, options);
-    //   subscribedUserId = payment.data.customer;
-    // }
-
-    // if (status === 'unsubscribed') {
-    //   await Payment.findOneAndUpdate({
-    //     'data.order_id': order_id,
-    //     'data.action': 'subscribe',
-    //     'data.status': 'subscribed',
-    //   }, 
-    //   { $set: { 'subscription.status': "cancelled" } }
-    //   );
-    // }
-
-    // const userId = customer || subscribedUserId;
-    
-    // if (status === 'subscribed') {
-    //   await User.findByIdAndUpdate(
-    //     userId, 
-    //     { $push: { subscriptions: newPayment._id } }
-    //   );
-    // }
-
     if (action === 'regular') {
-      const payment = await Payment.findOne({
+      const filter = {
         'data.order_id': order_id,
         'data.action': 'subscribe',
-      });
-
-      subscribedUserId = payment.data.customer;
-
-      const filter = {
-        subscribedUserId
+        'data.status': 'subscribed',
       };
 
       const update = { 
-        $push: { 'subscriptions.$[elem].regularPayments': newPayment._id },
-        $set: { 'subscriptions.$[elem].lastPaymentDate': end_date }, 
+        $push: { 'objSub.regular': newPayment._id },
+        $set: { 'objSub.lastPaymentDate': end_date }, 
       };
 
       const options = {
-        arrayFilters: [{ 'elem.objSub.data.order_id': order_id }] 
+        new: true, 
       };
       
-      const us = await User.findByIdAndUpdate(filter, update, options);
-      console.log(us);
+      const payment = await Payment.findOneAndUpdate(filter, update, options);
+      subscribedUserId = payment.data.customer;
+    }
+
+    if (status === 'unsubscribed') {
+      await Payment.findOneAndUpdate({
+        'data.order_id': order_id,
+        'data.action': 'subscribe',
+        'data.status': 'subscribed',
+      }, 
+      { $set: { 'objSub.isUnsubscribe': true } }
+      );
     }
 
     const userId = customer || subscribedUserId;
-
-    if (status === 'unsubscribed') {
-      await User.findOneAndUpdate({
-        _id: customer,
-        subscriptions: { 
-          $elemMatch: { 
-              'objSub.data.order_id': order_id
-          }
-        }
-      }, 
-      { $set: { 
-          'subscriptions.isUnsubscribe': true 
-        } 
-      });
-    }
     
     if (status === 'subscribed') {
       await User.findByIdAndUpdate(
-        customer, 
-        { $push: { subscriptions: {objSub: newPayment._id} } }
+        userId, 
+        { $push: { subscriptions: newPayment._id } }
       );
     }
+
+    // if (action === 'regular') {
+    //   const payment = await Payment.findOne({
+    //     'data.order_id': order_id,
+    //     'data.action': 'subscribe',
+    //   });
+
+    //   subscribedUserId = payment.data.customer;
+
+    //   const filter = {
+    //     subscribedUserId
+    //   };
+
+    //   const update = { 
+    //     $push: { 'subscriptions.$[elem].regularPayments': newPayment._id },
+    //     $set: { 'subscriptions.$[elem].lastPaymentDate': end_date }, 
+    //   };
+
+    //   const options = {
+    //     arrayFilters: [{ 'elem.objSub.data.order_id': order_id }] 
+    //   };
+      
+    //   const us = await User.findByIdAndUpdate(filter, update, options);
+    //   console.log(us);
+    // }
+
+    // const userId = customer || subscribedUserId;
+
+    // if (status === 'unsubscribed') {
+    //   await User.findOneAndUpdate({
+    //     _id: customer,
+    //     subscriptions: { 
+    //       $elemMatch: { 
+    //           'objSub.data.order_id': order_id
+    //       }
+    //     }
+    //   }, 
+    //   { $set: { 
+    //       'subscriptions.isUnsubscribe': true 
+    //     } 
+    //   });
+    // }
+    
+    // if (status === 'subscribed') {
+    //   await User.findByIdAndUpdate(
+    //     customer, 
+    //     { $push: { subscriptions: {objSub: newPayment._id} } }
+    //   );
+    // }
 
     if (status === 'success') {
       const user = await User.findByIdAndUpdate(

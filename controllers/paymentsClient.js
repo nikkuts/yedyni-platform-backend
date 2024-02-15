@@ -60,13 +60,27 @@ const getSubscriptions = async (req, res) => {
     res.json(result);
 };
 
-const getSub = async (req, res) => {
-    const {_id} = req.user;
-    const subscriptions = await Payment.find({
-        'data.customer': _id,
-        'data.action': 'subscribe'
-    })
-}
+// const getSub = async (req, res) => {
+//     const {_id} = req.user;
+    
+//     const subscriptions = await Payment.find({
+//         'data.customer': _id,
+//         'data.action': 'subscribe',
+//         'data.status': 'subscribed'
+//     });
+
+//     const unsubscriptions = await Payment.find({
+//         'data.customer': _id,
+//         'data.action': 'subscribe',
+//         'data.status': 'unsubscribe'
+//     });
+
+//     const regularPayments = await Payment.find({
+//         'data.order_id': subscriptions.data.order_id,
+//         'data.action': 'regular',
+//         'data.status': 'success'
+//     });
+// }
 
 const getByIdSubscription = async (req, res) => {
     // const {subscriptionId} = req.params;
