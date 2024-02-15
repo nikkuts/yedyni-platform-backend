@@ -30,6 +30,7 @@ const handleIndicators = (user) => {
     const levelSupport = (totalDonat / BASE_AMOUNT_SUPPORT) * (BASE_COURSE_TIME / totalTime);
 
     return {
+      totalTime,
       totalDonat,
       pastCount,
       currentCount,
