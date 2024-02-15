@@ -26,6 +26,7 @@ const paymentSchema = new Schema({
                 fee: {
                     type: Number,
                 },
+                _id: false,
             }
         ],
     },
@@ -49,7 +50,6 @@ const paymentSchema = new Schema({
             },
         },
         default: {},
-        _id: false,
       },
 }, {versionKey: false, timestamps: true});
 

@@ -71,33 +71,6 @@ const userSchema = new Schema({
           }                     
         ],
       },
-      // subscriptions: {
-      //   type: [
-      //     {
-      //       objSub: {
-      //         type: Schema.Types.ObjectId,
-      //         ref: 'Payment',
-      //       },
-      //       regularPayments: {
-      //         type: [
-      //             {
-      //               type: Schema.Types.ObjectId,
-      //               ref: 'Payment',
-      //             }
-      //         ],
-      //       },
-      //       lastPaymentDate: {
-      //           type: Date,
-      //           default: null,
-      //       },
-      //       isUnsubscribe: {
-      //           type: Boolean,
-      //           default: false,
-      //       },
-      //       _id: false,            
-      //     }
-      //   ]
-      // },
       bonusAccount: {
         type: Number,
         default: 0,

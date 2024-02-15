@@ -279,55 +279,6 @@ const processesPayment = async (req, res) => {
       );
     }
 
-    // if (action === 'regular') {
-    //   const payment = await Payment.findOne({
-    //     'data.order_id': order_id,
-    //     'data.action': 'subscribe',
-    //   });
-
-    //   subscribedUserId = payment.data.customer;
-
-    //   const filter = {
-    //     subscribedUserId
-    //   };
-
-    //   const update = { 
-    //     $push: { 'subscriptions.$[elem].regularPayments': newPayment._id },
-    //     $set: { 'subscriptions.$[elem].lastPaymentDate': end_date }, 
-    //   };
-
-    //   const options = {
-    //     arrayFilters: [{ 'elem.objSub.data.order_id': order_id }] 
-    //   };
-      
-    //   const us = await User.findByIdAndUpdate(filter, update, options);
-    //   console.log(us);
-    // }
-
-    // const userId = customer || subscribedUserId;
-
-    // if (status === 'unsubscribed') {
-    //   await User.findOneAndUpdate({
-    //     _id: customer,
-    //     subscriptions: { 
-    //       $elemMatch: { 
-    //           'objSub.data.order_id': order_id
-    //       }
-    //     }
-    //   }, 
-    //   { $set: { 
-    //       'subscriptions.isUnsubscribe': true 
-    //     } 
-    //   });
-    // }
-    
-    // if (status === 'subscribed') {
-    //   await User.findByIdAndUpdate(
-    //     customer, 
-    //     { $push: { subscriptions: {objSub: newPayment._id} } }
-    //   );
-    // }
-
     if (status === 'success') {
       const user = await User.findByIdAndUpdate(
         userId, 
