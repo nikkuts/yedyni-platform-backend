@@ -8,10 +8,12 @@ const {
 const getIndicators = async (req, res) => {
     const user = req.user;
     const bonusAccount = user.bonusAccount;
-    const {currentCount, pastCount, levelSupport} = handleIndicators(user);
+    const {totalTime, totalDonat, currentCount, pastCount, levelSupport} = handleIndicators(user);
 
     res.json({
         bonusAccount,
+        totalTime,
+        totalDonat,
         currentCount,
         pastCount,
         levelSupport,
