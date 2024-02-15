@@ -62,7 +62,10 @@ const getSubscriptions = async (req, res) => {
 
 const getSub = async (req, res) => {
     const {_id} = req.user;
-    const subscriptions = await Payment.find({'data.customer': _id})
+    const subscriptions = await Payment.find({
+        'data.customer': _id,
+        'data.action': 'subscribe'
+    })
 }
 
 const getByIdSubscription = async (req, res) => {

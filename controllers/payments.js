@@ -286,9 +286,9 @@ const processesPayment = async (req, res) => {
       });
 
       subscribedUserId = payment.data.customer;
-console.log(subscribedUserId);
+
       const filter = {
-        _id: subscribedUserId
+        subscribedUserId
       };
 
       const update = { 
@@ -300,7 +300,7 @@ console.log(subscribedUserId);
         arrayFilters: [{ 'elem.objSub.data.order_id': order_id }] 
       };
       
-      const us = await User.findOneAndUpdate(filter, update, options);
+      const us = await User.findByIdAndUpdate(filter, update, options);
       console.log(us);
     }
 
