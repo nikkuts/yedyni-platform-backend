@@ -26,21 +26,21 @@ const getSubscriptions = async (req, res) => {
     if (start && end) {
         result = await Payment.find(
             {
-                'data.customer': _id,
-                'data.action': 'subscribe',
-                'data.status': 'subscribed',
+                "data.customer": _id.toString(),
+                "data.action": "subscribe",
+                "data.status": "subscribed",
                 $and: [
-                    {'data.end_date': {$gte: Number(start)}}, 
-                    {'data.end_date': {$lte: Number(end)}}
+                    {'data.end_date': {$gt: Number(start)}}, 
+                    {'data.end_date': {$lt: Number(end)}},
                 ]
             },
-            '_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe',
+            "_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe",
             { skip, limit }
         )
     } else {
         result = await Payment.find(
             {
-                'data.customer': _id,
+                'data.customer': _id.toString(),
                 'data.action': 'subscribe',
                 'data.status': 'subscribed',
             },
@@ -53,7 +53,7 @@ const getSubscriptions = async (req, res) => {
         throw HttpError(404, "Не знайдено");
     }
 
-
+   
     // let result;
 
     // if (start && end) {
