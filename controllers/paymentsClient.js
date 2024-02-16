@@ -49,35 +49,10 @@ const getSubscriptions = async (req, res) => {
         )
     }
 
-    if (result.length === 0) {
-        throw HttpError(404, "Не знайдено");
+    if (!result) {
+        throw HttpError(404, "Not found");
     }
-
-   
-    // let result;
-
-    // if (start && end) {
-    //     result = await User.findById(
-    //         { _id, subscriptions: {  } },
-    //         "subscriptions -_id",
-    //         { skip, limit }
-    //     )
-    //     .populate('subscriptions', 
-    //         '_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe');
-    // } else {
-    //     result = await User.findById(
-    //         _id,
-    //         "subscriptions -_id",
-    //         { skip, limit }
-    //     )
-    //     .populate('subscriptions', 
-    //         '_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe');
-    // }
-
-    // if (result.length === 0) {
-    //     throw HttpError(404, "Не знайдено");
-    // }
-
+    
     res.json(result);
 };
 
