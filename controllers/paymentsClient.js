@@ -29,10 +29,10 @@ const getSubscriptions = async (req, res) => {
                 'data.customer': _id,
                 'data.action': 'subscribe',
                 'data.status': 'subscribed',
-                // $and: [
-                //     {'data.end_date': {$gte: Number(start)}}, 
-                //     {'data.end_date': {$lte: Number(end)}}
-                // ]
+                $and: [
+                    {'data.end_date': {$gte: Number(start)}}, 
+                    {'data.end_date': {$lte: Number(end)}}
+                ]
             },
             '_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe',
             { skip, limit }
