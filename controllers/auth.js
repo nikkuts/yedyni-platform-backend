@@ -138,26 +138,29 @@ const login = async (req, res) => {
         throw HttpError(401, 'Недійсний пароль');
     }
 
-    const payload = {id: user._id,};
-    const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
-    await User.findByIdAndUpdate(user._id, {token});
+    const {_id, name, inviter = MAIN_ID, createdAt} = user;
 
-    const inviterUser = await User.findById(user.inviter.toString());
+    const payload = {id: _id,};
+    const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
+    
+    await User.findByIdAndUpdate(_id, {token});
+
+    const inviterUser = await User.findById(inviter.toString());
 
     return res.json({
         token: token,
         user: {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            registerDate: user.createdAt,
+            id: _id,
+            name,
+            email,
+            registerDate: createdAt,
             inviter: inviterUser.name,
           }
     })
 };
 
 const getCurrent = async (req, res) => {
-    const {_id, name, email, inviter, createdAt} = req.user;
+    const {_id, name, email, inviter = MAIN_ID, createdAt} = req.user;
     const inviterUser = await User.findById(inviter.toString());
 
     res.json({
