@@ -70,10 +70,8 @@ const register = async (req, res) => {
             id: newUser._id,
             name: newUser.name,
             email: newUser.email,
-            inviter: {
-                name: inviter.name,
-            },
             registerDate: newUser.createdAt,
+            inviter: inviter.name,
           }
     })
 };
@@ -144,27 +142,30 @@ const login = async (req, res) => {
     const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
     await User.findByIdAndUpdate(user._id, {token});
 
+    const inviterUser = await User.findById(inviter);
+
     return res.json({
         token: token,
         user: {
             id: user._id,
             name: user.name,
             email: user.email,
-            inviter: user.inviter,
             registerDate: user.createdAt,
+            inviter: inviterUser.name,
           }
     })
 };
 
 const getCurrent = async (req, res) => {
     const {_id, name, email, inviter, createdAt} = req.user;
+    const inviterUser = await User.findById(inviter);
 
     res.json({
         id: _id,
         name,
         email,
-        inviter,
         registerDate: createdAt,
+        inviter: inviterUser.name,
     });
 };
 

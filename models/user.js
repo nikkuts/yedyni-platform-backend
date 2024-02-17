@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose');
-const autopopulate = require('mongoose-autopopulate');
 const Joi = require('joi');
 const {handleMongooseError} = require('../helpers');
 
@@ -43,9 +42,6 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
-        autopopulate: {
-          select: 'name -_id',
-        },
       },
       team: {
         type: [
@@ -99,7 +95,6 @@ const userSchema = new Schema({
 }, {versionKey: false, timestamps: true});
 
 userSchema.post('save', handleMongooseError);
-userSchema.plugin(autopopulate);
 
 const registerSchema = Joi.object({
     name: Joi.string().min(2).max(30).pattern(nameRegexp).required(),
