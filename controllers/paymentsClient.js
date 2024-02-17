@@ -5,14 +5,45 @@ const {
     ctrlWrapper
 } = require('../helpers');
 
+// const getDonats = async (req, res) => {
+//     const {_id} = req.user;
+//     const result = await User.findById(_id, "donats -_id")
+//     .populate('donats', '_id data.amount data.end_date data.description data.info data.action');
+    
+//     if(!result) {
+//         throw HttpError (404, 'Not found')
+//     }
+//     res.json(result);
+// };
+
 const getDonats = async (req, res) => {
     const {_id} = req.user;
-    const result = await User.findById(_id, "donats -_id")
-    .populate('donats', '_id data.amount data.end_date data.description data.info data.action');
-    
-    if(!result) {
-        throw HttpError (404, 'Not found')
+    const { start = null, end = null } = req.query;
+    const { page = 1, limit = 10 } = req.query;
+    const skip = (page - 1) * limit;
+    let result;
+
+    if (start && end) {
+        result = await User.findById(_id, "donats -_id", { skip, limit })
+        .populate({
+            path: 'donats',
+            select: '_id data.amount data.end_date data.description data.info data.action',
+            match: {
+                $and: [
+                    {'data.end_date': {$gte: Number(start)}}, 
+                    {'data.end_date': {$lte: Number(end)}},
+                ]
+            } // Додаткова умова для фільтрації елементів у підмасиві
+        })
+    } else {
+        result = await User.findById(_id, "donats -_id", { skip, limit })
+        .populate('donats', '_id data.amount data.end_date data.description data.info data.action');    
     }
+
+    if (!result) {
+        throw HttpError(404, "Not found");
+    }
+    
     res.json(result);
 };
 
@@ -30,8 +61,8 @@ const getSubscriptions = async (req, res) => {
                 "data.action": "subscribe",
                 "data.status": "subscribed",
                 $and: [
-                    {'data.end_date': {$gt: Number(start)}}, 
-                    {'data.end_date': {$lt: Number(end)}},
+                    {'data.end_date': {$gte: Number(start)}}, 
+                    {'data.end_date': {$lte: Number(end)}},
                 ]
             },
             "_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe",
@@ -55,18 +86,6 @@ const getSubscriptions = async (req, res) => {
     
     res.json(result);
 };
-
-// const getSubscriptions = async (req, res) => {
-//     const {_id} = req.user;
-//     const result = await User.findById(_id, "subscriptions -_id")
-//     .populate('subscriptions', 
-//         '_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe');
-    
-//     if(!result) {
-//         throw HttpError (404, 'Not found')
-//     }
-//     res.json(result);
-// };
 
 const getByIdSubscription = async (req, res) => {
     // const {subscriptionId} = req.params;
