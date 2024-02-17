@@ -32,14 +32,6 @@ const paymentSchema = new Schema({
     },
     objSub: {
         type: {
-            regular: {
-                type: [
-                    {
-                      type: Schema.Types.ObjectId,
-                      ref: 'Payment',
-                    }
-                ],
-            },
             lastPaymentDate: {
                 type: Date,
                 default: null,

@@ -44,7 +44,7 @@ const userSchema = new Schema({
         ref: 'User',
         required: true,
         autopopulate: {
-          select: 'name email -_id',
+          select: 'name -_id',
         },
       },
       team: {
@@ -61,14 +61,6 @@ const userSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Payment',
           }
-        ],
-      },
-      subscriptions: {
-        type: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: 'Payment',
-          }                     
         ],
       },
       bonusAccount: {

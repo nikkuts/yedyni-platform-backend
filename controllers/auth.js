@@ -72,7 +72,6 @@ const register = async (req, res) => {
             email: newUser.email,
             inviter: {
                 name: inviter.name,
-                email: inviter.email,
             },
             registerDate: newUser.createdAt,
           }
