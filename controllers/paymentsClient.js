@@ -22,7 +22,7 @@ const getDonats = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
     const skip = (page - 1) * limit;
     let result;
-
+console.log(page, limit);
     if (start && end) {
         result = await User.findById(_id, "donats -_id", { skip, limit })
         .populate({
