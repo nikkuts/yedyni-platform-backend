@@ -74,10 +74,8 @@ const getSubscriptions = async (req, res) => {
 
     const startNum = parseInt(start, 10);
     const endNum = parseInt(end, 10);
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
 
-    const skip = (pageNum - 1) * limitNum;
+    const skip = (page - 1) * limit;
     let result;
     let totalCount;
 
@@ -93,7 +91,7 @@ const getSubscriptions = async (req, res) => {
                 ]
             },
             "_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe",
-            { skip, limitNum }
+            { skip, limit }
         )
 
         totalCount = await Payment.countDocuments({
@@ -113,7 +111,7 @@ const getSubscriptions = async (req, res) => {
                 'data.status': 'subscribed',
             },
             '_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe',
-            { skip, limitNum }
+            { skip, limit }
         )
 
         totalCount = await Payment.countDocuments({
@@ -127,7 +125,7 @@ const getSubscriptions = async (req, res) => {
         throw HttpError(404, "Not found");
     }
 
-    const totalPages = Math.ceil(totalCount / limitNum);
+    const totalPages = Math.ceil(totalCount / limit);
     
     res.json({
         subscriptions: result,
