@@ -21,7 +21,7 @@ const getDonats = async (req, res) => {
     const { start = null, end = null } = req.query;
     const { page = 1, limit = 10 } = req.query;
     const skip = (page - 1) * limit;
-    let result;
+    let donats;
 
     if (start && end) {
         const user = await User.findById(_id, "donats -_id")
@@ -37,20 +37,24 @@ const getDonats = async (req, res) => {
         })
         .lean();
 
-        result = user.donats.slice(skip, skip + limit);
+        donats = user.donats.slice(skip, skip + limit);
     } else {
         const user = await User.findById(_id, "donats -_id")
         .populate('donats', '_id data.amount data.end_date data.description data.info data.action')
         .lean();
         
-        result = user.donats.slice(skip, skip + limit);
+        donats = user.donats.slice(skip, skip + limit);
     }
 
-    if (!result) {
+    if (!donats) {
         throw HttpError(404, "Not found");
     }
     
-    res.json(result);
+    const totalPages = Math.ceil(donats.length / limit);
+    res.json({
+        donats,
+        totalPages
+    });
 };
 
 const getSubscriptions = async (req, res) => {
