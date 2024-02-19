@@ -22,9 +22,9 @@ const getDonats = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
     const skip = (page - 1) * limit;
     let result;
-console.log(page, limit);
+
     if (start && end) {
-        result = await User.findById(_id, "donats -_id", { skip, limit })
+        const user = await User.findById(_id, "donats -_id")
         .populate({
             path: 'donats',
             select: '_id data.amount data.end_date data.description data.info data.action',
@@ -35,9 +35,15 @@ console.log(page, limit);
                 ]
             } // Додаткова умова для фільтрації елементів у підмасиві
         })
+        .lean();
+
+        result = user.donats.slice(skip, skip + limit);
     } else {
-        result = await User.findById(_id, "donats -_id", { skip, limit })
-        .populate('donats', '_id data.amount data.end_date data.description data.info data.action');    
+        const user = await User.findById(_id, "donats -_id")
+        .populate('donats', '_id data.amount data.end_date data.description data.info data.action')
+        .lean();
+        
+        result = user.donats.slice(skip, skip + limit);
     }
 
     if (!result) {
