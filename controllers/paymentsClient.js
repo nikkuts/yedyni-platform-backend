@@ -20,7 +20,13 @@ const getDonats = async (req, res) => {
     const {_id} = req.user;
     const { start = null, end = null } = req.query;
     const { page = 1, limit = 10 } = req.query;
-    const skip = (page - 1) * limit;
+
+    const startNum = parseInt(start, 10);
+    const endNum = parseInt(end, 10);
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+
+    const skip = (pageNum - 1) * limitNum;
     let result;
     let totalCount;
 
@@ -31,30 +37,30 @@ const getDonats = async (req, res) => {
             select: '_id data.amount data.end_date data.description data.info data.action',
             match: {
                 $and: [
-                    {'data.end_date': {$gte: Number(start)}}, 
-                    {'data.end_date': {$lte: Number(end)}},
+                    {'data.end_date': {$gte: startNum}}, 
+                    {'data.end_date': {$lte: endNum}},
                 ]
             } // Додаткова умова для фільтрації елементів у підмасиві
         })
         .lean();
 
         totalCount = user.donats.length;
-        result = user.donats.slice(skip, skip + limit);
+        result = user.donats.slice(skip, skip + limitNum);
     } else {
         const user = await User.findById(_id, "donats -_id")
         .populate('donats', '_id data.amount data.end_date data.description data.info data.action')
         .lean();
         
         totalCount = user.donats.length;
-        result = user.donats.slice(skip, skip + limit);
+        result = user.donats.slice(skip, skip + limitNum);
     }
 
     if (!result) {
         throw HttpError(404, "Not found");
     }
     
-    const totalPages = Math.ceil(totalCount / limit);
-    
+    const totalPages = Math.ceil(totalCount / limitNum);
+
     res.json({
         donats: result,
         totalPages
@@ -65,8 +71,15 @@ const getSubscriptions = async (req, res) => {
     const {_id} = req.user;
     const { start = null, end = null } = req.query;
     const { page = 1, limit = 10 } = req.query;
-    const skip = (page - 1) * limit;
+
+    const startNum = parseInt(start, 10);
+    const endNum = parseInt(end, 10);
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+
+    const skip = (pageNum - 1) * limitNum;
     let result;
+    let totalCount;
 
     if (start && end) {
         result = await Payment.find(
@@ -75,13 +88,23 @@ const getSubscriptions = async (req, res) => {
                 "data.action": "subscribe",
                 "data.status": "subscribed",
                 $and: [
-                    {'data.end_date': {$gte: Number(start)}}, 
-                    {'data.end_date': {$lte: Number(end)}},
+                    {'data.end_date': {$gte: startNum}}, 
+                    {'data.end_date': {$lte: endNum}},
                 ]
             },
             "_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe",
-            { skip, limit }
+            { skip, limitNum }
         )
+
+        totalCount = await Payment.countDocuments({
+            "data.customer": _id.toString(),
+            "data.action": "subscribe",
+            "data.status": "subscribed",
+            $and: [
+                {'data.end_date': {$gte: startNum}}, 
+                {'data.end_date': {$lte: endNum}},
+            ]
+        });
     } else {
         result = await Payment.find(
             {
@@ -90,15 +113,26 @@ const getSubscriptions = async (req, res) => {
                 'data.status': 'subscribed',
             },
             '_id data.order_id data.amount data.end_date data.description data.info objSub.lastPaymentDate objSub.isUnsubscribe',
-            { skip, limit }
+            { skip, limitNum }
         )
+
+        totalCount = await Payment.countDocuments({
+            "data.customer": _id.toString(),
+            "data.action": "subscribe",
+            "data.status": "subscribed",
+        });
     }
 
     if (!result) {
         throw HttpError(404, "Not found");
     }
+
+    const totalPages = Math.ceil(totalCount / limitNum);
     
-    res.json(result);
+    res.json({
+        subscriptions: result,
+        totalPages
+    });
 };
 
 const getByIdSubscription = async (req, res) => {
@@ -118,3 +152,4 @@ module.exports = {
     getSubscriptions: ctrlWrapper(getSubscriptions),
     getByIdSubscription: ctrlWrapper(getByIdSubscription),
 };
+
