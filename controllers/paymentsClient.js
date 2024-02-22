@@ -145,7 +145,7 @@ const getByIdSubscription = async (req, res) => {
     // res.json(result);
 };
 
-const getHistoryBonusAccount = async (req, res) => {
+const getAccount = async (req, res) => {
     const {_id} = req.user;
     const { start = null, end = null } = req.query;
     const { page = 1, limit = 10 } = req.query;
@@ -191,7 +191,7 @@ const getHistoryBonusAccount = async (req, res) => {
     const totalPages = Math.ceil(totalCount / limitNum);
 
     res.json({
-        historyBonusAccount: result,
+        account: result,
         totalPages
     });
 };
@@ -200,6 +200,6 @@ module.exports = {
     getDonats: ctrlWrapper(getDonats),
     getSubscriptions: ctrlWrapper(getSubscriptions),
     getByIdSubscription: ctrlWrapper(getByIdSubscription),
-    getHistoryBonusAccount: ctrlWrapper(getHistoryBonusAccount),
+    getAccount: ctrlWrapper(getAccount),
 };
 
