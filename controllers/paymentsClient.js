@@ -159,30 +159,16 @@ const getAccount = async (req, res) => {
     let result;
     let totalCount;
 
-    if (start && end) {
-        const user = await User.findById(_id, "historyBonusAccount -_id")
-        .populate({
-            path: 'historyBonusAccount',
-            select: '*',
-            match: {
-                $and: [
-                    {'dateTransaction': {$gte: startNum}}, 
-                    {'dateTransaction': {$lte: endNum}},
-                ]
-            } // Додаткова умова для фільтрації елементів у підмасиві
-        })
-        .lean();
+        const user = await User.findById(_id, "historyBonusAccount -_id");
 
-        totalCount = user.historyBonusAccount.length;
-        result = user.historyBonusAccount.slice(skip, skip + limitNum);
-    } else {
-        const user = await User.findById(_id, "historyBonusAccount -_id")
-        .populate('historyBonusAccount', '*')
-        .lean();
+        const prevResult = user.historyBonusAccount.filter(
+            ({dateTransaction}) => {
+               return dateTransaction >= startNum && dateTransaction <= endNum
+            }
+        );
         
-        totalCount = user.historyBonusAccount.length;
-        result = user.historyBonusAccount.slice(skip, skip + limitNum);
-    }
+        totalCount = prevResult.length;
+        result = prevResult.slice(skip, skip + limitNum);
 
     if (!result) {
         throw HttpError(404, "Not found");
