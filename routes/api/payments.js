@@ -22,4 +22,6 @@ router.get('/subscriptions', authenticate, ctrlClient.getSubscriptions);
 
 router.get("/subscriptions/:subscriptionId", authenticate, ctrlClient.getByIdSubscription);
 
+router.get('/account', authenticate, ctrlClient.getHistoryBonusAccount);
+
 module.exports = router;

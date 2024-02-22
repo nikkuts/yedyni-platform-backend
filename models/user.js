@@ -76,8 +76,8 @@ const userSchema = new Schema({
               type: Number,
             },
             dateTransaction: {
-              type: Date,
-              default: Date.now,
+              type: Number,
+              default: Date.now.getTime(),
             },
             comment: {
               type: String,

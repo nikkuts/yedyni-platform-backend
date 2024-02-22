@@ -145,9 +145,61 @@ const getByIdSubscription = async (req, res) => {
     // res.json(result);
 };
 
+const getHistoryBonusAccount = async (req, res) => {
+    const {_id} = req.user;
+    const { start = null, end = null } = req.query;
+    const { page = 1, limit = 10 } = req.query;
+
+    const startNum = parseInt(start, 10);
+    const endNum = parseInt(end, 10);
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+
+    const skip = (pageNum - 1) * limitNum;
+    let result;
+    let totalCount;
+
+    if (start && end) {
+        const user = await User.findById(_id, "historyBonusAccount -_id")
+        .populate({
+            path: 'historyBonusAccount',
+            select: '*',
+            match: {
+                $and: [
+                    {'dateTransaction': {$gte: startNum}}, 
+                    {'dateTransaction': {$lte: endNum}},
+                ]
+            } // Додаткова умова для фільтрації елементів у підмасиві
+        })
+        .lean();
+
+        totalCount = user.historyBonusAccount.length;
+        result = user.historyBonusAccount.slice(skip, skip + limitNum);
+    } else {
+        const user = await User.findById(_id, "historyBonusAccount -_id")
+        .populate('historyBonusAccount', '*')
+        .lean();
+        
+        totalCount = user.historyBonusAccount.length;
+        result = user.historyBonusAccount.slice(skip, skip + limitNum);
+    }
+
+    if (!result) {
+        throw HttpError(404, "Not found");
+    }
+    
+    const totalPages = Math.ceil(totalCount / limitNum);
+
+    res.json({
+        historyBonusAccount: result,
+        totalPages
+    });
+};
+
 module.exports = {
     getDonats: ctrlWrapper(getDonats),
     getSubscriptions: ctrlWrapper(getSubscriptions),
     getByIdSubscription: ctrlWrapper(getByIdSubscription),
+    getHistoryBonusAccount: ctrlWrapper(getHistoryBonusAccount),
 };
 
