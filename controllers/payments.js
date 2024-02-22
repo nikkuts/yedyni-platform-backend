@@ -105,7 +105,7 @@ const cancelSubscribe = async (req, res) => {
         }
       });
 
-      res.json({ success: true, message: 'Підписку успішно скасовано' });
+      res.json({ success: true, message: 'Підписку успішно скасовано', orderId });
     } 
     catch (error) {
       console.error(error);
