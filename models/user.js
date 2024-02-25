@@ -92,6 +92,20 @@ const userSchema = new Schema({
           }
         ]
       },
+      diary: {
+        type: [
+          {
+            day: {
+              type: String,
+              required: true,
+            },
+            entry: {
+              type: String,
+              required: true,
+            }
+          }
+        ]
+      }
 }, {versionKey: false, timestamps: true});
 
 userSchema.post('save', handleMongooseError);
@@ -116,6 +130,11 @@ const updateStatusSchema = Joi.object({
   status: Joi.string().valid("user", "admin").required(),
 });
 
+const diarySchema = Joi.object({
+  day: Joi.string().required(),
+  entry: Joi.string().max(500).required(),
+});
+
 // const startDateSchema = Joi.object({
 //   startDate: Joi.date().required(),
 // });
@@ -125,6 +144,7 @@ const schemas = {
     loginSchema,
     updateStatusSchema,
     emailSchema,
+    diarySchema,
     // startDateSchema,
 };
 

@@ -13,6 +13,7 @@
     "@sendgrid/mail": "^7.7.0",
     "axios": "^1.6.2",
     "bcrypt": "^5.1.0",
+    "cloudinary": "^2.0.1",
     "cors": "2.8.5",
     "cross-env": "7.0.3",
     "crypto-js": "^4.2.0",

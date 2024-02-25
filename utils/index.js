@@ -7,6 +7,12 @@ const {
     workScheduleRegexp,
     passwordRegex,
   } = require("./regexp");
+
+  const {
+    uploadImageToCloudinary,
+    deleteImageFromCloudinary,
+  } = require("./cloudinary");
+  
   
   module.exports = {
     emailRegexp,
@@ -16,4 +22,6 @@ const {
     phoneRegexp,
     workScheduleRegexp,
     passwordRegex,
+    uploadImageToCloudinary,
+    deleteImageFromCloudinary,
   };
