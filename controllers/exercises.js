@@ -5,6 +5,22 @@ const {
 } = require("../utils");
 const {HttpError, ctrlWrapper} = require('../helpers');
 
+const getExercise = async (req, res) => {
+  const {_id: owner} = req.user;
+  const {courseId, lessonId} = req.body;
+
+  const result = await Exercises.findOne(
+    { owner, courseId, lessonId }, 
+    "-createdAt -updatedAt"
+  );
+  
+  if (!result) {
+    throw HttpError(404, "Вправи вказаного уроку не знайдено");
+  }
+
+  res.status(200).json(result);
+};
+
 const addExercise = async (req, res) => {
   const { _id: owner } = req.user;
   const {courseId, lessonId} = req.body;
@@ -122,7 +138,7 @@ const updateExercise = async (req, res) => {
 // };
 
 module.exports = {
-    // getAll: ctrlWrapper(getAll),
+    getExercise: ctrlWrapper(getExercise),
     // getById: ctrlWrapper(getById),
     addExercise: ctrlWrapper(addExercise),
     updateExercise: ctrlWrapper(updateExercise),

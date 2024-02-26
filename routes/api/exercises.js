@@ -8,9 +8,9 @@ const {schemas} = require('../../models/exercise');
 
 const router = express.Router();
 
-router.post('/', authenticate, upload.single("images"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.addExercise);
+router.get('/', authenticate, ctrl.getExercise);
 
-// router.get('/', authenticate, ctrl.getAll);
+router.post('/', authenticate, upload.single("images"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.addExercise);
 
 // router.get('/:contactId', authenticate, isValidId, ctrl.getById);
 
