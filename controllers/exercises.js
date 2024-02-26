@@ -6,11 +6,11 @@ const {
 const {HttpError, ctrlWrapper} = require('../helpers');
 
 const getExercise = async (req, res) => {
-  const {_id: owner} = req.user;
+  const {_id} = req.user;
   const {courseId, lessonId} = req.body;
-
+// console.log(owner, courseId, lessonId);
   const result = await Exercises.findOne(
-    { owner, courseId, lessonId }, 
+    { owner: _id, courseId, lessonId }, 
     "-createdAt -updatedAt"
   );
   
