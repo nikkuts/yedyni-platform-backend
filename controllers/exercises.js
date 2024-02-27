@@ -8,7 +8,7 @@ const {HttpError, ctrlWrapper} = require('../helpers');
 const getExercise = async (req, res) => {
   const {_id: owner} = req.user;
   const {courseId, lessonId} = req.query;
-console.log(req.query);
+
   const result = await Exercises.findOne(
     { owner, courseId, lessonId }, 
     "-createdAt -updatedAt"
@@ -16,17 +16,16 @@ console.log(req.query);
   
   if (!result) {
     res.status(204);
-    return;
+  } else {
+    const {homework, fileURL = null} = result;
+
+    res.status(200).json({
+      courseId,
+      lessonId,
+      homework,
+      fileURL,
+    });
   }
-
-  const {homework, fileURL = null} = result;
-
-  res.status(200).json({
-    courseId,
-    lessonId,
-    homework,
-    fileURL,
-  });
 };
 
 const addExercise = async (req, res) => {
