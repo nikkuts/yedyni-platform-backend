@@ -9,7 +9,7 @@ const getExercise = async (req, res) => {
   const {_id: owner} = req.user;
   const { courseId, lessonId } = req.query;
   // const {courseId, lessonId} = req.body;
-console.log(courseId, lessonId);
+console.log(req.query);
   const result = await Exercises.findOne(
     { owner, courseId, lessonId }, 
     "-createdAt -updatedAt"
