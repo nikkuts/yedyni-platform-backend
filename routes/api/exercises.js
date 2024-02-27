@@ -8,7 +8,7 @@ const {schemas} = require('../../models/exercise');
 
 const router = express.Router();
 
-router.get('/home', authenticate, ctrl.getExercise);
+router.get('/', authenticate, ctrl.getExercise);
 
 router.post('/', authenticate, upload.single("images"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.addExercise);
 
