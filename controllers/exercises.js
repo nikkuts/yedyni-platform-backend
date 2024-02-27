@@ -15,17 +15,17 @@ const getExercise = async (req, res) => {
   );
   
   if (!result) {
-    res.status(204);
-  } else {
-    const {homework, fileURL = null} = result;
-
-    res.status(200).json({
-      courseId,
-      lessonId,
-      homework,
-      fileURL,
-    });
+    return res.status(204).send("Вправа вказаного уроку ще не створена");
   }
+
+  const { homework, fileURL = null } = result;
+
+  return res.status(200).json({
+    courseId,
+    lessonId,
+    homework,
+    fileURL,
+  });
 };
 
 const addExercise = async (req, res) => {
