@@ -8,17 +8,24 @@ const {HttpError, ctrlWrapper} = require('../helpers');
 const getExercise = async (req, res) => {
   const {_id: owner} = req.user;
   const {courseId, lessonId} = req.body;
-console.log(req.body);
+
   const result = await Exercises.findOne(
     { owner, courseId, lessonId }, 
     "-createdAt -updatedAt"
   );
   
   if (!result) {
-    throw HttpError(404, "Вправи вказаного уроку не знайдено");
+    res.status(204);
   }
 
-  res.status(200).json(result);
+  const {homework, fileURL = null} = result;
+
+  res.status(200).json({
+    courseId,
+    lessonId,
+    homework,
+    fileURL,
+  });
 };
 
 const addExercise = async (req, res) => {
