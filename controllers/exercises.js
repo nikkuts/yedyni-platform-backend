@@ -21,8 +21,6 @@ const getExercise = async (req, res) => {
   const { homework, fileURL = null } = result;
 
   return res.status(200).json({
-    courseId,
-    lessonId,
     homework,
     fileURL,
   });
