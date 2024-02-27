@@ -16,9 +16,10 @@ console.log(req.body);
   
   if (!result) {
     res.status(204);
+    return;
   }
 
-  const {homework = '', fileURL = null} = result;
+  const {homework, fileURL = null} = result;
 
   res.status(200).json({
     courseId,
