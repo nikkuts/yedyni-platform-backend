@@ -18,7 +18,7 @@ const getExercise = async (req, res) => {
     return res.status(204).send("Вправа вказаного уроку ще не створена");
   }
 
-  const { homework, fileURL = null } = result;
+  const { homework, fileURL } = result;
 
   return res.status(200).json({
     homework,
@@ -28,7 +28,7 @@ const getExercise = async (req, res) => {
 
 const addExercise = async (req, res) => {
   const { _id: owner } = req.user;
-  const {courseId, lessonId} = req.body;
+  const {courseId, lessonId, homework} = req.body;
 
   const exercise = await Exercises.findOne(
     { owner, courseId, lessonId }
@@ -38,25 +38,42 @@ const addExercise = async (req, res) => {
     throw HttpError(409, "Вправа вказаного уроку вже створена");
   }
 
-  let result;
+  // let result;
 
+  // if (req.file) {
+  //   const { path } = req.file;
+  //   const image = await uploadImageToCloudinary(path);
+
+  //   result = await Exercises.create({
+  //     ...req.body,
+  //     fileURL: image.url,
+  //     owner,
+  //   });
+  // } else {
+  //   result = await Exercises.create({
+  //     ...req.body,
+  //     owner,
+  //   });
+  // }
+
+  // res.status(201).json(result);
+
+  let fileURL;
   if (req.file) {
     const { path } = req.file;
     const image = await uploadImageToCloudinary(path);
-
-    result = await Exercises.create({
-      ...req.body,
-      fileURL: image.url,
-      owner,
-    });
-  } else {
-    result = await Exercises.create({
-      ...req.body,
-      owner,
-    });
+    fileURL = image.url;
   }
 
-  res.status(201).json(result);
+  const newExercise = await Exercises.create({
+    courseId,
+    lessonId,
+    homework,
+    fileURL,
+    owner,
+  });
+
+  res.status(201).json(newExercise);
 };
 
 const updateExercise = async (req, res) => {
@@ -71,31 +88,50 @@ const updateExercise = async (req, res) => {
     throw HttpError(404, "Вправи вказаного уроку не знайдено");
   }
 
-  let result;
+  // let result;
 
+  // if (req.file) {
+  //   const { path } = req.file;
+  //   const image = await uploadImageToCloudinary(path);
+
+  //   result = await Exercises.findOneAndUpdate(
+  //     { owner, courseId, lessonId },
+  //     { $set: 
+  //       { 
+  //       homework,
+  //       fileURL: image.url  
+  //       } 
+  //     },
+  //     { new: true }
+  //   );
+  // } else {
+  //   result = await Exercises.findOneAndUpdate(
+  //     { owner, courseId, lessonId },
+  //     { $set: { homework } },
+  //     { new: true }
+  //   );
+  // }
+  
+  // res.status(201).json(result);
+  let fileURL;
   if (req.file) {
     const { path } = req.file;
     const image = await uploadImageToCloudinary(path);
-
-    result = await Exercises.findOneAndUpdate(
-      { owner, courseId, lessonId },
-      { $set: 
-        { 
-        homework,
-        fileURL: image.url  
-        } 
-      },
-      { new: true }
-    );
-  } else {
-    result = await Exercises.findOneAndUpdate(
-      { owner, courseId, lessonId },
-      { $set: { homework } },
-      { new: true }
-    );
+    fileURL = image.url;
   }
-  
-  res.status(201).json(result);
+
+  const update = { homework };
+  if (fileURL) {
+    update.fileURL = fileURL;
+  }
+
+  const updatedExercise = await Exercises.findOneAndUpdate(
+    { owner, courseId, lessonId },
+    { $set: update },
+    { new: true }
+  );
+
+  res.status(201).json(updatedExercise);
 };
 
 // const getAll = async (req, res) => {

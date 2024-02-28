@@ -17,6 +17,7 @@ const exerciseSchema = new Schema({
   },
   fileURL: {
     type: String,
+    default: '',
   },
   owner: {
     type: Schema.Types.ObjectId,
