@@ -16,7 +16,7 @@ if (!file) {
     next();
   } else if (file.size > maxFileSize) {
     fs.unlink(file.path);
-    next(HttpError(400, "Розмір файлу перевищує 1 MB"));
+    next(HttpError(409, "Розмір файлу перевищує 1 MB"));
   } else {
     next();
   }
