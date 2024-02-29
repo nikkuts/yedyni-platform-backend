@@ -10,6 +10,7 @@ const {
 
   const {
     uploadImageToCloudinary,
+    getFileInfo,
     deleteImageFromCloudinary,
   } = require("./cloudinary");
   
@@ -23,5 +24,6 @@ const {
     workScheduleRegexp,
     passwordRegex,
     uploadImageToCloudinary,
+    getFileInfo,
     deleteImageFromCloudinary,
   };

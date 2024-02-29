@@ -1,6 +1,7 @@
 const { Exercises } = require('../models/exercise');
 const {
   uploadImageToCloudinary,
+  getFileInfo,
   deleteImageFromCloudinary,
 } = require("../utils");
 const {HttpError, ctrlWrapper} = require('../helpers');
@@ -37,27 +38,7 @@ const addExercise = async (req, res) => {
   if (exercise) {
     throw HttpError(409, "Вправа вказаного уроку вже створена");
   }
-
-  // let result;
-
-  // if (req.file) {
-  //   const { path } = req.file;
-  //   const image = await uploadImageToCloudinary(path);
-
-  //   result = await Exercises.create({
-  //     ...req.body,
-  //     fileURL: image.url,
-  //     owner,
-  //   });
-  // } else {
-  //   result = await Exercises.create({
-  //     ...req.body,
-  //     owner,
-  //   });
-  // }
-
-  // res.status(201).json(result);
-
+console.log(req.file);
   let fileURL;
   if (req.file) {
     const { path } = req.file;
@@ -88,31 +69,6 @@ const updateExercise = async (req, res) => {
     throw HttpError(404, "Вправи вказаного уроку не знайдено");
   }
 
-  // let result;
-
-  // if (req.file) {
-  //   const { path } = req.file;
-  //   const image = await uploadImageToCloudinary(path);
-
-  //   result = await Exercises.findOneAndUpdate(
-  //     { owner, courseId, lessonId },
-  //     { $set: 
-  //       { 
-  //       homework,
-  //       fileURL: image.url  
-  //       } 
-  //     },
-  //     { new: true }
-  //   );
-  // } else {
-  //   result = await Exercises.findOneAndUpdate(
-  //     { owner, courseId, lessonId },
-  //     { $set: { homework } },
-  //     { new: true }
-  //   );
-  // }
-  
-  // res.status(201).json(result);
   let fileURL;
   if (req.file) {
     const { path } = req.file;
@@ -128,6 +84,27 @@ const updateExercise = async (req, res) => {
   const updatedExercise = await Exercises.findOneAndUpdate(
     { owner, courseId, lessonId },
     { $set: update },
+    { new: true }
+  );
+
+  res.status(201).json(updatedExercise);
+};
+
+const deleteFileAndUpdateExercise = async (req, res) => {
+  const {_id: owner} = req.user;
+  const {courseId, lessonId, fileURL} = req.body;
+  
+  const fileInfo = await getFileInfo(fileURL);
+
+  if (fileInfo && Object.keys(fileInfo).length > 0) {
+    await deleteImageFromCloudinary(fileURL);
+  } else {
+    throw HttpError(404, "Файл не знайдено");
+  } 
+
+  const updatedExercise = await Exercises.findOneAndUpdate(
+    { owner, courseId, lessonId },
+    { $set: {fileURL: ''} },
     { new: true }
   );
 
@@ -183,6 +160,6 @@ module.exports = {
     // getById: ctrlWrapper(getById),
     addExercise: ctrlWrapper(addExercise),
     updateExercise: ctrlWrapper(updateExercise),
-    // updateStatusContact: ctrlWrapper(updateStatusContact),
+    deleteFileAndUpdateExercise: ctrlWrapper(deleteFileAndUpdateExercise),
     // removeById: ctrlWrapper(removeById),
 };

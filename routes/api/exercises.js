@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get('/', authenticate, ctrl.getExercise);
 
-router.post('/', authenticate, upload.single("images"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.addExercise);
+router.post('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.addExercise);
 
 // router.get('/:contactId', authenticate, isValidId, ctrl.getById);
 
@@ -18,8 +18,8 @@ router.post('/', authenticate, upload.single("images"), checkFileSize, validateB
 
 // router.delete('/:contactId', authenticate, isValidId, ctrl.removeById);
 
-router.patch('/', authenticate, upload.single("images"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.updateExercise);
+router.patch('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.updateExercise);
 
-// router.patch('/:contactId/favorite', authenticate, isValidId, validateBody(schemas.updateFavoriteSchema), ctrl.updateStatusContact);
+router.patch('/file', authenticate, validateBody(schemas.deleteFileSchema), ctrl.deleteFileAndUpdateExercise);
 
 module.exports = router;

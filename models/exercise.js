@@ -33,8 +33,15 @@ const addExerciseSchema = Joi.object({
   homework: Joi.string().max(3000).required(),
 });
 
+const deleteFileSchema = Joi.object({
+  courseId: Joi.string().required(),
+  lessonId: Joi.string().required(),
+  fileURL: Joi.string().required().not().empty(),
+});
+
 const schemas = {
     addExerciseSchema,
+    deleteFileSchema,
 };
 
 const Exercises = model('Exercise', exerciseSchema);

@@ -18,6 +18,15 @@ const uploadImageToCloudinary = async (file) => {
   }
 };
 
+const getFileInfo = async (fileUrl) => {
+  try {
+    const fileInfo = await cloudinary.api.resource(fileUrl);
+    return fileInfo;
+  } catch (error) {
+    throw HttpError(400, 'Помилка при отриманні інформації про файл');
+  }
+}
+
 const deleteImageFromCloudinary = async (imageUrlFromCloudinary) => {
   try {
     const lastDotIndex = imageUrlFromCloudinary.lastIndexOf(".");
@@ -32,4 +41,4 @@ const deleteImageFromCloudinary = async (imageUrlFromCloudinary) => {
   }
 };
 
-module.exports = { uploadImageToCloudinary, deleteImageFromCloudinary };
+module.exports = { uploadImageToCloudinary, getFileInfo, deleteImageFromCloudinary };
