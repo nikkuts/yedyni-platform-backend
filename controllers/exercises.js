@@ -12,19 +12,14 @@ const getExercise = async (req, res) => {
 
   const result = await Exercises.findOne(
     { owner, courseId, lessonId }, 
-    "-createdAt -updatedAt"
+    "-_id -owner -createdAt -updatedAt"
   );
   
   if (!result) {
     return res.status(204).send("Вправа вказаного уроку ще не створена");
   }
 
-  const { homework, fileURL } = result;
-
-  return res.status(200).json({
-    homework,
-    fileURL,
-  });
+  return res.status(200).json(result);
 };
 
 const addExercise = async (req, res) => {
@@ -38,7 +33,7 @@ const addExercise = async (req, res) => {
   if (exercise) {
     throw HttpError(409, "Вправа вказаного уроку вже створена");
   }
-console.log(req.file);
+
   let fileURL;
   if (req.file) {
     const { path } = req.file;
@@ -54,7 +49,12 @@ console.log(req.file);
     owner,
   });
 
-  res.status(201).json(newExercise);
+  res.status(201).json({
+    courseId: newExercise.courseId,
+    lessonId: newExercise.lessonId,
+    homework: newExercise.homework,
+    fileURL: newExercise.fileURL,
+  });
 };
 
 const updateExercise = async (req, res) => {
@@ -66,7 +66,7 @@ const updateExercise = async (req, res) => {
   );
 
   if (!exercise) {
-    throw HttpError(404, "Вправи вказаного уроку не знайдено");
+    throw HttpError(404, "Вправа вказаного уроку не знайдена");
   }
 
   let fileURL;
@@ -84,7 +84,10 @@ const updateExercise = async (req, res) => {
   const updatedExercise = await Exercises.findOneAndUpdate(
     { owner, courseId, lessonId },
     { $set: update },
-    { new: true }
+    { 
+      new: true,
+      projection: { _id: 0, owner: 0, createdAt: 0, updatedAt: 0 } 
+    }
   );
 
   res.status(201).json(updatedExercise);
@@ -105,7 +108,10 @@ const deleteFileAndUpdateExercise = async (req, res) => {
   const updatedExercise = await Exercises.findOneAndUpdate(
     { owner, courseId, lessonId },
     { $set: {fileURL: ''} },
-    { new: true }
+    { 
+      new: true,
+      projection: { _id: 0, owner: 0, createdAt: 0, updatedAt: 0 } 
+    }
   );
 
   res.status(201).json(updatedExercise);
