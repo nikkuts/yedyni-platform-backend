@@ -96,14 +96,16 @@ const updateExercise = async (req, res) => {
 const deleteFileAndUpdateExercise = async (req, res) => {
   const {_id: owner} = req.user;
   const {courseId, lessonId, fileURL} = req.body;
-  
-  const fileInfo = await getFileInfo(fileURL);
 
-  if (fileInfo && Object.keys(fileInfo).length > 0) {
-    await deleteImageFromCloudinary(fileURL);
-  } else {
-    throw HttpError(404, "Файл не знайдено");
-  } 
+  await deleteImageFromCloudinary(fileURL);
+  
+  // const fileInfo = await getFileInfo(fileURL);
+
+  // if (fileInfo && Object.keys(fileInfo).length > 0) {
+  //   await deleteImageFromCloudinary(fileURL);
+  // } else {
+  //   throw HttpError(404, "Файл не знайдено");
+  // } 
 
   const updatedExercise = await Exercises.findOneAndUpdate(
     { owner, courseId, lessonId },
