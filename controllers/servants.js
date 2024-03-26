@@ -7,6 +7,7 @@ const getServants = async (req, res) => {
 
 const addServant = async (req, res) => {
   const {firstname, lastname, email, phone, exam} = req.body;
+  console.log(firstname, lastname, email, phone, exam);
 
   await Servants.create({
     firstname, lastname, email, phone, exam
