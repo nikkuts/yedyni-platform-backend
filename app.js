@@ -10,6 +10,7 @@ const authRouter = require('./routes/api/auth')
 const partnersRouter = require('./routes/api/partners')
 const paymentsRouter = require('./routes/api/payments')
 const exercisesRouter = require('./routes/api/exercises')
+const servantsRouter = require('./routes/api/servants')
 
 const app = express()
 
@@ -25,6 +26,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/partners', partnersRouter)
 app.use('/api/payments', paymentsRouter)
 app.use('/api/exercises', exercisesRouter)
+app.use('/api/servants', servantsRouter)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res) => {
