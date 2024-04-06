@@ -44,11 +44,26 @@ const addServant = async (req, res) => {
   const signature = Base64.stringify(hash);
 
   const paymentForm = `
-    <form method="POST" action="https://www.liqpay.ua/api/3/checkout" accept-charset="utf-8">
+    <form id="paymentForm" method="POST" action="https://www.liqpay.ua/api/3/checkout" accept-charset="utf-8">
       <input type="hidden" name="data" value='${data}' />
       <input type="hidden" name="signature" value='${signature}' />
       <input type="image" src="//static.liqpay.ua/buttons/payUk.png"/>
     </form>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+      const paymentForm = document.getElementById("paymentForm");
+          try {
+            paymentForm.submit();
+          }
+          catch (error) {
+            console.error('Помилка під час відправлення форми:', error);
+            alert('Помилка відправки форми. Будь ласка, спробуйте повторити.');
+          }
+          finally {
+            paymentForm.reset();
+          }   
+      });
+    </script>
   `;
 
   res.send(paymentForm);
