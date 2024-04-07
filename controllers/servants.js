@@ -6,7 +6,7 @@ const Utf8 = require('crypto-js/enc-utf8');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 const { Servant } = require('../models/servant');
-const {ctrlWrapper, HttpError} = require('../helpers');
+const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
 const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
@@ -88,6 +88,20 @@ const processesServant = async (req, res) => {
       { payment: result },
       { new: true }
     );
+
+    const welcomeEmail = {
+      to: servant.email,
+      subject: 'Реєстрація на курс руху "Єдині"',
+      html: `
+      <h1>Дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</h1>
+      <p>Внесена Вами грошова пожертва в розмірі 900 грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
+      <p>Наступний крок: приєднатися до нашого Telegram!</p>
+      <p>Просимо не поширювати це посилання серед осіб, незареєстрованих на курс.</p>
+      <a target="_blank" href="https://t.me/+s_ebd987jWA1MTQy">Приєднатися до курсу</a>
+      `
+    };
+
+    await sendEmail(welcomeEmail);
   }
 
   res.status(200).json({
