@@ -31,6 +31,6 @@ const servantSchema = new Schema({
 
 servantSchema.post('save', handleMongooseError);
 
-const Servants = model('Servants', servantSchema);
+const Servant = model('Servant', servantSchema);
 
-module.exports = {Servants};
+module.exports = {Servant};

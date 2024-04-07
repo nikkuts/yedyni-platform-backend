@@ -5,7 +5,7 @@ const SHA1 = require('crypto-js/sha1');
 const Utf8 = require('crypto-js/enc-utf8');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
-const { Servants } = require('../models/servant');
+const { Servant } = require('../models/servant');
 const {ctrlWrapper} = require('../helpers');
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
@@ -14,9 +14,8 @@ const BASE_SERVER_URL = process.env.BASE_SERVER_URL;
 
 const addServant = async (req, res) => {
   const {firstname, lastname, email, phone, exam} = req.body;
-  console.log(firstname, lastname, email, phone, exam);
 
-  const newServant = await Servants.create({
+  const newServant = await Servant.create({
     firstname, lastname, email, phone, exam
   });
 
@@ -69,13 +68,41 @@ const addServant = async (req, res) => {
   res.send(paymentForm);
 };
 
+const processesServant = async (req, res) => {
+  const {data, signature} = req.body;
+  const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
+  const sign = Base64.stringify(hash);
+
+  if (sign !== signature) {
+    throw HttpError(400, "Несправжня відповідь LiqPay");
+  }
+
+  const dataString = Utf8.stringify(Base64.parse(data));
+  const result = JSON.parse(dataString);
+
+  const {order_id, action, status, customer, amount, end_date} = result;
+
+  if (status === 'success') {
+    const servant = await Servant.findByIdAndUpdate(
+      customer, 
+      { payment: result },
+      { new: true }
+    );
+  }
+
+  res.status(200).json({
+    message: 'success',
+})
+};
+
 const getServants = async (req, res) => {
   
 };
 
 module.exports = {
-    getServants: ctrlWrapper(getServants),
     addServant: ctrlWrapper(addServant),
+    processesServant: ctrlWrapper(processesServant),
+    getServants: ctrlWrapper(getServants),
 };
 
 // res.status(201).json({
