@@ -10,9 +10,9 @@ const nodemailerСonfig = {
     user: 'mykolakuts@meta.ua',
     pass: process.env.PASS,
   },
-  // tls: {
-  //   rejectUnauthorized: false
-  // }
+  tls: {
+    rejectUnauthorized: false
+  }
 };
 
 const transporter = nodemailer.createTransport(nodemailerСonfig);
@@ -20,9 +20,9 @@ const transporter = nodemailer.createTransport(nodemailerСonfig);
 const sendEmail = async (data) => {
     const email = {...data, from: 'mykolakuts@meta.ua'};
     await transporter.sendMail(email)
-    .then(() => console.log('success email'))
-    .catch((error) => console.log(error.message));
-    // return true;
+    // .then(() => console.log('success email'))
+    // .catch((error) => console.log(error.message));
+    return true;
 };
 
 module.exports = sendEmail; 
