@@ -10,9 +10,9 @@ const nodemailerСonfig = {
     user: 'mykolakuts@meta.ua',
     pass: process.env.PASS,
   },
-  tls: {
-    rejectUnauthorized: false
-  }
+  // tls: {
+  //   rejectUnauthorized: false
+  // }
 };
 
 const transporter = nodemailer.createTransport(nodemailerСonfig);
