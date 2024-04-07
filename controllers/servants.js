@@ -6,7 +6,7 @@ const Utf8 = require('crypto-js/enc-utf8');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 const { Servant } = require('../models/servant');
-const {ctrlWrapper} = require('../helpers');
+const {ctrlWrapper, HttpError} = require('../helpers');
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
 const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
@@ -29,7 +29,7 @@ const addServant = async (req, res) => {
       currency: 'UAH',
       description: 'Донат за курс для держслужбовців',
       order_id: orderId,
-      result_url: "https://yedyni.org/",
+      result_url: `https://yedyni.org/testpayment?servant_id=${newServant._id}`,
       server_url: `${BASE_SERVER_URL}/api/servants/process`,
       customer: newServant._id,
     };
@@ -92,7 +92,28 @@ const processesServant = async (req, res) => {
 
   res.status(200).json({
     message: 'success',
-})
+  })
+};
+
+const getByIdServant = async (req, res) => {
+  const {servantId} = req.params;
+  const servant = await Servant.findById(servantId);
+
+  if (!servant) {
+    throw HttpError (404, 'Не має даних')
+  }
+
+  if(!servant.payment) {
+    throw HttpError (404, 'Очікування проведення платежу')
+  }
+
+  const {status} = servant.payment;
+
+  if (status === "success") {
+    res.json({ success: true, message: 'Платіж успішно проведено', servantId });
+  } else {
+    res.status(500).json({ success: false, message: 'Помилка при проведенні платежу' });
+  }
 };
 
 const getServants = async (req, res) => {
@@ -102,6 +123,7 @@ const getServants = async (req, res) => {
 module.exports = {
     addServant: ctrlWrapper(addServant),
     processesServant: ctrlWrapper(processesServant),
+    getByIdServant: ctrlWrapper(getByIdServant),
     getServants: ctrlWrapper(getServants),
 };
 
