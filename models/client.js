@@ -23,6 +23,6 @@ const clientSchema = new Schema({
 
 clientSchema.post('save', handleMongooseError);
 
-const Client = model('Servant', clientSchema);
+const Client = model('Client', clientSchema);
 
 module.exports = {Client};
