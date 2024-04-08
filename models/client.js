@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 // const Joi = require('joi');
 const {handleMongooseError} = require('../helpers');
 
-const servantSchema = new Schema({
+const clientSchema = new Schema({
       name: {
         type: String,
         required: true,
@@ -21,8 +21,8 @@ const servantSchema = new Schema({
       }
 }, {versionKey: false, timestamps: true});
 
-servantSchema.post('save', handleMongooseError);
+clientSchema.post('save', handleMongooseError);
 
-const Servant = model('Servant', servantSchema);
+const Client = model('Servant', clientSchema);
 
-module.exports = {Servant};
+module.exports = {Client};

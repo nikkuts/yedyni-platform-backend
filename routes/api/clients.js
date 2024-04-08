@@ -1,12 +1,12 @@
 const express = require('express');
 
-const ctrl = require('../../controllers/servants');
+const ctrl = require('../../controllers/clients');
 
 const router = express.Router();
 
-router.post('/', ctrl.addServant);
+router.post('/servant', ctrl.addServant);
 
-router.post('/process', ctrl.processesServant);
+router.post('/process', ctrl.processesClient);
 
 router.get("/:servantId", ctrl.getByIdServant);
 

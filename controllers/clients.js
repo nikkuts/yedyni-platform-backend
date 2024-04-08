@@ -5,17 +5,17 @@ const SHA1 = require('crypto-js/sha1');
 const Utf8 = require('crypto-js/enc-utf8');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
-const { Servant } = require('../models/servant');
+const { Client } = require('../models/client');
 const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY;
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
+const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
 const BASE_SERVER_URL = process.env.BASE_SERVER_URL;
 
 const addServant = async (req, res) => {
   const {fio, mail, phone} = req.body;
 
-  const newServant = await Servant.create({
+  const newClient = await Client.create({
     name: fio, 
     email: mail,
     phone
@@ -29,11 +29,11 @@ const addServant = async (req, res) => {
       action: 'pay',
       amount: 1,
       currency: 'UAH',
-      description: 'Донат за курс для держслужбовців',
+      description: `${newClient.name} Донат за Курс для держслужбовців`,
       order_id: orderId,
-      result_url: `https://yedyni.org/testpayment?servant_id=${newServant._id}`,
-      server_url: `${BASE_SERVER_URL}/api/servants/process`,
-      customer: newServant._id,
+      result_url: `https://yedyni.org/testpayment?servant_id=${newClient._id}`,
+      server_url: `${BASE_SERVER_URL}/api/clients/process`,
+      customer: newClient._id,
     };
 
   // Кодуємо дані JSON у рядок та потім у Base64
@@ -70,7 +70,7 @@ const addServant = async (req, res) => {
   res.send(paymentForm);
 };
 
-const processesServant = async (req, res) => {
+const processesClient = async (req, res) => {
   const {data, signature} = req.body;
   const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
   const sign = Base64.stringify(hash);
@@ -85,7 +85,7 @@ const processesServant = async (req, res) => {
   const {order_id, action, status, customer, amount, end_date} = result;
 
   if (status === 'success') {
-    const servant = await Servant.findByIdAndUpdate(
+    const client = await Client.findByIdAndUpdate(
       customer, 
       { payment: result },
       { new: true }
@@ -110,7 +110,7 @@ const processesServant = async (req, res) => {
     // }
 
     const welcomeEmail = {
-      to: servant.email,
+      to: client.email,
       subject: 'Реєстрація на курс руху "Єдині"',
       html: `
       <h1>Дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</h1>
@@ -131,7 +131,7 @@ const processesServant = async (req, res) => {
 
 const getByIdServant = async (req, res) => {
   const {servantId} = req.params;
-  const servant = await Servant.findById(servantId);
+  const servant = await Client.findById(servantId);
 
   if (!servant) {
     throw HttpError (404, 'Не має даних')
@@ -156,7 +156,7 @@ const getServants = async (req, res) => {
 
 module.exports = {
     addServant: ctrlWrapper(addServant),
-    processesServant: ctrlWrapper(processesServant),
+    processesClient: ctrlWrapper(processesClient),
     getByIdServant: ctrlWrapper(getByIdServant),
     getServants: ctrlWrapper(getServants),
 };
