@@ -96,9 +96,17 @@ const processesClient = async (req, res) => {
       email: client.email,
     }
 
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(obj) 
+    };
+
     try {
-      await axios.post("https://script.google.com/macros/s/AKfycbwCCdeuGmMgOo86s_0ybq93uqP0e3bOT_hy0CVzepc5qxdjGr9KYUErPk1nfbfT13oCtw/exec", obj);
-      console.log('Дані записано до таблиці');
+      const result = await axios.post("https://script.google.com/macros/s/AKfycbwCCdeuGmMgOo86s_0ybq93uqP0e3bOT_hy0CVzepc5qxdjGr9KYUErPk1nfbfT13oCtw/exec", options);
+      console.log(result);
     } 
     catch (error) {
       console.error(error.message);
