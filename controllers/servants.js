@@ -89,23 +89,23 @@ const processesServant = async (req, res) => {
       { new: true }
     );
 
-    // const obj = {
-    //   firstname: servant.firstname,
-    //   lastname: servant.lastname,
-    //   email: servant.email,
-    //   phone: servant.phone,
-    //   exam: servant.exam,
-    //   amount,
-    //   status,
-    // }
+    const obj = {
+      firstname: servant.firstname,
+      lastname: servant.lastname,
+      email: servant.email,
+      phone: servant.phone,
+      exam: servant.exam,
+      amount,
+      status,
+    }
 
-    // try {
-    //   await axios.post("https://script.google.com/macros/s/AKfycbzOEEHzzQYh4aTWEX17fdD4iH9eHd_66WzN2seans88rNDwX3IvryBzBL1HvBYYCFZD/exec", obj);
-    //   console.log('Дані записано до таблиці');
-    // } 
-    // catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      await axios.post("https://script.google.com/macros/s/AKfycbz8qS-WcXvidfXFdVya7LNp95L7CXwZyG1AoY14FDSjdtn5cxmrxjiLLUd7-OgzsXCj/exec", obj);
+      console.log('Дані записано до таблиці');
+    } 
+    catch (error) {
+      console.error(error);
+    }
 
     const welcomeEmail = {
       to: servant.email,
