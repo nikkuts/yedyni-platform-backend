@@ -13,10 +13,12 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const BASE_SERVER_URL = process.env.BASE_SERVER_URL;
 
 const addServant = async (req, res) => {
-  const {firstname, lastname, email, phone, exam} = req.body;
+  const {fio, mail, phone} = req.body;
 
   const newServant = await Servant.create({
-    firstname, lastname, email, phone, exam
+    name: fio, 
+    email: mail,
+    phone
   });
 
   const orderId = uuidv4();

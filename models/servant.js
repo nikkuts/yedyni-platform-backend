@@ -3,11 +3,7 @@ const { Schema, model } = require('mongoose');
 const {handleMongooseError} = require('../helpers');
 
 const servantSchema = new Schema({
-      firstname: {
-        type: String,
-        required: true,
-      },
-      lastname: {
+      name: {
         type: String,
         required: true,
       },
@@ -16,10 +12,6 @@ const servantSchema = new Schema({
         required: true,
       },
       phone: {
-        type: String,
-        required: true,
-      },
-      exam: {
         type: String,
         required: true,
       },
