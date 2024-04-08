@@ -91,33 +91,33 @@ const processesClient = async (req, res) => {
       { new: true }
     );
 
-  //   const obj = {
-  //     name: client.name,
-  //     email: client.email,
-  //   }
+    // const obj = {
+    //   name: client.name,
+    //   email: client.email,
+    // }
 
-  //   try {
-  //     const result = await axios.post("https://script.google.com/macros/s/AKfycbwCCdeuGmMgOo86s_0ybq93uqP0e3bOT_hy0CVzepc5qxdjGr9KYUErPk1nfbfT13oCtw/exec", obj);
-  //     console.log(result.data);
-  //   } 
-  //   catch (error) {
-  //     console.error(error.message);
-  //   }
+    // try {
+    //   const result = await axios.post("https://script.google.com/macros/s/AKfycbwCCdeuGmMgOo86s_0ybq93uqP0e3bOT_hy0CVzepc5qxdjGr9KYUErPk1nfbfT13oCtw/exec", obj);
+    //   console.log(result.data);
+    // } 
+    // catch (error) {
+    //   console.error(error.message);
+    // }
 
-  //   const welcomeEmail = {
-  //     to: client.email,
-  //     subject: 'Реєстрація на курс руху "Єдині"',
-  //     html: `
-  //     <h1>Дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</h1>
-  //     <p>Внесена Вами грошова пожертва в розмірі 900 грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
-  //     <p>Наступний крок: приєднатися до нашого Telegram!</p>
-  //     <p>Просимо не поширювати це посилання серед осіб, незареєстрованих на курс.</p>
-  //     <a target="_blank" href="https://t.me/+s_ebd987jWA1MTQy">Приєднатися до курсу</a>
-  //     `
-  //   };
+    // const welcomeEmail = {
+    //   to: client.email,
+    //   subject: 'Реєстрація на курс руху "Єдині"',
+    //   html: `
+    //   <h1>Дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</h1>
+    //   <p>Внесена Вами грошова пожертва в розмірі 900 грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
+    //   <p>Наступний крок: приєднатися до нашого Telegram!</p>
+    //   <p>Просимо не поширювати це посилання серед осіб, незареєстрованих на курс.</p>
+    //   <a target="_blank" href="https://t.me/+s_ebd987jWA1MTQy">Приєднатися до курсу</a>
+    //   `
+    // };
 
-  //   await sendEmail(welcomeEmail);
-  // }
+    // await sendEmail(welcomeEmail);
+  }
 
   res.status(200).json({
     message: 'success',
