@@ -27,7 +27,7 @@ const addServant = async (req, res) => {
       public_key: PUBLIC_KEY, 
       version: '3',
       action: 'pay',
-      amount: 1,
+      amount: 900,
       currency: 'UAH',
       description: `${newClient.name} Донат за Курс для держслужбовців`,
       order_id: orderId,
