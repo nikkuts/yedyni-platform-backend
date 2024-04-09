@@ -8,8 +8,8 @@ router.post('/servant', ctrl.addServant);
 
 router.post('/process', ctrl.processesClient);
 
-router.get("/:servantId", ctrl.getByIdServant);
+router.get("/servants", ctrl.getServants);
 
-router.get("/", ctrl.getServants);
+router.get("/:servantId", ctrl.getByIdServant);
 
 module.exports = router;

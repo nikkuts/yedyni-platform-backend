@@ -147,7 +147,16 @@ const getByIdServant = async (req, res) => {
 };
 
 const getServants = async (req, res) => {
+  const result = await Client.find(
+    { product: "Курс для держслужбовців" }, 
+    "-_id -createdAt -updatedAt"
+  );
   
+  if (!result || result.length === 0) {
+    throw HttpError(404, 'Не знайдено даних');
+  }
+
+  res.json(result);
 };
 
 module.exports = {
