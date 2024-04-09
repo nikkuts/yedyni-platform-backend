@@ -18,7 +18,8 @@ const addServant = async (req, res) => {
   const newClient = await Client.create({
     name: fio, 
     email: mail,
-    phone
+    phone,
+    product: "Курс для держслужбовців",
   });
 
   const orderId = uuidv4();

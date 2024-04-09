@@ -15,6 +15,11 @@ const clientSchema = new Schema({
         type: String,
         required: true,
       },
+      product: {
+        type: String,
+        enum: ["Курс для держслужбовців", "Видноколо"],
+        required: true,
+      },
       payment: {
         type: Schema.Types.Object,
         default: {},
