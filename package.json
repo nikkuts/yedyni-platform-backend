@@ -23,7 +23,7 @@
     "jimp": "^0.22.10",
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.1",
-    "mongodb": "^5.7.0",
+    "mongodb": "^5.9.2",
     "mongodb-memory-server": "^8.13.0",
     "mongoose": "^7.3.4",
     "mongoose-autopopulate": "^1.1.0",

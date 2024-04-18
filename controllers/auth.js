@@ -16,15 +16,15 @@ const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 const register = async (req, res) => {
     const {name, email, password, inviterId = MAIN_ID} = req.body;
     
-    // if (!isValidObjectId(inviterId)) {
-    //     throw HttpError(404, "Помилка у запрошувальному посиланні");
-    // }
+    if (!isValidObjectId(inviterId)) {
+        throw HttpError(404, "Помилка у запрошувальному посиланні");
+    }
 
-    // const inviter = await User.findById(inviterId);
+    const inviter = await User.findById(inviterId);
     
-    // if (!inviter) {
-    //     throw HttpError(404, "Помилка у запрошувальному посиланні");
-    // }
+    if (!inviter) {
+        throw HttpError(404, "Помилка у запрошувальному посиланні");
+    }
 
     const user = await User.findOne({email});
 
@@ -42,7 +42,7 @@ const register = async (req, res) => {
         password: hasPassword, 
         avatarURL, 
         verificationToken, 
-        // inviter: inviterId
+        inviter: inviterId
     });
     const verifyEmail = {
         to: email,
@@ -59,10 +59,10 @@ const register = async (req, res) => {
         {token}
     );
 
-    // await User.findByIdAndUpdate(
-    //     inviterId, 
-    //     { $push: { team: newUser._id } }
-    // );
+    await User.findByIdAndUpdate(
+        inviterId, 
+        { $push: { team: newUser._id } }
+    );
 
     res.status(201).json({
         token: token,
@@ -71,7 +71,7 @@ const register = async (req, res) => {
             name: newUser.name,
             email: newUser.email,
             registerDate: newUser.createdAt,
-            // inviter: inviter.name,
+            inviter: inviter.name,
           }
     })
 };

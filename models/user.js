@@ -41,7 +41,7 @@ const userSchema = new Schema({
       inviter: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        // required: true,
+        required: true,
       },
       team: {
         type: [
@@ -135,17 +135,12 @@ const diarySchema = Joi.object({
   entry: Joi.string().max(500).required(),
 });
 
-// const startDateSchema = Joi.object({
-//   startDate: Joi.date().required(),
-// });
-
 const schemas = {
     registerSchema,
     loginSchema,
     updateStatusSchema,
     emailSchema,
     diarySchema,
-    // startDateSchema,
 };
 
 const User = model('User', userSchema);
