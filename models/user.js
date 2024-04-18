@@ -11,8 +11,8 @@ const userSchema = new Schema({
       },
       password: {
         type: String,
-        minlength: 6,
-        required: [true, 'Встановіть пароль довжиною не менше 6 символів'],
+        minlength: 8,
+        required: [true, 'Встановіть пароль довжиною не менше 8 символів'],
       },
       email: {
         type: String,
@@ -41,7 +41,7 @@ const userSchema = new Schema({
       inviter: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        // required: true,
       },
       team: {
         type: [
@@ -111,8 +111,8 @@ const userSchema = new Schema({
 userSchema.post('save', handleMongooseError);
 
 const registerSchema = Joi.object({
-    name: Joi.string().min(2).max(30).pattern(nameRegexp).required(),
-    password: Joi.string().min(6).max(30).pattern(passwordRegex).required(),
+    name: Joi.string().min(2).max(30).required(),
+    password: Joi.string().min(8).max(24).pattern(passwordRegex).required(),
     email: Joi.string().pattern(emailRegexp).required(),
     inviterId: Joi.string(),
 });
@@ -122,7 +122,7 @@ const emailSchema = Joi.object({
 });
 
 const loginSchema = Joi.object({
-  password: Joi.string().min(6).max(30).required(),
+  password: Joi.string().min(8).max(24).required(),
   email: Joi.string().pattern(emailRegexp).required(),
 });
 
