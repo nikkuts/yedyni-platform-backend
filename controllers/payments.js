@@ -266,20 +266,22 @@ const processesPayment = async (req, res) => {
     const userId = customer || subscribedUserId;
 
     if (status === 'success') {
-      const user = await User.findByIdAndUpdate(
-        userId, 
-        { $push: { donats: newPayment._id } },
+      const user = await User.findByIdAndUpdate(userId, {
+        $inc: { ukrainianMark: amount }, 
+        $push: { donats: newPayment._id } 
+      },
         { new: true }
       );
 
-      if (userId !== MAIN_ID) {
-        await distributesBonuses ({
-          id: user.inviter, 
-          email: user.email, 
-          amount,
-          paymentId: newPayment._id.toString(),
-        });
-      }
+      await User.findByIdAndUpdate(userId, { 
+          $push: {
+            historyUkrainianMark: {
+              points: amount,
+              comment: "донат",
+              finalValue: user.ukrainianMark,
+            }
+          }
+      });
     }
 
     res.status(200).json({

@@ -22,6 +22,6 @@ router.get('/subscriptions', authenticate, ctrlClient.getSubscriptions);
 
 router.get("/subscriptions/:subscriptionId", authenticate, ctrlClient.getByIdSubscription);
 
-router.get('/account', authenticate, ctrlClient.getAccount);
+router.get('/mark', authenticate, ctrlClient.getMark);
 
 module.exports = router;

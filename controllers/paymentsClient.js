@@ -145,7 +145,7 @@ const getByIdSubscription = async (req, res) => {
     // res.json(result);
 };
 
-const getAccount = async (req, res) => {
+const getMark = async (req, res) => {
     const {_id} = req.user;
     const { start = null, end = null } = req.query;
     const { page = 1, limit = 10 } = req.query;
@@ -159,11 +159,11 @@ const getAccount = async (req, res) => {
     let result;
     let totalCount;
 
-        const user = await User.findById(_id, "historyBonusAccount -_id");
+        const user = await User.findById(_id, "historyUkrainianMark -_id");
 
-        const prevResult = user.historyBonusAccount.filter(
-            ({dateTransaction}) => {
-               return dateTransaction >= startNum && dateTransaction <= endNum
+        const prevResult = user.historyUkrainianMark.filter(
+            ({date}) => {
+               return date >= startNum && date <= endNum
             }
         );
         
@@ -177,7 +177,7 @@ const getAccount = async (req, res) => {
     const totalPages = Math.ceil(totalCount / limitNum);
 
     res.json({
-        account: result,
+        mark: result,
         totalPages
     });
 };
@@ -186,6 +186,7 @@ module.exports = {
     getDonats: ctrlWrapper(getDonats),
     getSubscriptions: ctrlWrapper(getSubscriptions),
     getByIdSubscription: ctrlWrapper(getByIdSubscription),
-    getAccount: ctrlWrapper(getAccount),
+    getMark: ctrlWrapper(getMark),
 };
+
 

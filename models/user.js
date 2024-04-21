@@ -59,35 +59,25 @@ const userSchema = new Schema({
           }
         ],
       },
-      bonusAccount: {
+      ukrainianMark: {
         type: Number,
-        default: 0,
+        default: 40,
       },
-      historyBonusAccount: {
+      historyUkrainianMark: {
         type: [
           {
-            initialBalance: {
-              type: Number,
-            },
-            finalBalance: {
-              type: Number,
-            },
-            amountTransaction: {
-              type: Number,
-            },
-            dateTransaction: {
+            date: {
               type: Number,
               default: Date.now
             },
-            comment: {
-              type: String,
-              enum: ["бонус", "приз", "вивід"],
-            },
-            levelBonus: {
+            points: {
               type: Number,
             },
-            emailPartner: {
+            comment: {
               type: String,
+            },
+            finalValue: {
+              type: Number,
             },
           }
         ]
