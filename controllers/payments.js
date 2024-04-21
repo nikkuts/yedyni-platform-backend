@@ -267,18 +267,20 @@ const processesPayment = async (req, res) => {
 
     if (status === 'success') {
       const user = await User.findByIdAndUpdate(userId, {
-        $inc: { ukrainianMark: amount }, 
         $push: { donats: newPayment._id } 
       },
         { new: true }
       );
 
-      await User.findByIdAndUpdate(userId, { 
+      const ukrainianMark = user.ukrainianMark += amount;
+
+      await User.findByIdAndUpdate(userId, {
+        $set: { ukrainianMark },  
           $push: {
             historyUkrainianMark: {
               points: amount,
               comment: "донат",
-              finalValue: user.ukrainianMark,
+              finalValue: ukrainianMark,
             }
           }
       });
