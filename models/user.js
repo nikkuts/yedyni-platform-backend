@@ -61,7 +61,6 @@ const userSchema = new Schema({
       },
       ukrainianMark: {
         type: Number,
-        default: 40,
       },
       historyUkrainianMark: {
         type: [

@@ -9,7 +9,7 @@ const {nanoid} = require('nanoid');
 const {HttpError, ctrlWrapper, sendEmail} = require('../helpers');
 require('dotenv').config();
 
-const {SECRET_KEY, BASE_URL, MAIN_ID} = process.env;
+const {SECRET_KEY, BASE_URL, MAIN_ID, BASE_UKRAINIANMARK} = process.env;
 
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
@@ -42,7 +42,13 @@ const register = async (req, res) => {
         password: hasPassword, 
         avatarURL, 
         verificationToken, 
-        inviter: inviterId
+        inviter: inviterId,
+        ukrainianMark: BASE_UKRAINIANMARK,
+        historyUkrainianMark: [{
+            points: BASE_UKRAINIANMARK,
+            comment: "реєстрація на платформі",
+            finalValue: BASE_UKRAINIANMARK,
+        }]
     });
     const verifyEmail = {
         to: email,
@@ -59,10 +65,19 @@ const register = async (req, res) => {
         {token}
     );
 
-    await User.findByIdAndUpdate(
-        inviterId, 
-        { $push: { team: newUser._id } }
-    );
+    const ukrainianMarkInviter = inviter.ukrainianMark += BASE_UKRAINIANMARK;
+
+    await User.findByIdAndUpdate(inviterId, {
+        $set: { ukrainianMark: ukrainianMarkInviter },  
+          $push: {
+            team: newUser._id,
+            historyUkrainianMark: {
+              points: BASE_UKRAINIANMARK,
+              comment: `реєстрація нового учасника команди ${email}`,
+              finalValue: ukrainianMarkInviter,
+            }
+          }
+      });
 
     res.status(201).json({
         token: token,
