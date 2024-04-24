@@ -74,7 +74,7 @@ const register = async (req, res) => {
             team: newUser._id,
             historyUkrainianMark: {
               points: BASE_UKRAINIAN_MARK,
-              comment: `реєстрація нового учасника ${email}`,
+              comment: `реєстрація нового учасника команди ${email}`,
               finalValue: ukrainianMarkInviter,
             }
           }
