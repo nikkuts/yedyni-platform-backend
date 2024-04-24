@@ -9,7 +9,8 @@ const {nanoid} = require('nanoid');
 const {HttpError, ctrlWrapper, sendEmail} = require('../helpers');
 require('dotenv').config();
 
-const {SECRET_KEY, BASE_URL, MAIN_ID, BASE_UKRAINIANMARK} = process.env;
+const {SECRET_KEY, BASE_URL, MAIN_ID} = process.env;
+const BASE_UKRAINIAN_MARK = Number(process.env.BASE_UKRAINIAN_MARK);
 
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
@@ -17,13 +18,13 @@ const register = async (req, res) => {
     const {name, email, password, inviterId = MAIN_ID} = req.body;
     
     if (!isValidObjectId(inviterId)) {
-        throw HttpError(404, "Помилка у запрошувальному посиланні");
+        throw HttpError(404, "Помилка у запрошувальному покликанні");
     }
 
     const inviter = await User.findById(inviterId);
     
     if (!inviter) {
-        throw HttpError(404, "Помилка у запрошувальному посиланні");
+        throw HttpError(404, "Помилка у запрошувальному покликанні");
     }
 
     const user = await User.findOne({email});
@@ -43,11 +44,11 @@ const register = async (req, res) => {
         avatarURL, 
         verificationToken, 
         inviter: inviterId,
-        ukrainianMark: BASE_UKRAINIANMARK,
+        ukrainianMark: BASE_UKRAINIAN_MARK,
         historyUkrainianMark: [{
-            points: BASE_UKRAINIANMARK,
+            points: BASE_UKRAINIAN_MARK,
             comment: "реєстрація на платформі",
-            finalValue: BASE_UKRAINIANMARK,
+            finalValue: BASE_UKRAINIAN_MARK,
         }]
     });
     const verifyEmail = {
@@ -65,15 +66,15 @@ const register = async (req, res) => {
         {token}
     );
 
-    const ukrainianMarkInviter = inviter.ukrainianMark += BASE_UKRAINIANMARK;
+    const ukrainianMarkInviter = inviter.ukrainianMark += BASE_UKRAINIAN_MARK;
 
     await User.findByIdAndUpdate(inviterId, {
         $set: { ukrainianMark: ukrainianMarkInviter },  
           $push: {
             team: newUser._id,
             historyUkrainianMark: {
-              points: BASE_UKRAINIANMARK,
-              comment: `реєстрація нового учасника команди ${email}`,
+              points: BASE_UKRAINIAN_MARK,
+              comment: `реєстрація нового учасника ${email}`,
               finalValue: ukrainianMarkInviter,
             }
           }

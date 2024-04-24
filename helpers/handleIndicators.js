@@ -1,6 +1,7 @@
 require('dotenv').config();
 
-const {BASE_AMOUNT_SUPPORT, BASE_COURSE_TIME} = process.env;
+const BASE_AMOUNT_SUPPORT = Number(process.env.BASE_AMOUNT_SUPPORT);
+const BASE_COURSE_TIME = Number(process.env.BASE_COURSE_TIME);
 
 const handleIndicators = (user) => {
     const currentTime = new Date();
