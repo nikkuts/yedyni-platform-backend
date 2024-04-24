@@ -7,29 +7,6 @@ const paymentSchema = new Schema({
         type: Schema.Types.Object,
         required: true,
     },
-    fees: {
-        type: [
-            {
-                userId: {
-                    type: Schema.Types.ObjectId,
-                    ref: 'User',
-                },
-                levelPartner: {
-                    type: Number,
-                },
-                levelBonus: {
-                    type: Number,
-                },
-                levelSupport: {
-                    type: Number,
-                },
-                fee: {
-                    type: Number,
-                },
-                _id: false,
-            }
-        ],
-    },
     objSub: {
         type: {
             lastPaymentDate: {

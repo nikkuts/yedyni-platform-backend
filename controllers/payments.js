@@ -6,13 +6,12 @@ const Utf8 = require('crypto-js/enc-utf8');
 const { v4: uuidv4 } = require('uuid');
 const {User} = require('../models/user');
 const {Payment} = require('../models/payment');
-const {HttpError, ctrlWrapper, handleIndicators} = require('../helpers');
+const {HttpError, ctrlWrapper} = require('../helpers');
 require('dotenv').config();
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
 const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
 const {BASE_CLIENT_URL, BASE_SERVER_URL, API_LIQPAY_ENDPOINT} = process.env;
-const MAIN_ID = process.env.MAIN_ID;
 
 const createPayment = async (req, res) => {
     const {_id} = req.user;
@@ -113,107 +112,6 @@ const cancelSubscribe = async (req, res) => {
     }
 };
 
-const distributesBonuses = async ({id, email, amount, paymentId}) => {
-  let inviterId = id;
-  let bonus = amount * 0.45;
-  let bonusAccount;
-  let historyBonusAccount;
-  let userId;
-  let levelPartner = 0;
-  let levelBonus;
-  let levelSupport;
-  let fee;
-
-  for (let i = 1; i <= 8; i += 1) {
-    levelBonus = i;       
-      do {
-          const user = await User.findById(inviterId)
-          .populate('donats', 'data.amount');
-        
-          userId = user._id.toString();
-          bonusAccount = user.bonusAccount;
-          historyBonusAccount = {
-            initialBalance: user.bonusAccount,
-            comment: "бонус",
-            levelBonus,
-            emailPartner: email,
-          };
-
-          inviterId = user.inviter;
-          levelPartner += 1;
-          levelSupport = handleIndicators(user).levelSupport;
-
-          if (userId === MAIN_ID) {
-              bonusAccount += bonus;
-
-              await User.findByIdAndUpdate(MAIN_ID, {
-                $set: {bonusAccount}, 
-                $push: {
-                  historyBonusAccount: {
-                    ...historyBonusAccount,
-                  finalBalance: bonusAccount,
-                  amountTransaction: bonus,
-                  }
-                }
-              });
-              
-              await Payment.findByIdAndUpdate(paymentId, { 
-                $push: { 
-                  fees: {
-                    userId,
-                    levelPartner,
-                    levelBonus,
-                    levelSupport,
-                    fee: bonus,
-                  } 
-                } 
-              });
-              return console.log({ success: true, message: 'Головний акаунт досягнуто' });
-          }
-      } while (levelSupport < i);
-
-      fee = i === 1 
-          ? amount * 0.1
-          : amount * 0.05;
-
-      bonusAccount += fee;
-          
-      await User.findByIdAndUpdate(userId, {
-        $set: {bonusAccount}, 
-          $push: {
-            historyBonusAccount: {
-              ...historyBonusAccount,
-              finalBalance: bonusAccount,
-              amountTransaction: fee,
-            }
-          }
-        });
-
-      bonus = bonus - fee;
-
-      await Payment.findByIdAndUpdate(paymentId, { 
-        $push: { 
-          fees: {
-            userId,
-            levelPartner,
-            levelBonus,
-            levelSupport,
-            fee,
-          } 
-        } 
-      });
-
-      if (bonus === 0) {
-          return console.log({ success: true, message: 'Бонус повністю розподілено' });
-      }
-      if (bonus < 0) {
-        return console.log({ success: false, message: 'Розподілено більше допустимої суми бонусу' });
-      }
-  };
-  console.log({ success: false, message: 'Бонус не було розподілено' });
-  throw HttpError(409, "Бонус не було розподілено");
-};
-
 const processesPayment = async (req, res) => {
     let subscribedUserId = '';
     const {data, signature} = req.body;
@@ -296,49 +194,3 @@ module.exports = {
     cancelSubscribe: ctrlWrapper(cancelSubscribe),
     processesPayment: ctrlWrapper(processesPayment),
 };
-
-
-// const distributesBonuses = async (id, amount) => {
-//   let inviterId = id; 
-//   let bonus = amount * 0.45;
-//   let userId;
-//   let bonusAccount;
-//   let level;
-//   let fee;
-
-//   for (let i = 1; i <= 8; i += 1) {       
-//       do {
-//           const user = await User.findById(inviterId)
-//           .populate('donats', 'data.amount');
-        
-//           userId = user._id.toString();
-
-//           if (userId === MAIN_ID) {
-//               bonusAccount = user.bonusAccount + bonus;
-//               await User.findByIdAndUpdate(MAIN_ID, {bonusAccount});
-//               return console.log({ success: true, message: 'Головний акаунт досягнуто' });
-//           }
-
-//           inviterId = user.inviter;
-//           bonusAccount = user.bonusAccount;
-//           level = levelSupport(user);
-//       } while (level < i);
-
-//       fee = i === 1 
-//           ? amount * 0.1
-//           : amount * 0.05;
-
-//           bonusAccount = bonusAccount + fee;
-          
-//       await User.findByIdAndUpdate(userId, {bonusAccount});
-//       bonus = bonus - fee;
-
-//       if (bonus === 0) {
-//           return console.log({ success: true, message: 'Бонус повністю розподілено' });
-//       }
-//       if (bonus < 0) {
-//         return console.log({ success: false, message: 'Розподілено більше допустимої суми бонусу' });
-//       }
-//   };
-//   return console.log({ success: false, message: 'Бонус не було розподілено' });
-// };

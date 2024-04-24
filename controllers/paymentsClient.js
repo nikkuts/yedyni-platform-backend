@@ -5,17 +5,6 @@ const {
     ctrlWrapper
 } = require('../helpers');
 
-// const getDonats = async (req, res) => {
-//     const {_id} = req.user;
-//     const result = await User.findById(_id, "donats -_id")
-//     .populate('donats', '_id data.amount data.end_date data.description data.info data.action');
-    
-//     if(!result) {
-//         throw HttpError (404, 'Not found')
-//     }
-//     res.json(result);
-// };
-
 const getDonats = async (req, res) => {
     const {_id} = req.user;
     const { start = null, end = null } = req.query;

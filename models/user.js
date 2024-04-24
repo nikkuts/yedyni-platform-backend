@@ -5,7 +5,7 @@ const {handleMongooseError} = require('../helpers');
 const { emailRegexp, dateRegexp, nameRegexp, phoneRegexp, passwordRegex } = require("../utils");
 
 const userSchema = new Schema({
-    name: {
+      name: {
         type: String,
         required: [true, 'Вкажіть імя користувача'],
       },
@@ -80,20 +80,6 @@ const userSchema = new Schema({
             },
           }
         ]
-      },
-      diary: {
-        type: [
-          {
-            day: {
-              type: String,
-              required: true,
-            },
-            entry: {
-              type: String,
-              required: true,
-            }
-          }
-        ]
       }
 }, {versionKey: false, timestamps: true});
 
@@ -119,17 +105,11 @@ const updateStatusSchema = Joi.object({
   status: Joi.string().valid("user", "admin").required(),
 });
 
-const diarySchema = Joi.object({
-  day: Joi.string().required(),
-  entry: Joi.string().max(500).required(),
-});
-
 const schemas = {
     registerSchema,
     loginSchema,
     updateStatusSchema,
     emailSchema,
-    diarySchema,
 };
 
 const User = model('User', userSchema);
