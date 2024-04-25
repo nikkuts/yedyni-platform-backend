@@ -43,8 +43,8 @@ const addDiarySchema = Joi.object({
   lessonId: Joi.string().required(),
   date: Joi.string().required(),
   test: Joi.number().integer().min(0).max(10),
-  entry: Joi.string().max(500).required(),
-  plan: Joi.string().max(500).required(),
+  entry: Joi.string().max(500).allow('').required(),
+  plan: Joi.string().max(500).allow('').required(),
 });
 
 const schemas = {
