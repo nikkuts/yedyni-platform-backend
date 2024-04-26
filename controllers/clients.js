@@ -91,7 +91,7 @@ const addCreative = async (req, res) => {
       currency: 'UAH',
       description: `${newClient.name} Донат за Курс "Видноколо"`,
       order_id: orderId,
-      result_url: `https://yedyni.org/test?client_id=${newClient._id}`,
+      result_url: `https://yedyni.org/testpayment?client_id=${newClient._id}`,
       server_url: `${BASE_SERVER_URL}/api/clients/process`,
       customer: newClient._id,
     };
