@@ -87,7 +87,7 @@ const addCreative = async (req, res) => {
       public_key: PUBLIC_KEY, 
       version: '3',
       action: 'pay',
-      amount: 450,
+      amount: 1,
       currency: 'UAH',
       description: `${newClient.name} Донат за Курс "Видноколо"`,
       order_id: orderId,
