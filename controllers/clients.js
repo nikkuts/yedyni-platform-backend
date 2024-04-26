@@ -188,9 +188,9 @@ const getByIdClient = async (req, res) => {
   const {clientId} = req.params;
   const client = await Client.findById(clientId);
 
-  if (clientId === null) {
-    throw HttpError (400, 'Не передано clientId')
-  }
+  // if (clientId === null) {
+  //   throw HttpError (400, 'Не передано clientId')
+  // }
 
   if (!client) {
     throw HttpError (404, 'Не має даних')
