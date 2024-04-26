@@ -6,9 +6,13 @@ const router = express.Router();
 
 router.post('/servant', ctrl.addServant);
 
+router.post('/creative', ctrl.addCreative);
+
 router.post('/process', ctrl.processesClient);
 
 router.get("/servants", ctrl.getServants);
+
+router.get("/creatives", ctrl.getCreatives);
 
 router.get("/:clientId", ctrl.getByIdClient);
 

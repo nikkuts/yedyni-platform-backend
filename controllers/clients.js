@@ -32,7 +32,7 @@ const addServant = async (req, res) => {
       currency: 'UAH',
       description: `${newClient.name} Донат за Курс для держслужбовців`,
       order_id: orderId,
-      result_url: `https://yedyni.org/testpayment?servant_id=${newClient._id}`,
+      result_url: `https://yedyni.org/testpayment?client_id=${newClient._id}`,
       server_url: `${BASE_SERVER_URL}/api/clients/process`,
       customer: newClient._id,
     };
@@ -91,7 +91,7 @@ const addCreative = async (req, res) => {
       currency: 'UAH',
       description: `${newClient.name} Донат за Курс "Видноколо"`,
       order_id: orderId,
-      result_url: `https://yedyni.org/testpayment?servant_id=${newClient._id}`,
+      result_url: `https://yedyni.org/testpayment?client_id=${newClient._id}`,
       server_url: `${BASE_SERVER_URL}/api/clients/process`,
       customer: newClient._id,
     };
@@ -222,11 +222,26 @@ const getServants = async (req, res) => {
   res.json(result);
 };
 
+const getCreatives = async (req, res) => {
+  const result = await Client.find(
+    { product: "Видноколо" }, 
+    "-_id -updatedAt"
+  );
+  
+  if (!result || result.length === 0) {
+    throw HttpError(404, 'Не знайдено даних');
+  }
+
+  res.json(result);
+};
+
 module.exports = {
     addServant: ctrlWrapper(addServant),
+    addCreative: ctrlWrapper(addCreative),
     processesClient: ctrlWrapper(processesClient),
     getByIdClient: ctrlWrapper(getByIdClient),
     getServants: ctrlWrapper(getServants),
+    getCreatives: ctrlWrapper(getCreatives),
 };
 
 // res.status(201).json({
