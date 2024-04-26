@@ -10,6 +10,6 @@ router.post('/process', ctrl.processesClient);
 
 router.get("/servants", ctrl.getServants);
 
-router.get("/:servantId", ctrl.getByIdServant);
+router.get("/:clientId", ctrl.getByIdClient);
 
 module.exports = router;

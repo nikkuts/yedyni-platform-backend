@@ -8,8 +8,8 @@ require('dotenv').config();
 const { Client } = require('../models/client');
 const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY;
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
+const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
 const BASE_SERVER_URL = process.env.BASE_SERVER_URL;
 
 const addServant = async (req, res) => {
@@ -31,6 +31,65 @@ const addServant = async (req, res) => {
       amount: 900,
       currency: 'UAH',
       description: `${newClient.name} Донат за Курс для держслужбовців`,
+      order_id: orderId,
+      result_url: `https://yedyni.org/testpayment?servant_id=${newClient._id}`,
+      server_url: `${BASE_SERVER_URL}/api/clients/process`,
+      customer: newClient._id,
+    };
+
+  // Кодуємо дані JSON у рядок та потім у Base64
+  const dataString = JSON.stringify(dataObj);
+  const data = Base64.stringify(Utf8.parse(dataString));
+
+  // Створюємо підпис
+  const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
+  const signature = Base64.stringify(hash);
+
+  const paymentForm = `
+    <form id="paymentForm" method="POST" action="https://www.liqpay.ua/api/3/checkout" accept-charset="utf-8">
+      <input type="hidden" name="data" value='${data}' />
+      <input type="hidden" name="signature" value='${signature}' />
+      <input type="image" src="//static.liqpay.ua/buttons/payUk.png"/>
+    </form>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+      const paymentForm = document.getElementById("paymentForm");
+          try {
+            paymentForm.submit();
+          }
+          catch (error) {
+            console.error('Помилка під час відправлення форми:', error);
+            alert('Помилка відправки форми. Будь ласка, спробуйте повторити.');
+          }
+          finally {
+            paymentForm.reset();
+          }   
+      });
+    </script>
+  `;
+
+  res.send(paymentForm);
+};
+
+const addCreative = async (req, res) => {
+  const {fio, mail, phone} = req.body;
+
+  const newClient = await Client.create({
+    name: fio, 
+    email: mail,
+    phone,
+    product: "Видноколо",
+  });
+
+  const orderId = uuidv4();
+
+    const dataObj = {
+      public_key: PUBLIC_KEY, 
+      version: '3',
+      action: 'pay',
+      amount: 450,
+      currency: 'UAH',
+      description: `${newClient.name} Донат за Курс "Видноколо"`,
       order_id: orderId,
       result_url: `https://yedyni.org/testpayment?servant_id=${newClient._id}`,
       server_url: `${BASE_SERVER_URL}/api/clients/process`,
@@ -125,22 +184,26 @@ const processesClient = async (req, res) => {
   })
 };
 
-const getByIdServant = async (req, res) => {
-  const {servantId} = req.params;
-  const servant = await Client.findById(servantId);
+const getByIdClient = async (req, res) => {
+  const {clientId} = req.params;
+  const client = await Client.findById(clientId);
 
-  if (!servant) {
+  if (!clientId) {
+    throw HttpError (400, 'Не передано clientId')
+  }
+
+  if (!client) {
     throw HttpError (404, 'Не має даних')
   }
 
-  if(!servant.payment) {
+  if(!client.payment) {
     throw HttpError (404, 'Очікування проведення платежу')
   }
 
-  const {status} = servant.payment;
+  const {status} = client.payment;
 
   if (status === "success") {
-    res.json({ success: true, message: 'Платіж успішно проведено', servantId });
+    res.json({ success: true, message: 'Платіж успішно проведено', product: client.product });
   } else {
     res.status(500).json({ success: false, message: 'Помилка при проведенні платежу' });
   }
@@ -162,7 +225,7 @@ const getServants = async (req, res) => {
 module.exports = {
     addServant: ctrlWrapper(addServant),
     processesClient: ctrlWrapper(processesClient),
-    getByIdServant: ctrlWrapper(getByIdServant),
+    getByIdClient: ctrlWrapper(getByIdClient),
     getServants: ctrlWrapper(getServants),
 };
 
