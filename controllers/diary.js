@@ -19,7 +19,7 @@ const getDiary = async (req, res) => {
 
 const addDiary = async (req, res) => {
   const { _id: owner } = req.user;
-  const {courseId, lessonId, date, test = 0, entry, plan} = req.body;
+  const {courseId, lessonId, date, test = 0, entry = '', plan = ''} = req.body;
 
   const diary = await Diary.findOne(
     { owner, courseId, lessonId }
