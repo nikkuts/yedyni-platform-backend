@@ -8,8 +8,8 @@ require('dotenv').config();
 const { Client } = require('../models/client');
 const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
-const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
+const PUBLIC_KEY = process.env.PUBLIC_KEY;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const BASE_SERVER_URL = process.env.BASE_SERVER_URL;
 
 const addServant = async (req, res) => {
