@@ -20,15 +20,17 @@ const diarySchema = new Schema({
     integer: true,
     min: 0,
     max: 10,
-    // default: 0,
+    required: true,
   },
   entry: {
     type: String,
-    // required: true,
+    maxlength: 500,
+    required: false,
   },
   plan: {
     type: String,
-    // required: true,
+    maxlength: 500,
+    required: false,
   },
   owner: {
     type: Schema.Types.ObjectId,
@@ -42,11 +44,9 @@ const addDiarySchema = Joi.object({
   courseId: Joi.string().required(),
   lessonId: Joi.string().required(),
   date: Joi.string().required(),
-  test: Joi.number().integer().min(0).max(10),
+  test: Joi.number().integer().min(0).max(10).required(),
   entry: Joi.string().max(500).allow(''),
   plan: Joi.string().max(500).allow(''),
-  // entry: Joi.string().max(500).allow('').required(),
-  // plan: Joi.string().max(500).allow('').required(),
 });
 
 const schemas = {
