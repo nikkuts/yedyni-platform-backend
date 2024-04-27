@@ -24,11 +24,11 @@ const diarySchema = new Schema({
   },
   entry: {
     type: String,
-    required: true,
+    // required: true,
   },
   plan: {
     type: String,
-    required: true,
+    // required: true,
   },
   owner: {
     type: Schema.Types.ObjectId,
