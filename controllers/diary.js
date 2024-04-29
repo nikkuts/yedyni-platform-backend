@@ -40,7 +40,7 @@ const addDiary = async (req, res) => {
     owner,
   });
 
-      await User.findByIdAndUpdate(_id, {
+      await User.findByIdAndUpdate(owner, {
         $inc: { ukrainianMark: ukrainianMark + test },  
           $push: {
             historyUkrainianMark: {
@@ -88,6 +88,17 @@ const updateDiary = async (req, res) => {
       projection: { _id: 0, owner: 0, createdAt: 0, updatedAt: 0 } 
     }
   );
+
+  await User.findByIdAndUpdate(owner, {
+    $inc: { ukrainianMark: ukrainianMark + (test - diary.test) },  
+      $push: {
+        historyUkrainianMark: {
+          points: test - diary.test,
+          comment: `повторне тестування: Граматичний курс. Урок ${lessonId}`,
+          finalValue: ukrainianMark + (test - diary.test),
+        }
+      }
+  });
 
   res.status(201).json(updatedDiary);
 };
