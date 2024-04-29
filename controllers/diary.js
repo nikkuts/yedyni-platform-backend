@@ -48,7 +48,7 @@ const addDiary = async (req, res) => {
     $set: { ukrainianMark },  
       $push: {
         historyUkrainianMark: {
-          points,
+          points: test,
           comment: `тестування: Граматичний курс. Урок ${lessonId}`,
           finalValue: ukrainianMark,
         }
