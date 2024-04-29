@@ -1,4 +1,5 @@
 const { Diary } = require('../models/diary');
+const {User} = require('../models/user');
 const {HttpError, ctrlWrapper} = require('../helpers');
 
 const getDiary = async (req, res) => {
@@ -38,6 +39,17 @@ const addDiary = async (req, res) => {
     plan,
     owner,
   });
+
+      await User.findByIdAndUpdate(_id, {
+        $inc: { ukrainianMark: ukrainianMark + test },  
+          $push: {
+            historyUkrainianMark: {
+              points: test,
+              comment: `тестування: Граматичний курс. Урок ${lessonId}`,
+              finalValue: ukrainianMark + test,
+            }
+          }
+      });
 
   res.status(201).json({
     courseId: newDiary.courseId,
