@@ -31,24 +31,24 @@ const addDiary = async (req, res) => {
     throw HttpError(409, "Щоденник вказаного дня вже створено");
   }
 
-  // const testNum = Number(test);
+  const testNum = Number(test);
   const newDiary = await Diary.create({
     courseId,
     lessonId,
     date,
-    test,
+    test: testNum,
     entry,
     plan,
     owner,
   });
 
-  const ukrainianMark = req.user.ukrainianMark + test;
+  const ukrainianMark = req.user.ukrainianMark + testNum;
 
   await User.findByIdAndUpdate(_id, {
     $set: { ukrainianMark },  
       $push: {
         historyUkrainianMark: {
-          points: test,
+          points: testNum,
           comment: `тестування: Граматичний курс. Урок ${lessonId}`,
           finalValue: ukrainianMark,
         }
