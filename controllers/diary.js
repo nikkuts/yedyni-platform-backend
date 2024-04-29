@@ -19,7 +19,7 @@ const getDiary = async (req, res) => {
 };
 
 const addDiary = async (req, res) => {
-  // const { _id } = req.user;
+  const { _id } = req.user;
   const { _id: owner } = req.user;
   const {courseId, lessonId, date, test, entry, plan} = req.body;
 
@@ -40,17 +40,19 @@ const addDiary = async (req, res) => {
     plan,
     owner,
   });
-console.log( owner.toString());
-      await User.findByIdAndUpdate(owner.toString(), {
-        $inc: { ukrainianMark: ukrainianMark + test },  
-          $push: {
-            historyUkrainianMark: {
-              points: test,
-              comment: `тестування: Граматичний курс. Урок ${lessonId}`,
-              finalValue: ukrainianMark + test,
-            }
-          }
-      });
+
+  const ukrainianMark = req.user.ukrainianMark + test;
+
+  await User.findByIdAndUpdate(_id, {
+    $set: { ukrainianMark },  
+      $push: {
+        historyUkrainianMark: {
+          points: test,
+          comment: `тестування: Граматичний курс. Урок ${lessonId}`,
+          finalValue: ukrainianMark,
+        }
+      }
+  });
 
   res.status(201).json({
     courseId: newDiary.courseId,
@@ -91,15 +93,15 @@ const updateDiary = async (req, res) => {
     }
   );
 
-  const userId = owner.toString();
+  const ukrainianMark = req.user.ukrainianMark + test - diary.test;
 
   await User.findByIdAndUpdate(_id, {
-    $inc: { ukrainianMark: ukrainianMark + test - diary.test },  
+    $set: { ukrainianMark },  
       $push: {
         historyUkrainianMark: {
           points: test - diary.test,
           comment: `повторне тестування: Граматичний курс. Урок ${lessonId}`,
-          finalValue: ukrainianMark + test - diary.test,
+          finalValue: ukrainianMark,
         }
       }
   });

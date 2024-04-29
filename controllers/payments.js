@@ -170,7 +170,7 @@ const processesPayment = async (req, res) => {
         { new: true }
       );
 
-      const ukrainianMark = user.ukrainianMark += amount;
+      const ukrainianMark = user.ukrainianMark + amount;
 
       await User.findByIdAndUpdate(userId, {
         $set: { ukrainianMark },  
