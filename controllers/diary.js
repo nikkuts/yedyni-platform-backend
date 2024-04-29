@@ -42,7 +42,7 @@ const addDiary = async (req, res) => {
     owner,
   });
 
-  const ukrainianMark = req.user.ukrainianMark + testNum;
+  const ukrainianMark = req.user.ukrainianMark + test;
 
   await User.findByIdAndUpdate(_id, {
     $set: { ukrainianMark },  
