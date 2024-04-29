@@ -79,10 +79,9 @@ const updateDiary = async (req, res) => {
   }
 
   const testNum = Number(test);
-  // const testNum = parseInt(test, 10);
   const update = {
     date,
-    test,
+    test: testNum,
     entry,
     plan,
   };
@@ -95,15 +94,15 @@ const updateDiary = async (req, res) => {
       projection: { _id: 0, owner: 0, createdAt: 0, updatedAt: 0 } 
     }
   );
-  console.log(typeof test)
-  if (test !== diary.test) {
-    const ukrainianMark = req.user.ukrainianMark + test - diary.test;
+
+  if (testNum !== diary.test) {
+    const ukrainianMark = req.user.ukrainianMark + testNum - diary.test;
 
     await User.findByIdAndUpdate(_id, {
       $set: { ukrainianMark },  
         $push: {
           historyUkrainianMark: {
-            points: test - diary.test,
+            points: testNum - diary.test,
             comment: `повторне тестування: Граматичний курс. Урок ${lessonId}`,
             finalValue: ukrainianMark,
           }
