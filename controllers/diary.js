@@ -38,9 +38,9 @@ const addDiary = async (req, res) => {
     test,
     entry,
     plan,
-    owner: _id,
+    owner,
   });
-console.log(_id, owner.toString());
+console.log( owner.toString());
       await User.findByIdAndUpdate(owner.toString(), {
         $inc: { ukrainianMark: ukrainianMark + test },  
           $push: {
