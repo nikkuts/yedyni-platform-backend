@@ -19,6 +19,7 @@ const getDiary = async (req, res) => {
 };
 
 const addDiary = async (req, res) => {
+  const { _id } = req.user;
   const { _id: owner } = req.user;
   const {courseId, lessonId, date, test, entry, plan} = req.body;
 
@@ -39,10 +40,8 @@ const addDiary = async (req, res) => {
     plan,
     owner,
   });
-
-  const userId = owner.toString();
-
-      await User.findByIdAndUpdate(userId, {
+console.log(_id, owner);
+      await User.findByIdAndUpdate(_id, {
         $inc: { ukrainianMark: ukrainianMark + test },  
           $push: {
             historyUkrainianMark: {
@@ -64,6 +63,7 @@ const addDiary = async (req, res) => {
 };
 
 const updateDiary = async (req, res) => {
+  const {_id} = req.user;
   const {_id: owner} = req.user;
   const {courseId, lessonId, date, test, entry, plan} = req.body;
 
@@ -93,7 +93,7 @@ const updateDiary = async (req, res) => {
 
   const userId = owner.toString();
 
-  await User.findByIdAndUpdate(userId, {
+  await User.findByIdAndUpdate(_id, {
     $inc: { ukrainianMark: ukrainianMark + test - diary.test },  
       $push: {
         historyUkrainianMark: {
