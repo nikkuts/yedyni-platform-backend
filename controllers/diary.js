@@ -31,23 +31,24 @@ const addDiary = async (req, res) => {
     throw HttpError(409, "Щоденник вказаного дня вже створено");
   }
 
+  const testNum = Number(test);
   const newDiary = await Diary.create({
     courseId,
     lessonId,
     date,
-    test,
+    test: testNum,
     entry,
     plan,
     owner,
   });
 
-  const ukrainianMark = req.user.ukrainianMark + test;
+  const ukrainianMark = req.user.ukrainianMark + testNum;
 
   await User.findByIdAndUpdate(_id, {
     $set: { ukrainianMark },  
       $push: {
         historyUkrainianMark: {
-          points: test,
+          points: testNum,
           comment: `тестування: Граматичний курс. Урок ${lessonId}`,
           finalValue: ukrainianMark,
         }
@@ -77,6 +78,8 @@ const updateDiary = async (req, res) => {
     throw HttpError(404, "Щоденник вказаного дня не знайдено");
   }
 
+  const testNum = Number(test);
+  // const testNum = parseInt(test, 10);
   const update = {
     date,
     test,
@@ -92,7 +95,7 @@ const updateDiary = async (req, res) => {
       projection: { _id: 0, owner: 0, createdAt: 0, updatedAt: 0 } 
     }
   );
-
+  console.log(typeof test)
   if (test !== diary.test) {
     const ukrainianMark = req.user.ukrainianMark + test - diary.test;
 
