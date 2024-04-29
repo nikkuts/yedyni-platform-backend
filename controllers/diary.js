@@ -40,9 +40,7 @@ const addDiary = async (req, res) => {
     owner,
   });
 
-  const { _id: userId } = owner;
-
-      await User.findByIdAndUpdate(userId, {
+      await User.findByIdAndUpdate(req.user._id, {
         $inc: { ukrainianMark: ukrainianMark + test },  
           $push: {
             historyUkrainianMark: {
@@ -91,9 +89,7 @@ const updateDiary = async (req, res) => {
     }
   );
 
-  const { _id: userId } = owner;
-
-  await User.findByIdAndUpdate(userId, {
+  await User.findByIdAndUpdate(req.user._id, {
     $inc: { ukrainianMark: ukrainianMark + test - diary.test },  
       $push: {
         historyUkrainianMark: {
