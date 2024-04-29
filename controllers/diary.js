@@ -93,18 +93,20 @@ const updateDiary = async (req, res) => {
     }
   );
 
-  const ukrainianMark = req.user.ukrainianMark + test - diary.test;
+  if (test !== diary.test) {
+    const ukrainianMark = req.user.ukrainianMark + test - diary.test;
 
-  await User.findByIdAndUpdate(_id, {
-    $set: { ukrainianMark },  
-      $push: {
-        historyUkrainianMark: {
-          points: test - diary.test,
-          comment: `повторне тестування: Граматичний курс. Урок ${lessonId}`,
-          finalValue: ukrainianMark,
+    await User.findByIdAndUpdate(_id, {
+      $set: { ukrainianMark },  
+        $push: {
+          historyUkrainianMark: {
+            points: test - diary.test,
+            comment: `повторне тестування: Граматичний курс. Урок ${lessonId}`,
+            finalValue: ukrainianMark,
+          }
         }
-      }
-  });
+    });
+  }
 
   res.status(201).json(updatedDiary);
 };
