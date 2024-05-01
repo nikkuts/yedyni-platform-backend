@@ -87,7 +87,7 @@ const addCreative = async (req, res) => {
       public_key: PUBLIC_KEY, 
       version: '3',
       action: 'pay',
-      amount: 1,
+      amount: 450,
       currency: 'UAH',
       description: `${newClient.name} Донат за Курс "Видноколо"`,
       order_id: orderId,
@@ -150,19 +150,6 @@ const processesClient = async (req, res) => {
       { payment: result },
       { new: true }
     );
-
-    // const obj = {
-    //   name: client.name,
-    //   email: client.email,
-    // }
-
-    // try {
-    //   const result = await axios.post("https://script.google.com/macros/s/AKfycbwCCdeuGmMgOo86s_0ybq93uqP0e3bOT_hy0CVzepc5qxdjGr9KYUErPk1nfbfT13oCtw/exec", obj);
-    //   console.log(result.data);
-    // } 
-    // catch (error) {
-    //   console.error(error.message);
-    // }
 
     // const welcomeEmail = {
     //   to: client.email,
