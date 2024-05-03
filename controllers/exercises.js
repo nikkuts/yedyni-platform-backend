@@ -119,9 +119,90 @@ const deleteFileAndUpdateExercise = async (req, res) => {
   res.status(201).json(updatedExercise);
 };
 
+const addComment = async (req, res) => {
+  const { _id: owner } = req.user;
+  const {courseId, lessonId, author, comment} = req.body;
+
+  const updatedExercise = await Exercises.findOneAndUpdate(
+    { owner, courseId, lessonId },
+    {
+      $push: {
+        comments: {
+          author,
+          comment,
+        }
+      }
+    },
+    { 
+      new: true,
+      projection: { _id: 0, owner: 0, createdAt: 0, updatedAt: 0 } 
+    }
+  );
+
+  if (!updatedExercise) {
+    throw HttpError(404, "Вправа вказаного уроку не знайдена");
+  }
+  
+  res.status(201).json(updatedExercise);
+};
+
+const updateComment = async (req, res) => {
+  const { _id: owner } = req.user;
+  const { courseId, lessonId, author, comment, commentId } = req.body;
+
+  const updatedExercise = await Exercises.findOneAndUpdate(
+    { owner, courseId, lessonId, 'comments._id': commentId },
+    {
+      $set: {
+        'comments.$.date': Date.now(),
+        'comments.$.author': author,
+        'comments.$.comment': comment,
+        'comments.$.status': "active"
+      }
+    },
+    { new: true }
+  );
+
+  if (!updatedExercise) {
+    throw HttpError(404, "Коментар не знайдено");
+  }
+
+  const updatedComment = await Exercises.findOne(
+    { owner, courseId, lessonId, 'comments._id': commentId },
+    { 'comments.$': 1 }
+  );
+
+  res.status(201).json(updatedComment.comments[0]);
+};
+
+const deleteComment = async (req, res) => {
+  const { _id: owner } = req.user;
+  const { courseId, lessonId, commentId } = req.body;
+
+  try {
+    await Exercises.findOneAndUpdate(
+      { owner, courseId, lessonId },
+      {
+        $pull: {
+          comments: { _id: commentId } 
+        }
+      }
+    );
+
+    res.json({ success: true, message: 'Коментар видалено', commentId });
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Помилка при видаленні коментаря' });
+  }
+}
+
 module.exports = {
     getExercise: ctrlWrapper(getExercise),
     addExercise: ctrlWrapper(addExercise),
     updateExercise: ctrlWrapper(updateExercise),
     deleteFileAndUpdateExercise: ctrlWrapper(deleteFileAndUpdateExercise),
+    addComment: ctrlWrapper(addComment),
+    updateComment: ctrlWrapper(updateComment),
+    deleteComment: ctrlWrapper(deleteComment),
 };

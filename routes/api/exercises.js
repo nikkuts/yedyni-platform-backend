@@ -18,8 +18,14 @@ router.post('/', authenticate, upload.single("file"), checkFileSize, validateBod
 
 // router.delete('/:contactId', authenticate, isValidId, ctrl.removeById);
 
+router.post('/comment', authenticate, validateBody(schemas.addCommentSchema), ctrl.addComment);
+
 router.patch('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.updateExercise);
 
 router.patch('/file', authenticate, validateBody(schemas.deleteFileSchema), ctrl.deleteFileAndUpdateExercise);
+
+router.patch('/comment', authenticate, validateBody(schemas.addCommentSchema), ctrl.updateComment);
+
+router.delete('/comment', authenticate, validateBody(schemas.deleteCommentSchema), ctrl.deleteComment);
 
 module.exports = router;
