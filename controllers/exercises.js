@@ -54,6 +54,7 @@ const addExercise = async (req, res) => {
     lessonId: newExercise.lessonId,
     homework: newExercise.homework,
     fileURL: newExercise.fileURL,
+    comments: newExercise.comments,
   });
 };
 
@@ -133,24 +134,21 @@ const addComment = async (req, res) => {
         }
       }
     },
-    { 
-      new: true,
-      projection: { _id: 0, owner: 0, createdAt: 0, updatedAt: 0 } 
-    }
+    { new: true }
   );
 
   if (!updatedExercise) {
-    throw HttpError(404, "Вправа вказаного уроку не знайдена");
+    throw HttpError(404, "Вправу не знайдено");
   }
   
-  res.status(201).json(updatedExercise);
+  res.status(201).json(updatedExercise.comments[updatedExercise.comments.length - 1]);
 };
 
 const updateComment = async (req, res) => {
   const { _id: owner } = req.user;
   const { courseId, lessonId, author, comment, commentId } = req.body;
 
-  const updatedExercise = await Exercises.findOneAndUpdate(
+  await Exercises.findOneAndUpdate(
     { owner, courseId, lessonId, 'comments._id': commentId },
     {
       $set: {
@@ -159,20 +157,19 @@ const updateComment = async (req, res) => {
         'comments.$.comment': comment,
         'comments.$.status': "active"
       }
-    },
-    { new: true }
+    }
   );
 
-  if (!updatedExercise) {
-    throw HttpError(404, "Коментар не знайдено");
-  }
-
-  const updatedComment = await Exercises.findOne(
+  const updatedExercise = await Exercises.findOne(
     { owner, courseId, lessonId, 'comments._id': commentId },
     { 'comments.$': 1 }
   );
 
-  res.status(201).json(updatedComment.comments[0]);
+  if (!updatedExercise) {
+    throw HttpError(404, "Вправу не знайдено");
+  }
+
+  res.status(201).json(updatedExercise.comments[0]);
 };
 
 const deleteComment = async (req, res) => {
@@ -189,7 +186,7 @@ const deleteComment = async (req, res) => {
       }
     );
 
-    res.json({ success: true, message: 'Коментар видалено', commentId });
+    res.json({ commentId });
   }
   catch (error) {
     console.error(error);
