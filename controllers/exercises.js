@@ -138,7 +138,7 @@ const addComment = async (req, res) => {
   );
 
   if (!updatedExercise) {
-    throw HttpError(404, "Вправу не знайдено");
+    throw HttpError(404, "Відсутня домашня робота");
   }
   
   res.status(201).json(updatedExercise.comments[updatedExercise.comments.length - 1]);
