@@ -70,17 +70,17 @@ const addCommentSchema = Joi.object({
   commentId: Joi.string(),
 });
 
-const deleteCommentSchema = Joi.object({
-  courseId: Joi.string().required(),
-  lessonId: Joi.string().required(),
-  commentId: Joi.string(),
-});
+// const deleteCommentSchema = Joi.object({
+//   courseId: Joi.string().required(),
+//   lessonId: Joi.string().required(),
+//   commentId: Joi.string(),
+// });
 
 const schemas = {
     addExerciseSchema,
     deleteFileSchema,
     addCommentSchema,
-    deleteCommentSchema,
+    // deleteCommentSchema,
 };
 
 const Exercises = model('Exercise', exerciseSchema);

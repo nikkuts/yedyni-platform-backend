@@ -174,7 +174,7 @@ const updateComment = async (req, res) => {
 
 const deleteComment = async (req, res) => {
   const { _id: owner } = req.user;
-  const { courseId, lessonId, commentId } = req.body;
+  const { courseId, lessonId, commentId } = req.query;
 
   try {
     await Exercises.findOneAndUpdate(
