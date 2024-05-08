@@ -216,40 +216,33 @@ const updateAvatar = async (req, res) => {
     })
 };
 
-const addDiaryEntry = async (req, res) => {
-    const {_id} = req.user;
-    const result = await User.findByIdAndUpdate(
-        _id, 
-        {$push: {
-            diary: {
-              ...req.body,
-            }
-        }},
-        { new: true }
-    )
-
-    res.status(201).json(result);
-};
-
-const updatedDiaryEntry = async (req, res) => {
-    const {_id} = req.user;
-    const {day, entry} = req.body;
-
-    const result = await User.findOneAndUpdate(
-        { _id, 'diary.day': day },
-        { $set: { 'diary.$.entry': entry } },
-        { new: true }
-    );
-
-    res.status(201).json(result);
-};
-
-// const addStartBonusDate = async (req, res) => {
+// const addDiaryEntry = async (req, res) => {
 //     const {_id} = req.user;
-//     const result = await User.findByIdAndUpdate(_id, req.body, {new: true});
+//     const result = await User.findByIdAndUpdate(
+//         _id, 
+//         {$push: {
+//             diary: {
+//               ...req.body,
+//             }
+//         }},
+//         { new: true }
+//     )
 
-//     res.json(result);
-// }
+//     res.status(201).json(result);
+// };
+
+// const updatedDiaryEntry = async (req, res) => {
+//     const {_id} = req.user;
+//     const {day, entry} = req.body;
+
+//     const result = await User.findOneAndUpdate(
+//         { _id, 'diary.day': day },
+//         { $set: { 'diary.$.entry': entry } },
+//         { new: true }
+//     );
+
+//     res.status(201).json(result);
+// };
 
 module.exports = {
     register: ctrlWrapper(register),
@@ -260,7 +253,6 @@ module.exports = {
     updateAvatar: ctrlWrapper(updateAvatar),
     verifyEmail: ctrlWrapper(verifyEmail),
     resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
-    addDiaryEntry: ctrlWrapper(addDiaryEntry),
-    updatedDiaryEntry: ctrlWrapper(updatedDiaryEntry),
-    // addStartBonusDate: ctrlWrapper(addStartBonusDate),
+    // addDiaryEntry: ctrlWrapper(addDiaryEntry),
+    // updatedDiaryEntry: ctrlWrapper(updatedDiaryEntry),
 }
