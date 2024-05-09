@@ -24,8 +24,4 @@ router.patch("/status", authenticate, validateBody(schemas.updateStatusSchema), 
 
 router.patch("/avatar", authenticate, upload.single("avatar"), resizesAvatar, ctrl.updateAvatar);
 
-// router.post("/diary", authenticate, validateBody(schemas.diarySchema), ctrl.addDiaryEntry);
-
-// router.patch("/diary", authenticate, validateBody(schemas.diarySchema), ctrl.updatedDiaryEntry);
-
 module.exports = router;

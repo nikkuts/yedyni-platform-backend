@@ -19,6 +19,11 @@ const exerciseSchema = new Schema({
     type: String,
     default: '',
   },
+  status: {
+    type: String,
+    enum: ["active", "inactive"],
+    default: "active",
+  },
   owner: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -37,11 +42,6 @@ const exerciseSchema = new Schema({
         comment: {
           type: String,
           required: true,
-        },
-        status: {
-          type: String,
-          enum: ["active", "inactive"],
-          default: "active",
         },
       }
     ]

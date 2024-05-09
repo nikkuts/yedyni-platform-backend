@@ -22,7 +22,7 @@ const userSchema = new Schema({
       },
       status: {
         type: String,
-        enum: ["user", "admin"],
+        enum: ["user", "moderator", "admin"],
         default: "user",
       },
       avatarURL: {
@@ -102,7 +102,7 @@ const loginSchema = Joi.object({
 });
 
 const updateStatusSchema = Joi.object({
-  status: Joi.string().valid("user", "admin").required(),
+  status: Joi.string().valid("user", "moderator", "admin").required(),
 });
 
 const schemas = {

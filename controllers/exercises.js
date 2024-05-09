@@ -54,6 +54,7 @@ const addExercise = async (req, res) => {
     lessonId: newExercise.lessonId,
     homework: newExercise.homework,
     fileURL: newExercise.fileURL,
+    status: newExercise.status,
     comments: newExercise.comments,
   });
 };
@@ -77,7 +78,11 @@ const updateExercise = async (req, res) => {
     fileURL = image.url;
   }
 
-  const update = { homework };
+  const update = { 
+    homework,
+    status: 'active', 
+  };
+
   if (fileURL) {
     update.fileURL = fileURL;
   }
@@ -127,6 +132,7 @@ const addComment = async (req, res) => {
   const updatedExercise = await Exercises.findOneAndUpdate(
     { owner, courseId, lessonId },
     {
+      $set: {status: 'active'},
       $push: {
         comments: {
           author,
@@ -155,7 +161,7 @@ const updateComment = async (req, res) => {
         'comments.$.date': Date.now(),
         'comments.$.author': author,
         'comments.$.comment': comment,
-        'comments.$.status': "active"
+        status: "active"
       }
     }
   );
@@ -166,7 +172,7 @@ const updateComment = async (req, res) => {
   );
 
   if (!updatedExercise) {
-    throw HttpError(404, "Вправу не знайдено");
+    throw HttpError(404, "Коментар не знайдено");
   }
 
   res.status(201).json(updatedExercise.comments[0]);
@@ -194,6 +200,43 @@ const deleteComment = async (req, res) => {
   }
 }
 
+const getActiveExercises = async (req, res) => {
+  const {_id: owner, status} = req.user;
+  let result;
+
+  if (status === "moderator" || status === "admin") {
+    result = await Exercises.find({ 
+      status: "active", 
+      owner: { $ne: owner } // $ne - не рівно
+    }, "-createdAt -updatedAt")
+    .populate({
+      path: "owner",
+      select: "name"
+    });
+  } else {
+    result = await Exercises.find({ 
+      owner, 
+      status: "active",
+      'comments.author': { $ne: owner } 
+    }, "-_id -owner -createdAt -updatedAt");
+  }
+
+  return res.status(200).json(result);
+};
+
+const getByIdExercise = async (req, res) => {
+  const {exerciseId} = req.params;
+
+  const result = await Exercises.findById(exerciseId, "-_id")
+  .populate('owner', 'name');
+  
+  if (!result) {
+    throw HttpError (404, 'Not found')
+  }
+
+  return res.status(200).json(result);
+};
+
 module.exports = {
     getExercise: ctrlWrapper(getExercise),
     addExercise: ctrlWrapper(addExercise),
@@ -202,4 +245,6 @@ module.exports = {
     addComment: ctrlWrapper(addComment),
     updateComment: ctrlWrapper(updateComment),
     deleteComment: ctrlWrapper(deleteComment),
+    getActiveExercises: ctrlWrapper(getActiveExercises),
+    getByIdExercise: ctrlWrapper(getByIdExercise),
 };
