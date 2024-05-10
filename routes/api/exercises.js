@@ -2,7 +2,7 @@ const express = require('express');
 
 const ctrl = require('../../controllers/exercises');
 
-const {authenticate, validateBody, isValidId, upload, checkFileSize} = require('../../middlewares');
+const {authenticate, validateBody, upload, checkFileSize} = require('../../middlewares');
 
 const {schemas} = require('../../models/exercise');
 
