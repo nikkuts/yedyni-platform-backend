@@ -12,7 +12,7 @@ router.get('/', authenticate, ctrl.getExercise);
 
 router.get('/active', authenticate, ctrl.getActiveExercises);
 
-router.get('/:exerciseId', authenticate, isValidId, ctrl.getByIdExercise);
+router.get('/:exerciseId', authenticate, ctrl.getByIdExercise);
 
 router.post('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.addExercise);
 
