@@ -208,7 +208,7 @@ const getActiveExercises = async (req, res) => {
     result = await Exercises.find({ 
       status: "active", 
       owner: { $ne: owner } // $ne - не рівно
-    }, "-createdAt -updatedAt")
+    }, "_id, owner, courseId, lessonId, updatedAt")
     .populate({
       path: "owner",
       select: "name"
