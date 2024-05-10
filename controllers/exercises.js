@@ -227,8 +227,17 @@ const getActiveExercises = async (req, res) => {
 const getByIdExercise = async (req, res) => {
   const {exerciseId} = req.params;
 
-  const result = await Exercises.findById(exerciseId, "-_id")
-  .populate('owner', 'name');
+  const result = await Exercises.findByIdAndUpdate(
+    exerciseId,
+    { $set: {status: "inactive"} },
+    { 
+      new: true,
+      projection: { _id: 0, createdAt: 0, updatedAt: 0 } 
+    }
+  ).populate('owner', 'name');
+
+  // const result = await Exercises.findById(exerciseId, "-_id")
+  // .populate('owner', 'name');
   
   if (!result) {
     throw HttpError (404, 'Not found')
