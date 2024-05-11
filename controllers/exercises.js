@@ -216,9 +216,12 @@ const getMessages = async (req, res) => {
   } else {
     result = await Exercises.find({ 
       owner, 
-      status: "active",
       'comments.author': { $ne: owner } 
-    }, "-_id -owner -createdAt -updatedAt");
+    }, "_id status owner courseId lessonId updatedAt")
+    .populate({
+      path: "owner",
+      select: "name -_id"
+    });
   }
 
   return res.status(200).json(result);
