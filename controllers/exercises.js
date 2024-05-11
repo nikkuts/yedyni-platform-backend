@@ -232,20 +232,26 @@ const getMessages = async (req, res) => {
 };
 
 const getByIdExercise = async (req, res) => {
+  const {status} = req.user;
   const {exerciseId} = req.params;
-
-  const result = await Exercises.findByIdAndUpdate(
-    exerciseId,
-    { $set: {status: "inactive"} },
-    { 
-      new: true,
-      projection: { _id: 0, createdAt: 0, updatedAt: 0 } 
-    }
-  ).populate('owner', 'name');
-
-  // const result = await Exercises.findById(exerciseId, "-_id")
-  // .populate('owner', 'name');
+  let result;
   
+  if (status === "moderator" || status === "admin") {
+    result = await Exercises.findByIdAndUpdate(
+      exerciseId,
+      { $set: {status: "inactive"} },
+      { 
+        new: true,
+        projection: { _id: 0, createdAt: 0, updatedAt: 0 } 
+      }
+    ).populate('owner', 'name');
+  } else {
+    result = await Exercises.findById(
+      exerciseId, 
+      "-_id -owner -createdAt -updatedAt"
+    );
+  }
+
   if (!result) {
     throw HttpError (404, 'Not found')
   }
