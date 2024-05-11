@@ -220,12 +220,12 @@ const getMessages = async (req, res) => {
       owner: owner, 
       'comments.author': { $ne: name } 
     }, 
-    "_id status owner courseId lessonId updatedAt"
+    "_id status courseId lessonId updatedAt"
     )
-    .populate({
-      path: "owner",
-      select: "name -_id"
-    });
+    // .populate({
+    //   path: "owner",
+    //   select: "name -_id"
+    // });
   }
 
   return res.status(200).json(result);
