@@ -200,7 +200,7 @@ const deleteComment = async (req, res) => {
   }
 }
 
-const getActiveExercises = async (req, res) => {
+const getMessages = async (req, res) => {
   const {_id: owner, status} = req.user;
   let result;
 
@@ -254,6 +254,6 @@ module.exports = {
     addComment: ctrlWrapper(addComment),
     updateComment: ctrlWrapper(updateComment),
     deleteComment: ctrlWrapper(deleteComment),
-    getActiveExercises: ctrlWrapper(getActiveExercises),
+    getMessages: ctrlWrapper(getMessages),
     getByIdExercise: ctrlWrapper(getByIdExercise),
 };

@@ -2,7 +2,7 @@ const express = require('express');
 
 const ctrl = require('../../controllers/exercises');
 
-const {authenticate, validateBody, isValidId, upload, checkFileSize} = require('../../middlewares');
+const {authenticate, validateBody, upload, checkFileSize} = require('../../middlewares');
 
 const {schemas} = require('../../models/exercise');
 
@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get('/', authenticate, ctrl.getExercise);
 
-router.get('/active', authenticate, ctrl.getActiveExercises);
+router.get('/messages', authenticate, ctrl.getMessages);
 
 router.get('/:exerciseId', authenticate, ctrl.getByIdExercise);
 
