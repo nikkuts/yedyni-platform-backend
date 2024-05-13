@@ -19,7 +19,7 @@ const getExercise = async (req, res) => {
     return res.status(204).send("Вправа вказаного уроку ще не створена");
   }
 
-  const result = {exerciseId: exercise._id, ...exercise};
+  const result = {exerciseId: exercise._id, ...exercise.toObject()};
   delete result._id;
 
   return res.status(200).json(result);
