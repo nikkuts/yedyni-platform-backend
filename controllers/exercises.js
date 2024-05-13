@@ -10,14 +10,17 @@ const getExercise = async (req, res) => {
   const {_id: owner} = req.user;
   const {courseId, lessonId} = req.query;
 
-  const result = await Exercises.findOne(
+  const exercise = await Exercises.findOne(
     { owner, courseId, lessonId }, 
     "-createdAt -updatedAt"
   );
   
-  if (!result) {
+  if (!exercise) {
     return res.status(204).send("Вправа вказаного уроку ще не створена");
   }
+
+  const result = {exerciseId: exercise._id, ...exercise};
+  delete result._id;
 
   return res.status(200).json(result);
 };
@@ -50,7 +53,7 @@ const addExercise = async (req, res) => {
   });
 
   res.status(201).json({
-    _id: newExercise._id,
+    exerciseId: newExercise._id,
     courseId: newExercise.courseId,
     lessonId: newExercise.lessonId,
     homework: newExercise.homework,
@@ -91,7 +94,10 @@ const updateExercise = async (req, res) => {
     throw HttpError(404, "Відсутня вправа");
   }
 
-  res.status(201).json(updatedExercise);
+  const result = {exerciseId: updatedExercise._id, ...updatedExercise};
+  delete result._id;
+
+  res.status(201).json(result);
 };
 
 const deleteHomeworkAndUpdateExercise = async (req, res) => {
@@ -106,7 +112,10 @@ const deleteHomeworkAndUpdateExercise = async (req, res) => {
     }
   );
 
-  res.status(201).json(updatedExercise);
+  const result = {exerciseId: updatedExercise._id, ...updatedExercise};
+  delete result._id;
+
+  res.status(201).json(result);
 };
 
 const deleteFileAndUpdateExercise = async (req, res) => {
@@ -123,7 +132,10 @@ const deleteFileAndUpdateExercise = async (req, res) => {
     }
   );
 
-  res.status(201).json(updatedExercise);
+  const result = {exerciseId: updatedExercise._id, ...updatedExercise};
+  delete result._id;
+
+  res.status(201).json(result);
 };
 
 const addComment = async (req, res) => {
@@ -239,13 +251,13 @@ const getExerciseById = async (req, res) => {
       { $set: {status: "inactive"} },
       { 
         new: true,
-        projection: { createdAt: 0, updatedAt: 0 } 
+        projection: { _id: 0, createdAt: 0, updatedAt: 0 } 
       }
     ).populate('owner', 'name');
   } else {
     result = await Exercises.findById(
       exerciseId, 
-      "-createdAt -updatedAt"
+      "-id -createdAt -updatedAt"
     );
   }
 
@@ -253,7 +265,7 @@ const getExerciseById = async (req, res) => {
     throw HttpError (404, 'Відсутня вправа')
   }
 
-  return res.status(200).json(result);
+  return res.status(200).json({exerciseId, ...result});
 };
 
 module.exports = {
