@@ -94,7 +94,7 @@ const updateExercise = async (req, res) => {
     throw HttpError(404, "Відсутня вправа");
   }
 
-  const result = {exerciseId: updatedExercise._id, ...updatedExercise};
+  const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
   delete result._id;
 
   res.status(201).json(result);
@@ -112,7 +112,7 @@ const deleteHomeworkAndUpdateExercise = async (req, res) => {
     }
   );
 
-  const result = {exerciseId: updatedExercise._id, ...updatedExercise};
+  const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
   delete result._id;
 
   res.status(201).json(result);
@@ -132,7 +132,7 @@ const deleteFileAndUpdateExercise = async (req, res) => {
     }
   );
 
-  const result = {exerciseId: updatedExercise._id, ...updatedExercise};
+  const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
   delete result._id;
 
   res.status(201).json(result);
@@ -265,7 +265,7 @@ const getExerciseById = async (req, res) => {
     throw HttpError (404, 'Відсутня вправа')
   }
 
-  return res.status(200).json({exerciseId, ...result});
+  return res.status(200).json({exerciseId, ...result.toObject()});
 };
 
 module.exports = {
