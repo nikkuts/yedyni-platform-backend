@@ -153,7 +153,7 @@ const addComment = async (req, res) => {
 const updateComment = async (req, res) => {
   const { exerciseId, commentId, comment } = req.body;
 
-  const updatedExercise = await Exercises.findOneAndUpdate(
+  await Exercises.findOneAndUpdate(
     { _id: exerciseId, 'comments._id': commentId },
     {
       $set: {
@@ -161,20 +161,16 @@ const updateComment = async (req, res) => {
         'comments.$.comment': comment,
         status: "active"
       }
-    },
-    { 
-      new: true,
-      projection: { 'comments.$': 1 } 
     }
   );
 
-  // const updatedExercise = await Exercises.findOne(
-  //   { owner, courseId, lessonId, 'comments._id': commentId },
-  //   { 'comments.$': 1 }
-  // );
+  const updatedExercise = await Exercises.findOne(
+    { _id: exerciseId, 'comments._id': commentId },
+    { 'comments.$': 1 }
+  );
 
   if (!updatedExercise) {
-    throw HttpError(404, "Коментар не знайдено");
+    throw HttpError(404, "Відсутній коментар");
   }
 
   res.status(201).json(updatedExercise.comments[0]);
