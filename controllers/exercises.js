@@ -247,10 +247,10 @@ const deleteComment = async (req, res) => {
 
 const getMessages = async (req, res) => {
   const {_id: owner, status, name} = req.user;
-  let exercise;
+  let result;
 
   if (status === "moderator" || status === "admin") {
-    exercise = await Exercises.find({  
+    result = await Exercises.find({  
       owner: { $ne: owner }, // $ne - не рівно
       status: "active"
     }, 
@@ -261,7 +261,7 @@ const getMessages = async (req, res) => {
       select: "name -_id"
     });
   } else {
-    exercise = await Exercises.find({ 
+    result = await Exercises.find({ 
       owner: owner, 
       'comments.author': { $ne: name },
       'comments.status': "active", 
@@ -270,8 +270,8 @@ const getMessages = async (req, res) => {
     )
   }
 
-  const result = {exerciseId: exercise._id, ...exercise.toObject()};
-  delete result._id;
+  // const result = {exerciseId: exercise._id, ...exercise.toObject()};
+  // delete result._id;
 
   return res.status(200).json(result);
 };
