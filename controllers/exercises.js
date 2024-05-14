@@ -211,10 +211,10 @@ const deleteComment = async (req, res) => {
 
 const getMessages = async (req, res) => {
   const {_id: owner, status, name} = req.user;
-  let result;
+  let exercise;
 
   if (status === "moderator" || status === "admin") {
-    result = await Exercises.find({  
+    exercise = await Exercises.find({  
       owner: { $ne: owner }, // $ne - не рівно
       status: "active"
     }, 
@@ -225,17 +225,16 @@ const getMessages = async (req, res) => {
       select: "name -_id"
     });
   } else {
-    result = await Exercises.find({ 
+    exercise = await Exercises.find({ 
       owner: owner, 
       'comments.author': { $ne: name } 
     }, 
     "_id status courseId lessonId updatedAt"
     )
-    // .populate({
-    //   path: "owner",
-    //   select: "name -_id"
-    // });
   }
+
+  const result = {exerciseId: exercise._id, ...exercise.toObject()};
+  delete result._id;
 
   return res.status(200).json(result);
 };
