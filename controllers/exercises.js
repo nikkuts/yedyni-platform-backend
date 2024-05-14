@@ -289,7 +289,7 @@ const getExerciseById = async (req, res) => {
         new: true,
         projection: { _id: 0, createdAt: 0, updatedAt: 0 } 
       }
-    ).populate('owner', 'name');
+    ).populate('owner', 'name -id');
   } else {
     result = await Exercises.findById(
       exerciseId, 
