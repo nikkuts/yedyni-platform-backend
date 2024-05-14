@@ -18,7 +18,7 @@ router.post('/', authenticate, upload.single("file"), checkFileSize, validateBod
 
 router.post('/comment', authenticate, validateBody(schemas.addCommentSchema), ctrl.addComment);
 
-router.patch('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.updateExercise);
+router.patch('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.updateExerciseSchema), ctrl.updateExercise);
 
 router.patch('/homework', authenticate, ctrl.deleteHomeworkAndUpdateExercise);
 

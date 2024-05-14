@@ -43,6 +43,11 @@ const exerciseSchema = new Schema({
           type: String,
           required: true,
         },
+        status: {
+          type: String,
+          enum: ["active", "inactive"],
+          default: "active",
+        },
       }
     ]
   }
@@ -56,22 +61,25 @@ const addExerciseSchema = Joi.object({
   homework: Joi.string().max(3000).required(),
 });
 
+const updateExerciseSchema = Joi.object({
+  exerciseId: Joi.string().required(),
+  homework: Joi.string().max(3000).required(),
+});
+
 const deleteFileSchema = Joi.object({
-  courseId: Joi.string().required(),
-  lessonId: Joi.string().required(),
+  exerciseId: Joi.string().required(),
   fileURL: Joi.string().required().not().empty(),
 });
 
 const addCommentSchema = Joi.object({
-  courseId: Joi.string().required(),
-  lessonId: Joi.string().required(),
+  exerciseId: Joi.string().required(),
   author: Joi.string().required(),
   comment: Joi.string().max(300).required(),
-  commentId: Joi.string(),
 });
 
 const schemas = {
     addExerciseSchema,
+    updateExerciseSchema,
     deleteFileSchema,
     addCommentSchema,
 };
