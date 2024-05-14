@@ -77,11 +77,19 @@ const addCommentSchema = Joi.object({
   comment: Joi.string().max(300).required(),
 });
 
+const updateCommentSchema = Joi.object({
+  exerciseId: Joi.string().required(),
+  commentId: Joi.string().required(),
+  author: Joi.string().required(),
+  comment: Joi.string().max(300).required(),
+});
+
 const schemas = {
     addExerciseSchema,
     updateExerciseSchema,
     deleteFileSchema,
     addCommentSchema,
+    updateCommentSchema,
 };
 
 const Exercises = model('Exercise', exerciseSchema);

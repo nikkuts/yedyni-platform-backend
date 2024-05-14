@@ -139,21 +139,39 @@ const deleteFileAndUpdateExercise = async (req, res) => {
 };
 
 const addComment = async (req, res) => {
+  const {status} = req.user;
   const {exerciseId, author, comment} = req.body;
+  let updatedExercise;
 
-  const updatedExercise = await Exercises.findByIdAndUpdate(
-    exerciseId,
-    {
-      $set: {status: 'active'},
-      $push: {
-        comments: {
-          author,
-          comment,
+  if (status === "moderator" || status === "admin") {
+    updatedExercise = await Exercises.findByIdAndUpdate(
+      exerciseId,
+      {
+        $set: {status: 'inactive'},
+        $push: {
+          comments: {
+            author,
+            comment,
+          }
         }
-      }
-    },
-    { new: true }
-  );
+      },
+      { new: true }
+    );
+  } else {
+    updatedExercise = await Exercises.findByIdAndUpdate(
+      exerciseId,
+      {
+        $set: {status: 'active'},
+        $push: {
+          comments: {
+            author,
+            comment,
+          }
+        }
+      },
+      { new: true }
+    );
+  }
 
   if (!updatedExercise) {
     throw HttpError(404, "Відсутня домашня робота");
@@ -163,18 +181,36 @@ const addComment = async (req, res) => {
 };
 
 const updateComment = async (req, res) => {
-  const { exerciseId, commentId, comment } = req.body;
+  const {status} = req.user;
+  const { exerciseId, commentId, author, comment } = req.body;
 
-  await Exercises.findOneAndUpdate(
-    { _id: exerciseId, 'comments._id': commentId },
-    {
-      $set: {
-        'comments.$.date': Date.now(),
-        'comments.$.comment': comment,
-        status: "active"
+  if (status === "moderator" || status === "admin") {
+    await Exercises.findOneAndUpdate(
+      { _id: exerciseId, 'comments._id': commentId },
+      {
+        $set: {
+          'comments.$.date': Date.now(),
+          'comments.$author': author,
+          'comments.$.comment': comment,
+          'comments.$.status': "active",
+          status: "inactive"
+        }
       }
-    }
-  );
+    );
+  } else {
+    await Exercises.findOneAndUpdate(
+      { _id: exerciseId, 'comments._id': commentId },
+      {
+        $set: {
+          'comments.$.date': Date.now(),
+          'comments.$author': author,
+          'comments.$.comment': comment,
+          'comments.$.status': "active",
+          status: "active"
+        }
+      }
+    );
+  }
 
   const updatedExercise = await Exercises.findOne(
     { _id: exerciseId, 'comments._id': commentId },
@@ -227,7 +263,8 @@ const getMessages = async (req, res) => {
   } else {
     exercise = await Exercises.find({ 
       owner: owner, 
-      'comments.author': { $ne: name } 
+      'comments.author': { $ne: name },
+      'comments.status': "active", 
     }, 
     "_id status courseId lessonId updatedAt"
     )

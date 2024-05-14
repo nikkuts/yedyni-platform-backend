@@ -24,7 +24,7 @@ router.patch('/homework', authenticate, ctrl.deleteHomeworkAndUpdateExercise);
 
 router.patch('/file', authenticate, validateBody(schemas.deleteFileSchema), ctrl.deleteFileAndUpdateExercise);
 
-router.patch('/comment', authenticate, validateBody(schemas.addCommentSchema), ctrl.updateComment);
+router.patch('/comment', authenticate, validateBody(schemas.updateCommentSchema), ctrl.updateComment);
 
 router.delete('/comment', authenticate, ctrl.deleteComment);
 
