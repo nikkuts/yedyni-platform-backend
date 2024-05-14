@@ -279,10 +279,10 @@ const getMessages = async (req, res) => {
 const getExerciseById = async (req, res) => {
   const {status} = req.user;
   const {exerciseId} = req.params;
-  let result;
+  let exercise;
   
   if (status === "moderator" || status === "admin") {
-    result = await Exercises.findByIdAndUpdate(
+    exercise = await Exercises.findByIdAndUpdate(
       exerciseId,
       { $set: {status: "inactive"} },
       { 
@@ -291,17 +291,19 @@ const getExerciseById = async (req, res) => {
       }
     ).populate('owner', 'name -id');
   } else {
-    result = await Exercises.findById(
+    exercise = await Exercises.findById(
       exerciseId, 
       "-id -createdAt -updatedAt"
     );
   }
 
-  if (!result) {
+  if (!exercise) {
     throw HttpError (404, 'Відсутня вправа')
   }
 
-  return res.status(200).json({exerciseId, ...result.toObject()});
+  const result = {exerciseId: exerciseId, ...exercise.toObject()};
+
+  return res.status(200).json(result);
 };
 
 module.exports = {
