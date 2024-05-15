@@ -10,17 +10,17 @@ const getExercise = async (req, res) => {
   const {_id: owner} = req.user;
   const {courseId, lessonId} = req.query;
 
-  const exercise = await Exercises.findOne(
+  const result = await Exercises.findOne(
     { owner, courseId, lessonId }, 
     "-createdAt -updatedAt"
   );
   
-  if (!exercise) {
+  if (!result) {
     return res.status(204).send("Вправа вказаного уроку ще не створена");
   }
 
-  const result = {exerciseId: exercise._id, ...exercise.toObject()};
-  delete result._id;
+  // const result = {exerciseId: exercise._id, ...exercise.toObject()};
+  // delete result._id;
 
   return res.status(200).json(result);
 };
@@ -53,7 +53,7 @@ const addExercise = async (req, res) => {
   });
 
   res.status(201).json({
-    exerciseId: newExercise._id,
+    _id: newExercise._id,
     courseId: newExercise.courseId,
     lessonId: newExercise.lessonId,
     homework: newExercise.homework,
@@ -81,7 +81,7 @@ const updateExercise = async (req, res) => {
     }
   }
 
-  const updatedExercise = await Exercises.findByIdAndUpdate(
+  const result = await Exercises.findByIdAndUpdate(
     exerciseId,
     { $set: update },
     { 
@@ -90,12 +90,12 @@ const updateExercise = async (req, res) => {
     }
   );
 
-  if (!updatedExercise) {
+  if (!result) {
     throw HttpError(404, "Відсутня вправа");
   }
 
-  const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
-  delete result._id;
+  // const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
+  // delete result._id;
 
   res.status(201).json(result);
 };
@@ -103,7 +103,7 @@ const updateExercise = async (req, res) => {
 const deleteHomeworkAndUpdateExercise = async (req, res) => {
   const {exerciseId} = req.body;
 
-  const updatedExercise = await Exercises.findByIdAndUpdate(
+  const result = await Exercises.findByIdAndUpdate(
     exerciseId,
     { $set: {homework: ''} },
     { 
@@ -112,8 +112,8 @@ const deleteHomeworkAndUpdateExercise = async (req, res) => {
     }
   );
 
-  const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
-  delete result._id;
+  // const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
+  // delete result._id;
 
   res.status(201).json(result);
 };
@@ -123,7 +123,7 @@ const deleteFileAndUpdateExercise = async (req, res) => {
 
   await deleteImageFromCloudinary(fileURL);
 
-  const updatedExercise = await Exercises.findByIdAndUpdate(
+  const result = await Exercises.findByIdAndUpdate(
     exerciseId,
     { $set: {fileURL: ''} },
     { 
@@ -132,8 +132,8 @@ const deleteFileAndUpdateExercise = async (req, res) => {
     }
   );
 
-  const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
-  delete result._id;
+  // const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
+  // delete result._id;
 
   res.status(201).json(result);
 };
