@@ -287,13 +287,13 @@ const getExerciseById = async (req, res) => {
       { $set: {status: "inactive"} },
       { 
         new: true,
-        projection: { _id: 0, createdAt: 0, updatedAt: 0 } 
+        projection: { createdAt: 0, updatedAt: 0 } 
       }
     ).populate('owner', 'name -id');
   } else {
     exercise = await Exercises.findById(
       exerciseId, 
-      "-id -createdAt -updatedAt"
+      "-createdAt -updatedAt"
     );
   }
 
@@ -302,6 +302,7 @@ const getExerciseById = async (req, res) => {
   }
 
   const result = {exerciseId: exerciseId, ...exercise.toObject()};
+  delete result._id;
 
   return res.status(200).json(result);
 };
