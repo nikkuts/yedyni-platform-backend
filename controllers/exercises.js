@@ -279,33 +279,60 @@ const getMessages = async (req, res) => {
 const getExerciseById = async (req, res) => {
   const {status} = req.user;
   const {exerciseId} = req.params;
-  let exercise;
   
   if (status === "moderator" || status === "admin") {
-    exercise = await Exercises.findByIdAndUpdate(
+    const exercise = await Exercises.findByIdAndUpdate(
       exerciseId,
-      { $set: {status: "inactive"} },
-      { 
-        new: true,
-        projection: { createdAt: 0, updatedAt: 0 } 
-      }
-    ).populate('owner', 'name -id');
-  } else {
-    exercise = await Exercises.findById(
+      { $set: {status: "inactive"} }
+    )
+      if (!exercise) {
+        throw HttpError (404, 'Відсутня вправа')
+      } 
+  } 
+
+    const result = await Exercises.findById(
       exerciseId, 
       "-createdAt -updatedAt"
-    );
-  }
+    )
+    .populate('owner', 'id name');
 
-  if (!exercise) {
-    throw HttpError (404, 'Відсутня вправа')
-  }
+    if (!result) {
+      throw HttpError (404, 'Відсутня вправа')
+    } 
 
-  // const result = {exerciseId: exerciseId, ...exercise.toObject()};
-  // delete result._id;
-
-  return res.status(200).json(exercise);
+  return res.status(200).json(result);
 };
+
+// const getExerciseById = async (req, res) => {
+//   const {status} = req.user;
+//   const {exerciseId} = req.params;
+//   let exercise;
+  
+//   if (status === "moderator" || status === "admin") {
+//     exercise = await Exercises.findByIdAndUpdate(
+//       exerciseId,
+//       { $set: {status: "inactive"} },
+//       { 
+//         new: true,
+//         projection: { createdAt: 0, updatedAt: 0 } 
+//       }
+//     ).populate('owner', 'name -id');
+//   } else {
+//     exercise = await Exercises.findById(
+//       exerciseId, 
+//       "-createdAt -updatedAt"
+//     );
+//   }
+
+//   if (!exercise) {
+//     throw HttpError (404, 'Відсутня вправа')
+//   }
+
+//   // const result = {exerciseId: exerciseId, ...exercise.toObject()};
+//   // delete result._id;
+
+//   return res.status(200).json(exercise);
+// };
 
 module.exports = {
     getExercise: ctrlWrapper(getExercise),
