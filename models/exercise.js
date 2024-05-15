@@ -27,6 +27,7 @@ const exerciseSchema = new Schema({
   owner: {
     type: Schema.Types.ObjectId,
     ref: 'User',
+    required: true,
   },
   comments: {
     type: [
@@ -35,10 +36,10 @@ const exerciseSchema = new Schema({
           type: Number,
           default: Date.now
         },
-        author: {
-          type: String,
-          required: true,
-        },
+        // author: {
+        //   type: String,
+        //   required: true,
+        // },
         comment: {
           type: String,
           required: true,
@@ -47,6 +48,11 @@ const exerciseSchema = new Schema({
           type: String,
           enum: ["active", "inactive"],
           default: "active",
+        },
+        author: {
+          type: Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
         },
       }
     ]
@@ -73,14 +79,14 @@ const deleteFileSchema = Joi.object({
 
 const addCommentSchema = Joi.object({
   exerciseId: Joi.string().required(),
-  author: Joi.string().required(),
+  // author: Joi.string().required(),
   comment: Joi.string().max(300).required(),
 });
 
 const updateCommentSchema = Joi.object({
   exerciseId: Joi.string().required(),
   commentId: Joi.string().required(),
-  author: Joi.string().required(),
+  // author: Joi.string().required(),
   comment: Joi.string().max(300).required(),
 });
 

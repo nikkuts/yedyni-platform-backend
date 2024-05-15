@@ -13,7 +13,8 @@ const getExercise = async (req, res) => {
   const result = await Exercises.findOne(
     { owner, courseId, lessonId }, 
     "-createdAt -updatedAt"
-  );
+  )
+  .populate("comments.author", "_id name");
   
   if (!result) {
     return res.status(204).send("Вправа вказаного уроку ще не створена");
@@ -58,9 +59,9 @@ const addExercise = async (req, res) => {
     lessonId: newExercise.lessonId,
     homework: newExercise.homework,
     fileURL: newExercise.fileURL,
-    status: newExercise.status,
-    comments: newExercise.comments,
-    owner: newExercise.owner,
+    // status: newExercise.status,
+    // comments: newExercise.comments,
+    // owner: newExercise.owner,
   });
 };
 
@@ -88,7 +89,8 @@ const updateExercise = async (req, res) => {
       new: true,
       projection: { createdAt: 0, updatedAt: 0 } 
     }
-  );
+  )
+  .populate("comments.author", "_id name");
 
   if (!result) {
     throw HttpError(404, "Відсутня вправа");
@@ -110,7 +112,8 @@ const deleteHomeworkAndUpdateExercise = async (req, res) => {
       new: true,
       projection: { createdAt: 0, updatedAt: 0 } 
     }
-  );
+  )
+  .populate("comments.author", "_id name");
 
   // const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
   // delete result._id;
@@ -130,7 +133,8 @@ const deleteFileAndUpdateExercise = async (req, res) => {
       new: true,
       projection: { createdAt: 0, updatedAt: 0 } 
     }
-  );
+  )
+  .populate("comments.author", "_id name");;
 
   // const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
   // delete result._id;
@@ -139,8 +143,8 @@ const deleteFileAndUpdateExercise = async (req, res) => {
 };
 
 const addComment = async (req, res) => {
-  const {status} = req.user;
-  const {exerciseId, author, comment} = req.body;
+  const {_id: author, status} = req.user;
+  const {exerciseId, comment} = req.body;
   let updatedExercise;
 
   if (status === "moderator" || status === "admin") {
@@ -156,7 +160,8 @@ const addComment = async (req, res) => {
         }
       },
       { new: true }
-    );
+    )
+    .populate("comments.author", "_id name");
   } else {
     updatedExercise = await Exercises.findByIdAndUpdate(
       exerciseId,
@@ -170,7 +175,8 @@ const addComment = async (req, res) => {
         }
       },
       { new: true }
-    );
+    )
+    .populate("comments.author", "_id name");
   }
 
   if (!updatedExercise) {
@@ -181,8 +187,8 @@ const addComment = async (req, res) => {
 };
 
 const updateComment = async (req, res) => {
-  const {status} = req.user;
-  const { exerciseId, commentId, author, comment } = req.body;
+  const {_id: author, status} = req.user;
+  const { exerciseId, commentId, comment } = req.body;
 
   if (status === "moderator" || status === "admin") {
     await Exercises.findOneAndUpdate(
@@ -190,7 +196,7 @@ const updateComment = async (req, res) => {
       {
         $set: {
           'comments.$.date': Date.now(),
-          'comments.$author': author,
+          // 'comments.$.author': author,
           'comments.$.comment': comment,
           'comments.$.status': "active",
           status: "inactive"
@@ -203,7 +209,7 @@ const updateComment = async (req, res) => {
       {
         $set: {
           'comments.$.date': Date.now(),
-          'comments.$author': author,
+          // 'comments.$.author': author,
           'comments.$.comment': comment,
           'comments.$.status': "active",
           status: "active"
@@ -215,7 +221,8 @@ const updateComment = async (req, res) => {
   const updatedExercise = await Exercises.findOne(
     { _id: exerciseId, 'comments._id': commentId },
     { 'comments.$': 1 }
-  );
+  )
+  .populate("comments.$.author", "_id name");
 
   if (!updatedExercise) {
     throw HttpError(404, "Відсутній коментар");
@@ -263,7 +270,7 @@ const getMessages = async (req, res) => {
   } else {
     result = await Exercises.find({ 
       owner: owner, 
-      'comments.author': { $ne: name },
+      'comments.author': { $ne: owner },
       'comments.status': "active", 
     }, 
     "_id status courseId lessonId updatedAt"
@@ -294,7 +301,8 @@ const getExerciseById = async (req, res) => {
       exerciseId, 
       "-createdAt -updatedAt"
     )
-    .populate('owner', 'id name');
+    .populate('owner', '_id name')
+    .populate('comments.author', '_id name');
 
     if (!result) {
       throw HttpError (404, 'Відсутня вправа')
