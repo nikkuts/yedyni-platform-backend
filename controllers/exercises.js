@@ -301,10 +301,10 @@ const getExerciseById = async (req, res) => {
     throw HttpError (404, 'Відсутня вправа')
   }
 
-  const result = {exerciseId: exerciseId, ...exercise.toObject()};
-  delete result._id;
+  // const result = {exerciseId: exerciseId, ...exercise.toObject()};
+  // delete result._id;
 
-  return res.status(200).json(result);
+  return res.status(200).json(exercise);
 };
 
 module.exports = {
