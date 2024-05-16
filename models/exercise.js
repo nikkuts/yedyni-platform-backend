@@ -64,12 +64,12 @@ exerciseSchema.post('save', handleMongooseError);
 const addExerciseSchema = Joi.object({
   courseId: Joi.string().required(),
   lessonId: Joi.string().required(),
-  homework: Joi.string().max(3000).empty(),
+  homework: Joi.string().max(3000).required(),
 });
 
 const updateExerciseSchema = Joi.object({
   exerciseId: Joi.string().required(),
-  homework: Joi.string().max(3000).empty(),
+  homework: Joi.string().max(3000).required(),
 });
 
 const deleteFileSchema = Joi.object({
