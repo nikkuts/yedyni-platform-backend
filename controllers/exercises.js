@@ -218,33 +218,17 @@ const updateComment = async (req, res) => {
     );
   }
 
-  // const updatedExercise = await Exercises.findOne(
-  //   { _id: exerciseId, 'comments._id': commentId },
-  //   { 'comments.$': 1 }
-  // )
-  // .populate("comments.$.author", "_id name");
-
-  // if (!updatedExercise) {
-  //   throw HttpError(404, "Відсутній коментар");
-  // }
-
-  // res.status(201).json(updatedExercise.comments[0]);
-
-  const exercise = await Exercises.findOne(
+  const updatedExercise = await Exercises.findOne(
     { _id: exerciseId, 'comments._id': commentId },
     { 'comments.$': 1 }
-  ).lean();
+  )
+  .populate("comments.author", "_id name");
 
-  if (!exercise) {
+  if (!updatedExercise) {
     throw HttpError(404, "Відсутній коментар");
   }
 
-  const updatedComment = exercise.comments.find(comment => comment._id.toString() === commentId);
-
-  // Виконати популяцію поля author
-  const result = await Exercises.populate(updatedComment, { path: 'author', select: '_id name' });
-
-  res.status(201).json(result);
+  res.status(201).json(updatedExercise.comments[0]);
 };
 
 const deleteComment = async (req, res) => {
