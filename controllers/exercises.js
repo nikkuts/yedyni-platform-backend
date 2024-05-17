@@ -268,13 +268,38 @@ const getMessages = async (req, res) => {
       select: "name -_id"
     });
   } else {
-    result = await Exercises.find({ 
-      owner: owner, 
-      'comments.author': { $ne: owner },
-      'comments.status': "active", 
-    }, 
-    "_id status courseId lessonId updatedAt"
-    )
+    // result = await Exercises.find({ 
+    //   owner: owner, 
+    //   'comments.author': { $ne: owner },
+    //   'comments.status': "active", 
+    // }, 
+    // "_id status courseId lessonId updatedAt"
+    // )
+    const aggResult = await Exercises.aggregate([
+      // Спочатку знаходимо вправи власника
+      { $match: { owner: owner } },
+      
+      // Розкладаємо масив comments
+      { $unwind: "$comments" },
+      
+      // Фільтруємо коментарі, щоб залишити лише ті, які належать невласнику і мають статус "active"
+      { $match: { "comments.author": { $ne: owner }, "comments.status": "active" } },
+      
+      // Групуємо назад вправи, щоб відновити структуру
+      { $group: { _id: "$_id", doc: { $first: "$$ROOT" } } },
+      
+      // Відновлюємо початкову структуру документа
+      { $replaceRoot: { newRoot: "$doc" } },
+      
+      // Вибираємо лише необхідні поля для відповіді
+      { $project: { "comments.author": 1, "courseId": 1, "lessonId": 1, "updatedAt": 1 } }
+    ]);
+    
+    // Виконуємо популяцію для поля comments.author
+    result = await Exercises.populate(aggResult, { 
+      path: "comments.author", 
+      select: "_id name"
+    });
   }
 
   // const result = {exerciseId: exercise._id, ...exercise.toObject()};
