@@ -60,7 +60,7 @@ const addExercise = async (req, res) => {
     homework: newExercise.homework,
     fileURL: newExercise.fileURL,
     // status: newExercise.status,
-    // comments: newExercise.comments,
+    comments: newExercise.comments,
     // owner: newExercise.owner,
   });
 };
@@ -87,7 +87,7 @@ const updateExercise = async (req, res) => {
     { $set: update },
     { 
       new: true,
-      projection: { createdAt: 0, updatedAt: 0 } 
+      projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
     }
   )
   .populate("comments.author", "_id name");
@@ -110,7 +110,7 @@ const deleteHomeworkAndUpdateExercise = async (req, res) => {
     { $set: {homework: ''} },
     { 
       new: true,
-      projection: { createdAt: 0, updatedAt: 0 } 
+      projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
     }
   )
   .populate("comments.author", "_id name");
@@ -131,7 +131,7 @@ const deleteFileAndUpdateExercise = async (req, res) => {
     { $set: {fileURL: ''} },
     { 
       new: true,
-      projection: { createdAt: 0, updatedAt: 0 } 
+      projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
     }
   )
   .populate("comments.author", "_id name");;
