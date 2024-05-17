@@ -292,13 +292,13 @@ const getMessages = async (req, res) => {
       { $replaceRoot: { newRoot: "$doc" } },
       
       // Вибираємо лише необхідні поля для відповіді
-      { $project: { "comments.author": 1, "courseId": 1, "lessonId": 1, "updatedAt": 1 } }
+      { $project: { "comments._id": 1, "comments.author": 1, "courseId": 1, "lessonId": 1, "updatedAt": 1 } }
     ]);
     
     // Виконуємо популяцію для поля comments.author
     result = await Exercises.populate(aggResult, { 
       path: "comments.author", 
-      select: "_id name"
+      select: "-_id name"
     });
   }
 
