@@ -253,7 +253,7 @@ const deleteComment = async (req, res) => {
 }
 
 const getMessages = async (req, res) => {
-  const {_id: owner, status, name} = req.user;
+  const {_id: owner, status } = req.user;
   let result;
 
   if (status === "moderator" || status === "admin") {
@@ -268,13 +268,6 @@ const getMessages = async (req, res) => {
       select: "name -_id"
     });
   } else {
-    // result = await Exercises.find({ 
-    //   owner: owner, 
-    //   'comments.author': { $ne: owner },
-    //   'comments.status': "active", 
-    // }, 
-    // "_id status courseId lessonId updatedAt"
-    // )
     const aggResult = await Exercises.aggregate([
       // Спочатку знаходимо вправи власника
       { $match: { owner: owner } },
@@ -302,10 +295,9 @@ const getMessages = async (req, res) => {
     });
   }
 
-  // const result = {exerciseId: exercise._id, ...exercise.toObject()};
-  // delete result._id;
+  const countMessages = result.length;
 
-  return res.status(200).json(result);
+  return res.status(200).json({messages: result, countMessages});
 };
 
 const getExerciseById = async (req, res) => {
