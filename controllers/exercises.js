@@ -290,30 +290,55 @@ const getMessages = async (req, res) => {
 const getExerciseById = async (req, res) => {
   const {status} = req.user;
   const {exerciseId} = req.params;
+  let result;
   
   if (status === "moderator" || status === "admin") {
-    const exercise = await Exercises.findByIdAndUpdate(
+    result = await Exercises.findByIdAndUpdate(
       exerciseId,
-      { $set: {status: "inactive"} }
+      { $set: {status: "inactive"} },
+      { 
+        new: true,
+        projection: { status: 0, createdAt: 0, updatedAt: 0 } 
+      }
     )
-      if (!exercise) {
-        throw HttpError (404, 'Відсутня вправа')
-      } 
+    .populate('owner', '-_id name');
+  } else {
+    throw HttpError (401, 'Відсутні права доступу')
+  }
+
+  if (!result) {
+    throw HttpError (404, 'Відсутня вправа')
   } 
-
-    const result = await Exercises.findById(
-      exerciseId, 
-      "-createdAt -updatedAt"
-    )
-    .populate('owner', '-_id name')
-    // .populate('comments.author', '_id name');
-
-    if (!result) {
-      throw HttpError (404, 'Відсутня вправа')
-    } 
 
   return res.status(200).json(result);
 };
+
+// const getExerciseById = async (req, res) => {
+//   const {status} = req.user;
+//   const {exerciseId} = req.params;
+  
+//   if (status === "moderator" || status === "admin") {
+//     const exercise = await Exercises.findByIdAndUpdate(
+//       exerciseId,
+//       { $set: {status: "inactive"} }
+//     )
+//       if (!exercise) {
+//         throw HttpError (404, 'Відсутня вправа')
+//       } 
+//   } 
+
+//     const result = await Exercises.findById(
+//       exerciseId, 
+//       "-createdAt -updatedAt"
+//     )
+//     .populate('owner', '-_id name');
+
+//     if (!result) {
+//       throw HttpError (404, 'Відсутня вправа')
+//     } 
+
+//   return res.status(200).json(result);
+// };
 
 // const getExerciseById = async (req, res) => {
 //   const {status} = req.user;
