@@ -20,9 +20,6 @@ const getExercise = async (req, res) => {
     return res.status(204).send("Вправа вказаного уроку ще не створена");
   }
 
-  // const result = {exerciseId: exercise._id, ...exercise.toObject()};
-  // delete result._id;
-
   return res.status(200).json(result);
 };
 
@@ -59,9 +56,7 @@ const addExercise = async (req, res) => {
     lessonId: newExercise.lessonId,
     homework: newExercise.homework,
     fileURL: newExercise.fileURL,
-    // status: newExercise.status,
     comments: newExercise.comments,
-    // owner: newExercise.owner,
   });
 };
 
@@ -96,9 +91,6 @@ const updateExercise = async (req, res) => {
     throw HttpError(404, "Відсутня вправа");
   }
 
-  // const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
-  // delete result._id;
-
   res.status(201).json(result);
 };
 
@@ -114,9 +106,6 @@ const deleteHomeworkAndUpdateExercise = async (req, res) => {
     }
   )
   .populate("comments.author", "_id name");
-
-  // const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
-  // delete result._id;
 
   res.status(201).json(result);
 };
@@ -134,10 +123,7 @@ const deleteFileAndUpdateExercise = async (req, res) => {
       projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
     }
   )
-  .populate("comments.author", "_id name");;
-
-  // const result = {exerciseId: updatedExercise._id, ...updatedExercise.toObject()};
-  // delete result._id;
+  .populate("comments.author", "_id name");
 
   res.status(201).json(result);
 };
@@ -156,6 +142,7 @@ const addComment = async (req, res) => {
           comments: {
             author,
             comment,
+            status: 'active',
           }
         }
       },
@@ -211,7 +198,7 @@ const updateComment = async (req, res) => {
           'comments.$.date': Date.now(),
           // 'comments.$.author': author,
           'comments.$.comment': comment,
-          'comments.$.status': "active",
+          // 'comments.$.status': "active",
           status: "active"
         }
       }
@@ -261,7 +248,7 @@ const getMessages = async (req, res) => {
       owner: { $ne: owner }, // $ne - не рівно
       status: "active"
     }, 
-    "_id owner courseId lessonId updatedAt"
+    "_id courseId lessonId owner updatedAt"
     )
     .populate({
       path: "owner",
@@ -285,7 +272,7 @@ const getMessages = async (req, res) => {
       { $replaceRoot: { newRoot: "$doc" } },
       
       // Вибираємо лише необхідні поля для відповіді
-      { $project: { "comments._id": 1, "comments.author": 1, "courseId": 1, "lessonId": 1, "updatedAt": 1 } }
+      { $project: { "_id": 1, "courseId": 1, "lessonId": 1, "comments._id": 1, "comments.author": 1, "comments.date": 1 } }
     ]);
     
     // Виконуємо популяцію для поля comments.author
@@ -318,8 +305,8 @@ const getExerciseById = async (req, res) => {
       exerciseId, 
       "-createdAt -updatedAt"
     )
-    .populate('owner', '_id name')
-    .populate('comments.author', '_id name');
+    .populate('owner', '-_id name')
+    // .populate('comments.author', '_id name');
 
     if (!result) {
       throw HttpError (404, 'Відсутня вправа')

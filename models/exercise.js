@@ -47,7 +47,7 @@ const exerciseSchema = new Schema({
         status: {
           type: String,
           enum: ["active", "inactive"],
-          default: "active",
+          // default: "active",
         },
         author: {
           type: Schema.Types.ObjectId,
