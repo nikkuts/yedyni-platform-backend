@@ -215,37 +215,69 @@ const updateComment = async (req, res) => {
   res.status(201).json(updatedExercise.comments[0]);
 };
 
+// const updateCommentStatus = async (req, res) => {
+//   const { exerciseId, commentId } = req.query;
+
+//   try {
+//     await Exercises.findOneAndUpdate(
+//       { _id: exerciseId, 'comments._id': commentId },
+//       {
+//         $set: {
+//           'comments.$.status': "inactive",
+//         }
+//       }
+//     );
+
+//     res.json({ success: true, message: 'Статус коментаря успішно оновлено' });
+//   }
+//   catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, message: 'Помилка при оновленні статусу коментаря' });
+//   }
+
+//     // await Exercises.findOneAndUpdate(
+//     //   { _id: exerciseId, 'comments._id': commentId },
+//     //   {
+//     //     $set: {
+//     //       'comments.$.status': "inactive",
+//     //     }
+//     //   }
+//     // );
+
+//     // res.json({ commentId });
+
+// }
+
 const updateCommentStatus = async (req, res) => {
   const { exerciseId, commentId } = req.query;
 
   try {
-    await Exercises.findOneAndUpdate(
-      { _id: exerciseId, 'comments._id': commentId },
-      {
-        $set: {
-          'comments.$.status': "inactive",
-        }
-      }
-    );
+    // Знаходимо вправу
+    const exercise = await Exercises.findById(exerciseId, "-_id comments");
+    
+    if (!exercise) {
+      return res.status(404).send("Вправа не знайдена");
+    }
 
-    res.json({ success: true, message: 'Статус коментаря успішно оновлено' });
+    // Масив промісів для оновлення статусу коментарів
+    const updatePromises = exercise.comments
+      .filter(comment => comment.status === 'active')
+      .map(comment => 
+        Exercises.findOneAndUpdate(
+          { _id: exerciseId, 'comments._id': comment._id },
+          { $set: { 'comments.$.status': 'inactive' } },
+          { new: true }
+        )
+      );
+
+    // Виконуємо всі оновлення
+    await Promise.all(updatePromises);
+
+    res.status(200).send("Статус коментарів оновлено");
+  } catch (error) {
+    res.status(500).send("Помилка сервера");
   }
-  catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Помилка при оновленні статусу коментаря' });
-  }
-
-    // await Exercises.findOneAndUpdate(
-    //   { _id: exerciseId, 'comments._id': commentId },
-    //   {
-    //     $set: {
-    //       'comments.$.status': "inactive",
-    //     }
-    //   }
-    // );
-
-    // res.json({ commentId });
-}
+};
 
 const deleteComment = async (req, res) => {
   const { exerciseId, commentId } = req.query;
