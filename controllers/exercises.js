@@ -215,7 +215,7 @@ const updateComment = async (req, res) => {
   res.status(201).json(updatedExercise.comments[0]);
 };
 
-const updateStatusComment = async (req, res) => {
+const updateCommentStatus = async (req, res) => {
   const { exerciseId, commentId } = req.query;
 
     await Exercises.findOneAndUpdate(
@@ -333,7 +333,7 @@ module.exports = {
     deleteFileAndUpdateExercise: ctrlWrapper(deleteFileAndUpdateExercise),
     addComment: ctrlWrapper(addComment),
     updateComment: ctrlWrapper(updateComment),
-    updateStatusComment: ctrlWrapper(updateStatusComment),
+    updateCommentStatus: ctrlWrapper(updateCommentStatus),
     deleteComment: ctrlWrapper(deleteComment),
     getMessages: ctrlWrapper(getMessages),
     getExerciseById: ctrlWrapper(getExerciseById),
