@@ -215,44 +215,10 @@ const updateComment = async (req, res) => {
   res.status(201).json(updatedExercise.comments[0]);
 };
 
-// const updateCommentStatus = async (req, res) => {
-//   const { exerciseId, commentId } = req.query;
-
-//   try {
-//     await Exercises.findOneAndUpdate(
-//       { _id: exerciseId, 'comments._id': commentId },
-//       {
-//         $set: {
-//           'comments.$.status': "inactive",
-//         }
-//       }
-//     );
-
-//     res.json({ success: true, message: 'Статус коментаря успішно оновлено' });
-//   }
-//   catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: 'Помилка при оновленні статусу коментаря' });
-//   }
-
-//     // await Exercises.findOneAndUpdate(
-//     //   { _id: exerciseId, 'comments._id': commentId },
-//     //   {
-//     //     $set: {
-//     //       'comments.$.status': "inactive",
-//     //     }
-//     //   }
-//     // );
-
-//     // res.json({ commentId });
-
-// }
-
 const updateCommentStatus = async (req, res) => {
-  const { exerciseId, commentId } = req.query;
+  const { exerciseId } = req.query;
 
   try {
-    // Знаходимо вправу
     const exercise = await Exercises.findById(exerciseId, "-_id comments");
     
     if (!exercise) {
