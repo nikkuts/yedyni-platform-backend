@@ -133,22 +133,46 @@ const addComment = async (req, res) => {
   const {exerciseId, comment} = req.body;
   let updatedExercise;
 
+  const exercise = await Exercises.findById(exerciseId, "owner");
+
+  if (!exercise) {
+    throw HttpError(404, "Відсутня домашня робота");
+  }
+
   if (status === "moderator" || status === "admin") {
-    updatedExercise = await Exercises.findByIdAndUpdate(
-      exerciseId,
-      {
-        $set: {status: 'inactive'},
-        $push: {
-          comments: {
-            author,
-            comment,
-            status: 'active',
+
+    if (exercise.owner === author) {
+      updatedExercise = await Exercises.findByIdAndUpdate(
+        exerciseId,
+        {
+          $set: {status: 'inactive'},
+          $push: {
+            comments: {
+              author,
+              comment,
+            }
           }
-        }
-      },
-      { new: true }
-    )
-    .populate("comments.author", "_id name");
+        },
+        { new: true }
+      )
+      .populate("comments.author", "_id name");
+    } else {
+      updatedExercise = await Exercises.findByIdAndUpdate(
+        exerciseId,
+        {
+          $set: {status: 'inactive'},
+          $push: {
+            comments: {
+              author,
+              comment,
+              status: 'active',
+            }
+          }
+        },
+        { new: true }
+      )
+      .populate("comments.author", "_id name");
+    }
   } else {
     updatedExercise = await Exercises.findByIdAndUpdate(
       exerciseId,
@@ -164,10 +188,6 @@ const addComment = async (req, res) => {
       { new: true }
     )
     .populate("comments.author", "_id name");
-  }
-
-  if (!updatedExercise) {
-    throw HttpError(404, "Відсутня домашня робота");
   }
   
   res.status(201).json(updatedExercise.comments[updatedExercise.comments.length - 1]);
@@ -320,15 +340,15 @@ const getExerciseById = async (req, res) => {
   let result;
   
   if (status === "moderator" || status === "admin") {
-    result = await Exercises.findByIdAndUpdate(
+    await Exercises.findByIdAndUpdate(
       exerciseId,
-      { $set: {status: "inactive"} },
-      { 
-        new: true,
-        projection: { status: 0, createdAt: 0, updatedAt: 0 } 
-      }
-    )
-    .populate('owner', '_id name');
+      { $set: {status: "inactive"} }
+    );
+
+    result = await Exercises.findById(
+      exerciseId,
+      '-status -createdAt -updatedAt'
+    ).populate('owner', '_id name');
   } else {
     throw HttpError (401, 'Відсутні права доступу')
   }
