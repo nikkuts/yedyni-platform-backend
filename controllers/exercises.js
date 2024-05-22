@@ -141,7 +141,7 @@ const addComment = async (req, res) => {
 
   if (status === "moderator" || status === "admin") {
 
-    if (exercise.owner.toString() === author) {
+    if (exercise.owner.toString() === author.toString()) {
       updatedExercise = await Exercises.findByIdAndUpdate(
         exerciseId,
         {
@@ -197,18 +197,38 @@ const updateComment = async (req, res) => {
   const {_id: author, status} = req.user;
   const { exerciseId, commentId, comment } = req.body;
 
+  const exercise = await Exercises.findById(exerciseId, "owner");
+
+  if (!exercise) {
+    throw HttpError(404, "Відсутня домашня робота");
+  }
+
   if (status === "moderator" || status === "admin") {
-    await Exercises.findOneAndUpdate(
-      { _id: exerciseId, 'comments._id': commentId },
-      {
-        $set: {
-          'comments.$.date': Date.now(),
-          'comments.$.comment': comment,
-          'comments.$.status': "active",
-          status: "inactive"
+
+    if (exercise.owner.toString() === author.toString()) {
+      await Exercises.findOneAndUpdate(
+        { _id: exerciseId, 'comments._id': commentId },
+        {
+          $set: {
+            'comments.$.date': Date.now(),
+            'comments.$.comment': comment,
+            status: "inactive"
+          }
         }
-      }
-    );
+      );
+    } else {
+      await Exercises.findOneAndUpdate(
+        { _id: exerciseId, 'comments._id': commentId },
+        {
+          $set: {
+            'comments.$.date': Date.now(),
+            'comments.$.comment': comment,
+            'comments.$.status': "active",
+            status: "inactive"
+          }
+        }
+      );
+    }
   } else {
     await Exercises.findOneAndUpdate(
       { _id: exerciseId, 'comments._id': commentId },
