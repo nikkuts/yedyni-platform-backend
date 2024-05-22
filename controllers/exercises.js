@@ -141,7 +141,7 @@ const addComment = async (req, res) => {
 
   if (status === "moderator" || status === "admin") {
 
-    if (exercise.owner === author) {
+    if (exercise.owner.toString() === author) {
       updatedExercise = await Exercises.findByIdAndUpdate(
         exerciseId,
         {
