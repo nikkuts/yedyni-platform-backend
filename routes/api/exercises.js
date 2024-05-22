@@ -26,6 +26,8 @@ router.patch('/file', authenticate, validateBody(schemas.deleteFileSchema), ctrl
 
 router.patch('/comment', authenticate, validateBody(schemas.updateCommentSchema), ctrl.updateComment);
 
+router.patch('/status', authenticate, ctrl.updateStatusComment);
+
 router.delete('/comment', authenticate, ctrl.deleteComment);
 
 module.exports = router;
