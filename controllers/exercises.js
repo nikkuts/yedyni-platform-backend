@@ -328,7 +328,7 @@ const getExerciseById = async (req, res) => {
         projection: { status: 0, createdAt: 0, updatedAt: 0 } 
       }
     )
-    .populate('owner', '-_id name');
+    .populate('owner', '_id name');
   } else {
     throw HttpError (401, 'Відсутні права доступу')
   }
