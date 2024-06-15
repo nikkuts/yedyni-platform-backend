@@ -334,7 +334,7 @@ const processesClient = async (req, res) => {
         authorization: `Bearer ${jwt}`
       },
       data: {
-        kanban_status: ["SUCCESS"]
+        kanban_status: "SUCCESS"
       }
     };
 
