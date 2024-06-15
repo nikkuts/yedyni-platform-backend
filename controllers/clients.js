@@ -282,6 +282,7 @@ const processesClient = async (req, res) => {
   const result = JSON.parse(dataString);
 
   const {order_id, action, status, customer, amount, end_date} = result;
+  let dealUspacyId;
 
   try {
     if (status === 'success') {
@@ -290,6 +291,8 @@ const processesClient = async (req, res) => {
         { payment: result },
         { new: true }
       );
+
+      dealUspacyId = client.dealUspacyId;
 
       // const welcomeEmail = {
       //   to: client.email,
@@ -324,7 +327,7 @@ const processesClient = async (req, res) => {
     // Редагування угоди в Uspacy
     const editDealOptions = {
       method: 'PATCH',
-      url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${client.dealUspacyId}`,
+      url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}`,
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
