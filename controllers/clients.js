@@ -281,11 +281,13 @@ const processesClient = async (req, res) => {
   const dataString = Utf8.stringify(Base64.parse(data));
   const result = JSON.parse(dataString);
 
-  const {order_id, action, status, customer, amount, end_date} = result;
+  const { status, customer } = result;
   let dealUspacyId;
+  let stageId;
 
-  try {
-    if (status === 'success') {
+  if (status === 'success') {
+
+    try {
       const client = await Client.findByIdAndUpdate(
         customer, 
         { payment: result },
@@ -307,44 +309,59 @@ const processesClient = async (req, res) => {
       // };
 
       // await sendEmail(welcomeEmail);
-    }
+    
 
-    res.status(200).json({
-      message: 'success',
-    })
+      // Отримання JWT токена від Uspacy
+      const authOptions = {
+        method: 'POST',
+        url: 'https://yedyni.uspacy.ua/auth/v1/auth/sign_in',
+        headers: { accept: 'application/json', 'content-type': 'application/json' },
+        data: { email: USPACY_LOGIN, password: USPACY_PASS }
+      };
 
-    // Отримання JWT токена від Uspacy
-    const authOptions = {
-      method: 'POST',
-      url: 'https://yedyni.uspacy.ua/auth/v1/auth/sign_in',
-      headers: { accept: 'application/json', 'content-type': 'application/json' },
-      data: { email: USPACY_LOGIN, password: USPACY_PASS }
-    };
+      const authResponse = await axios(authOptions);
+      const jwt = authResponse.data.jwt;
 
-    const authResponse = await axios(authOptions);
-    const jwt = authResponse.data.jwt;
-
-    // Редагування угоди в Uspacy
-    const editDealOptions = {
-      method: 'PATCH',
-      url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}`,
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: `Bearer ${jwt}`
-      },
-      data: {
-        kanban_status: "SUCCESS"
+      // Встановлення етапу успішного завершення угоди в Uspacy
+      switch (client.product) {
+        case "Курс для держслужбовців":
+          stageId = 19;
+          break;
+      
+        case "Видноколо":
+          stageId = 22;
+          break;
       }
-    };
 
-    const editDealResponse = await axios(editDealOptions);
-    const dealStatus = editDealResponse.data.kanban_status;
+      const moveStageDealOptions = {
+        method: 'POST',
+        url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}/move/stage/${stageId}`,
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          authorization: `Bearer ${jwt}`
+        }
+      };
 
-    console.log('Встановлено статус угоди', dealStatus);
+      await axios(moveStageDealOptions);
 
-  } catch (error) {
-    if (error.response) {
+      // Отримання угоди з Uspacy
+      const getDealOptions = {
+        method: 'GET',
+        url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}`,
+        headers: {
+          accept: 'application/json',
+          authorization: `Bearer ${jwt}`
+        }
+      };
+
+      const getDealResponse = await axios(getDealOptions);
+      const dealStatus = getDealResponse.data.kanban_status;
+
+      console.log('Встановлено статус угоди', dealStatus);
+
+    } catch (error) {
+      if (error.response) {
         // Логування повної відповіді помилки, якщо вона є
         console.error('Error during the process:', error.message, error.response.data);
         res.status(error.response.status).json({ success: false, message: error.response.data.message || 'Помилка при обробці запиту' });
@@ -353,7 +370,9 @@ const processesClient = async (req, res) => {
         console.error('Error during the process:', error.message);
         res.status(500).json({ success: false, message: 'Помилка при обробці запиту' });
       }
+    }
   }
+  res.status(200).json({message: 'success'})
 };
 
 const getByIdClient = async (req, res) => {
