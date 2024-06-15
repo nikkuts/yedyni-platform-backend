@@ -21,7 +21,7 @@ const addServant = async (req, res) => {
       name: fio, 
       email,
       phone,
-      product: "Курс з підготовки до держіспиту",
+      product: "Курс для держслужбовців",
     });
 
     const orderId = uuidv4();

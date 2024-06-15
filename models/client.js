@@ -17,7 +17,7 @@ const clientSchema = new Schema({
       },
       product: {
         type: String,
-        enum: ["Курс з підготовки до держіспиту", "Видноколо"],
+        enum: ["Курс для держслужбовців", "Видноколо"],
         required: true,
       },
       contactUspacyId: {
