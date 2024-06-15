@@ -17,8 +17,14 @@ const clientSchema = new Schema({
       },
       product: {
         type: String,
-        enum: ["Курс для держслужбовців", "Видноколо"],
+        enum: ["Курс з підготовки до держіспиту", "Видноколо"],
         required: true,
+      },
+      contactUspacyId: {
+        type: String,
+      },
+      dealUspacyId: {
+        type: String,
       },
       payment: {
         type: Schema.Types.Object,

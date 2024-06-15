@@ -61,6 +61,9 @@ const contactSchema = new Schema({
       },
       contactUspacyId: {
         type: String,
+      },
+      dealUspacyId: {
+        type: String,
       }
 }, {versionKey: false, timestamps: true});
 
