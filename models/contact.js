@@ -54,7 +54,8 @@ const contactSchema = new Schema({
               "kurs_perehodu", 
               "gramatichniy_kurs", 
               "kurs_z_pidgotovki_do_derzhispitu", 
-              "kurs_vidnokolo"
+              "kurs_vidnokolo",
+              "kurs_proukrayinska_new"
             ], 
           }
         ]

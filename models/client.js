@@ -3,7 +3,11 @@ const { Schema, model } = require('mongoose');
 const {handleMongooseError} = require('../helpers');
 
 const clientSchema = new Schema({
-      name: {
+      first_name: {
+        type: String,
+        required: true,
+      },
+      last_name: {
         type: String,
         required: true,
       },
@@ -17,7 +21,7 @@ const clientSchema = new Schema({
       },
       product: {
         type: String,
-        enum: ["Курс для держслужбовців", "Видноколо"],
+        enum: ["Курс для держслужбовців", "Видноколо", "Проукраїнська"],
         required: true,
       },
       contactUspacyId: {

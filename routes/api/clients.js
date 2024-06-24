@@ -8,6 +8,8 @@ router.post('/servant', ctrl.addServant);
 
 router.post('/creative', ctrl.addCreative);
 
+router.post('/proukrainian', ctrl.addProukrainian);
+
 router.post('/process', ctrl.processesClient);
 
 router.get("/servants", ctrl.getServants);
