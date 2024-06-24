@@ -8,17 +8,18 @@ require('dotenv').config();
 const { Client } = require('../models/client');
 const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
-const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
+const PUBLIC_KEY = process.env.PUBLIC_KEY;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const BASE_SERVER_URL = process.env.BASE_SERVER_URL;
 const {USPACY_LOGIN, USPACY_PASS} = process.env;
 
 const addServant = async (req, res) => {
-  const {fio, email, phone} = req.body;
+  const {first_name, last_name, email, phone} = req.body;
 
   try {
     const newClient = await Client.create({
-      name: fio, 
+      first_name,
+      last_name, 
       email,
       phone,
       product: "Курс для держслужбовців",
@@ -32,7 +33,7 @@ const addServant = async (req, res) => {
         action: 'pay',
         amount: 950,
         currency: 'UAH',
-        description: `${newClient.name} Донат за Курс з підготовки до держіспиту`,
+        description: `${last_name} ${first_name} Донат за Курс з підготовки до держіспиту`,
         order_id: orderId,
         result_url: `https://yedyni.org/testpayment?client_id=${newClient._id}`,
         server_url: `${BASE_SERVER_URL}/api/clients/process`,
@@ -93,8 +94,9 @@ const addServant = async (req, res) => {
         authorization: `Bearer ${jwt}`
       },
       data: {
-        title: fio,
-        first_name: fio,
+        title: `${last_name} ${first_name}`,
+        first_name,
+        last_name,
         email: [{ value: email }],
         phone: [{ value: phone }],
         registration: ["kurs_z_pidgotovki_do_derzhispitu"]
@@ -126,7 +128,7 @@ const addServant = async (req, res) => {
 
     // Збереження в локальній базі id контакту та угоди
     await Client.findByIdAndUpdate(newClient._id, {contactUspacyId, dealUspacyId});
-    console.log('Створено угоду "Курс з підготовки до держіспиту"', fio);
+    console.log('Створено угоду "Курс з підготовки до держіспиту"', `${last_name} ${first_name}`);
 
   } catch (error) {
     if (error.response) {
@@ -142,11 +144,12 @@ const addServant = async (req, res) => {
 };
 
 const addCreative = async (req, res) => {
-  const {fio, email, phone} = req.body;
+  const {first_name, last_name, email, phone} = req.body;
 
   try {
     const newClient = await Client.create({
-      name: fio, 
+      first_name,
+      last_name, 
       email,
       phone,
       product: "Видноколо",
@@ -160,7 +163,7 @@ const addCreative = async (req, res) => {
         action: 'pay',
         amount: 750,
         currency: 'UAH',
-        description: `${newClient.name} Донат за Курс "Видноколо"`,
+        description: `${last_name} ${first_name} Донат за Курс "Видноколо"`,
         order_id: orderId,
         result_url: `https://yedyni.org/testpayment?client_id=${newClient._id}`,
         server_url: `${BASE_SERVER_URL}/api/clients/process`,
@@ -221,8 +224,9 @@ const addCreative = async (req, res) => {
         authorization: `Bearer ${jwt}`
       },
       data: {
-        title: fio,
-        first_name: fio,
+        title: `${last_name} ${first_name}`,
+        first_name,
+        last_name,
         email: [{ value: email }],
         phone: [{ value: phone }],
         registration: ["kurs_vidnokolo"]
@@ -254,7 +258,7 @@ const addCreative = async (req, res) => {
 
     // Збереження в локальній базі id контакту та угоди
     await Client.findByIdAndUpdate(newClient._id, {contactUspacyId, dealUspacyId});
-    console.log('Створено угоду "Видноколо"', fio);
+    console.log('Створено угоду "Видноколо"', `${last_name} ${first_name}`);
 
   } catch (error) {
     if (error.response) {
