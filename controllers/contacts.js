@@ -171,7 +171,12 @@ const addTransition = async (req, res) => {
     }
   };
 
+  const eventUspacy = async (req, res) => {
+    console.log('Подія Uspacy', req.body);
+  }
+
 module.exports = {
     addTransition: ctrlWrapper(addTransition),
     addGrammatical: ctrlWrapper(addGrammatical),
+    eventUspacy: ctrlWrapper(eventUspacy),
 };
