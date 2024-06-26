@@ -202,7 +202,7 @@ const addTransition = async (req, res) => {
     // }
     console.log('req.headers', req.headers);
     console.log('req.body', req.body);
-    res.status(200)
+    res.status(200);
   }
 
 module.exports = {
