@@ -172,7 +172,10 @@ const addTransition = async (req, res) => {
   };
 
   const eventUspacy = async (req, res) => {
-    console.log('Подія Uspacy', req.body);
+    console.log('Подія Uspacy params', req.params);
+    console.log('Подія Uspacy query', req.query);
+
+    res.status(200);
   }
 
 module.exports = {
