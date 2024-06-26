@@ -172,8 +172,7 @@ const addTransition = async (req, res) => {
   };
 
   const eventUspacy = async (req, res) => {
-    console.log('Подія Uspacy params', req.params);
-    console.log('Подія Uspacy query', req.query);
+    console.log('Подія Uspacy', req);
 
     res.status(200);
   }
