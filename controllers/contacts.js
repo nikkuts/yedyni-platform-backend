@@ -2,8 +2,10 @@ const axios = require('axios');
 require('dotenv').config();
 const { Contact } = require('../models/contact');
 const {ctrlWrapper, HttpError} = require('../helpers');
+const { SNSClient, ConfirmSubscriptionCommand } = require('@aws-sdk/client-sns');
 
 const {USPACY_LOGIN, USPACY_PASS} = process.env;
+const snsClient = new SNSClient({ region: "eu-west-1" });
 
 const addTransition = async (req, res) => {
     const contact = req.body;
@@ -172,9 +174,32 @@ const addTransition = async (req, res) => {
   };
 
   const eventUspacy = async (req, res) => {
-    console.log('Подія Uspacy', req);
-
-    res.status(200);
+    try {
+      // Перевірте заголовок 'X-Amz-Sns-Message-Type' для типу повідомлення
+      const messageType = req.headers['x-amz-sns-message-type'];
+      
+      if (messageType === 'SubscriptionConfirmation') {
+        const { Token, TopicArn } = req.body;
+  
+        // Викличте функцію підтвердження підписки
+        const response = await snsClient.send(
+          new ConfirmSubscriptionCommand({
+            Token,
+            TopicArn,
+            AuthenticateOnUnsubscribe: "false",
+          })
+        );
+  
+        console.log("Subscription confirmed:", response);
+        res.status(200).send("Subscription confirmed.");
+      } else {
+        console.log("Received non-subscription message:", req.body);
+        res.status(200).send("Message received.");
+      }
+    } catch (error) {
+      console.error("Error processing SNS message:", error);
+      res.status(500).send("Error processing SNS message.");
+    }
   }
 
 module.exports = {

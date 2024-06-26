@@ -10,9 +10,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.600.0",
     "@sendgrid/mail": "^7.7.0",
     "axios": "^1.6.2",
     "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.2",
     "cloudinary": "^2.0.1",
     "cors": "2.8.5",
     "cross-env": "7.0.3",

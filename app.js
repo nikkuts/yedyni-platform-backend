@@ -2,6 +2,7 @@ const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
 require('dotenv').config()
+const bodyParser = require('body-parser')
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
@@ -23,6 +24,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.use('/api/auth', authRouter)
 app.use('/api/partners', partnersRouter)
