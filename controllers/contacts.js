@@ -174,35 +174,35 @@ const addTransition = async (req, res) => {
   };
 
   const eventUspacy = async (req, res) => {
-    // try {
-    //   // Перевірте заголовок 'X-Amz-Sns-Message-Type' для типу повідомлення
-    //   const messageType = req.headers['x-amz-sns-message-type'];
-      
-    //   if (messageType === 'SubscriptionConfirmation') {
-    //     const { Token, TopicArn } = req.body;
+    try {
+      // Перевірте заголовок 'X-Amz-Sns-Message-Type' для типу повідомлення
+      const messageType = req.headers['x-amz-sns-message-type'];
+      console.log('messageType', messageType);
+      if (messageType === 'SubscriptionConfirmation') {
+        const { Token, TopicArn } = req.body;
   
-    //     // Викличте функцію підтвердження підписки
-    //     const response = await snsClient.send(
-    //       new ConfirmSubscriptionCommand({
-    //         Token,
-    //         TopicArn,
-    //         AuthenticateOnUnsubscribe: "false",
-    //       })
-    //     );
+        // Викличте функцію підтвердження підписки
+        const response = await snsClient.send(
+          new ConfirmSubscriptionCommand({
+            Token,
+            TopicArn,
+            AuthenticateOnUnsubscribe: "false",
+          })
+        );
   
-    //     console.log("Subscription confirmed:", response);
-    //     res.status(200).send("Subscription confirmed.");
-    //   } else {
-    //     console.log("Received non-subscription message:", req.body);
-    //     res.status(200).send("Message received.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error processing SNS message:", error);
-    //   res.status(500).send("Error processing SNS message.");
-    // }
-    console.log('req.headers', req.headers);
-    console.log('req.body', req.body);
-    res.status(200);
+        console.log("Subscription confirmed:", response);
+        res.status(200).send("Subscription confirmed.");
+      } else {
+        console.log("Received non-subscription message:", req.body);
+        res.status(200).send("Message received.");
+      }
+    } catch (error) {
+      console.error("Error processing SNS message:", error);
+      res.status(500).send("Error processing SNS message.");
+    }
+    // console.log('req.headers', req.headers);
+    // console.log('req.body', req.body);
+    // res.status(200);
   };
 
 module.exports = {
