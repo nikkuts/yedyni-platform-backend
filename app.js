@@ -25,6 +25,8 @@ app.use(express.json())
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(bodyParser.text({ type: 'text/plain' }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRouter)
 app.use('/api/partners', partnersRouter)
