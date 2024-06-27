@@ -20,7 +20,8 @@ const app = express()
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(logger(formatsLogger))
-app.use(cors({origin: ['https://yedyni.org', 'https://www.liqpay.ua', 'https://yedyni.uspacy.ua']}))
+app.use(cors())
+// app.use(cors({origin: ['https://yedyni.org', 'https://www.liqpay.ua', 'https://yedyni.uspacy.ua']}))
 app.use(express.json())
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }));
