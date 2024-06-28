@@ -12,4 +12,6 @@ router.post('/grammatical', ctrl.addGrammatical);
 
 router.post('/hookuspacy', ctrl.eventUspacy);
 
+router.post('/edituspacy', ctrl.editUspacy);
+
 module.exports = router;
