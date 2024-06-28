@@ -14,4 +14,6 @@ router.post('/hookuspacy', ctrl.eventUspacy);
 
 router.post('/edituspacy', ctrl.editUspacy);
 
+router.post('/editcontact', ctrl.editContactUspacy);
+
 module.exports = router;

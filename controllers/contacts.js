@@ -211,9 +211,15 @@ const addTransition = async (req, res) => {
     res.status(200);
   };
 
+  const editContactUspacy = async (req, res) => {
+    console.log('req.body', req.body);
+    res.status(200);
+  };
+
 module.exports = {
     addTransition: ctrlWrapper(addTransition),
     addGrammatical: ctrlWrapper(addGrammatical),
     eventUspacy: ctrlWrapper(eventUspacy),
     editUspacy: ctrlWrapper(editUspacy),
+    editContactUspacy: ctrlWrapper(editContactUspacy),
 };
