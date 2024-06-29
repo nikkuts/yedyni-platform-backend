@@ -174,7 +174,9 @@ const addTransition = async (req, res) => {
   const sendEmailContact = async (req, res) => {
     const payload = JSON.parse(req.body);
     const message = JSON.parse(payload.Message);
-    message.entity.contacts.forEach(contact => {
+    const data = message.data;
+    const contacts = data.entity.contacts;
+    contacts.forEach(contact => {
                 console.log('Contact:', contact);
             });
     res.status(200);
