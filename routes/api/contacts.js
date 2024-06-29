@@ -10,10 +10,6 @@ router.post('/grammatical', ctrl.addGrammatical);
 
 // router.post('/process', ctrl.processesContact);
 
-router.post('/hookuspacy', ctrl.eventUspacy);
-
-router.post('/edituspacy', ctrl.editUspacy);
-
-router.post('/editcontact', ctrl.editContactUspacy);
+router.post('/editcontact', ctrl.sendEmailContact);
 
 module.exports = router;
