@@ -173,8 +173,9 @@ const addTransition = async (req, res) => {
 
   const sendEmailContact = async (req, res) => {
     const payload = req.body;
-    const message = JSON.parse(payload.Message);
-            console.log('Message:', message);
+    console.log(payload.Message);
+    // const message = JSON.parse(payload.Message);
+    //         console.log('Message:', message);
     res.status(200);
   };
 
