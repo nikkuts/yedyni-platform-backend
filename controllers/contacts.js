@@ -2,10 +2,8 @@ const axios = require('axios');
 require('dotenv').config();
 const { Contact } = require('../models/contact');
 const {ctrlWrapper, HttpError} = require('../helpers');
-const { SNSClient, ConfirmSubscriptionCommand } = require('@aws-sdk/client-sns');
 
 const {USPACY_LOGIN, USPACY_PASS} = process.env;
-const snsClient = new SNSClient({ region: "eu-west-1" });
 
 const addTransition = async (req, res) => {
     const contact = req.body;
@@ -174,7 +172,9 @@ const addTransition = async (req, res) => {
   };
 
   const sendEmailContact = async (req, res) => {
-    console.log('req.body', req.body);
+    const payload = req.body;
+    const message = JSON.parse(payload.Message);
+            console.log('Message:', message);
     res.status(200);
   };
 
