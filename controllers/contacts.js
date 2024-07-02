@@ -175,10 +175,8 @@ const addTransition = async (req, res) => {
     const payload = JSON.parse(req.body);
     const message = JSON.parse(payload.Message);
     const data = message.data;
+    console.log('data', data);
     const contacts = data.entity.contacts;
-    // contacts.forEach(contact => {
-    //             console.log('Contact:', contact);
-    //         });
     console.log('контакт', contacts[0]);
     res.status(200);
   };
