@@ -12,4 +12,6 @@ router.post('/grammatical', ctrl.addGrammatical);
 
 router.post('/editcontact', ctrl.sendEmailContact);
 
+router.post('/edituspacy', ctrl.editLead);
+
 module.exports = router;

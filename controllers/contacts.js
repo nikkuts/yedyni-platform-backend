@@ -181,8 +181,18 @@ const addTransition = async (req, res) => {
     res.status(200);
   };
 
+  const editLead = async (req, res) => {
+    const payload = JSON.parse(req.body);
+    const message = JSON.parse(payload.Message);
+    const data = message.data;
+    console.log('data', data);
+
+    res.status(201);
+  };
+
 module.exports = {
     addTransition: ctrlWrapper(addTransition),
     addGrammatical: ctrlWrapper(addGrammatical),
     sendEmailContact: ctrlWrapper(sendEmailContact),
+    editLead: ctrlWrapper(editLead),
 };
