@@ -175,9 +175,9 @@ const addTransition = async (req, res) => {
     const payload = JSON.parse(req.body);
     const message = JSON.parse(payload.Message);
     const data = message.data;
-    console.log('data', data);
+    // console.log('data', data);
     const contacts = data.entity.contacts;
-    console.log('контакт', contacts[0]);
+    console.log("Пов'язаний контакт", contacts[0]);
     res.status(200);
   };
 
