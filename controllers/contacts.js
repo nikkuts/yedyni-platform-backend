@@ -60,7 +60,8 @@ const addTransition = async (req, res) => {
         data: {
           title: "Курс переходу",
           funnel_id: 3,
-          contacts: [contactUspacyId]
+          contacts: [contactUspacyId],
+          hvilya: courses[0].wave
         }
       };
   
@@ -171,7 +172,8 @@ const addTransition = async (req, res) => {
         data: {
           title: "Граматичний курс",
           funnel_id: 4,
-          contacts: [contactUspacyId]
+          contacts: [contactUspacyId],
+          hvilya: courses[1].wave
         }
       };
   
