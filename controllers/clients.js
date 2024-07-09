@@ -120,7 +120,8 @@ const addServant = async (req, res) => {
         title: "Курс з підготовки до держіспиту",
         funnel_id: 5,
         amount_of_the_deal: {currency: "UAH", value: "950"},
-        contacts: [contactUspacyId]
+        contacts: [contactUspacyId],
+        hvilya: courses[2].wave
       }
     };
 
@@ -250,7 +251,8 @@ const addCreative = async (req, res) => {
         title: "Видноколо",
         funnel_id: 6,
         amount_of_the_deal: {currency: "UAH", value: "750"},
-        contacts: [contactUspacyId]
+        contacts: [contactUspacyId],
+        hvilya: courses[3].wave
       }
     };
 
@@ -380,7 +382,8 @@ const addProukrainian = async (req, res) => {
         title: "Проукраїнська",
         funnel_id: 7,
         amount_of_the_deal: {currency: "UAH", value: "1100"},
-        contacts: [contactUspacyId]
+        contacts: [contactUspacyId],
+        hvilya: courses[4].wave
       }
     };
 
