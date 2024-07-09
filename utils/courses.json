@@ -1,0 +1,45 @@
+[
+    {
+        "title": "Курс переходу",
+        "wave": "27",
+        "start": "2024-07-01",
+        "canal": "https://t.me/+LYFRXXFQv784OGQ6",
+        "viber": "https://invite.viber.com/?g2=AQAcUY%2B3ydJse1MSVuQTQlErpDR9YefoAiPsg%2BeNerEv9p7WOxlPHnCt23p5gIHq",
+        "welcomeStageId": "30"
+    },
+    {
+        "title": "Граматичний курс",
+        "wave": "20",
+        "start": "2024-07-01",
+        "canal": "https://t.me/+DF_nowJ66sBmZWJi",
+        "classroom": "https://classroom.google.com/c/Njk1MjI5NjQ5NjU0?cjc=y5tkc6b",
+        "welcomeStageId": "33"
+    },
+    {
+        "title": "Курс для держслужбовців",
+        "amount": "950",
+        "wave": "2",
+        "start": "2024-07-08",
+        "canal": "https://t.me/+7dGtTxhjSvYwMjcy",
+        "paymentStageId": "",
+        "welcomeStageId": ""
+    },
+    {
+        "title": "Видноколо",
+        "amount": "750",
+        "wave": "5",
+        "start": "2024-07-15",
+        "canal": "https://t.me/+-V2iiwAEpyA5MTg6",
+        "paymentStageId": "",
+        "welcomeStageId": ""
+    },
+    {
+        "title": "Проукраїнська",
+        "amount": "1100",
+        "wave": "1",
+        "start": "2024-07-22",
+        "canal": "",
+        "paymentStageId": "",
+        "welcomeStageId": ""
+    }
+]

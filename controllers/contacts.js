@@ -1,7 +1,8 @@
 const axios = require('axios');
 require('dotenv').config();
 const { Contact } = require('../models/contact');
-const {ctrlWrapper, HttpError} = require('../helpers');
+const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
+const courses = require('../utils/courses.json');
 
 const {USPACY_LOGIN, USPACY_PASS} = process.env;
 
@@ -37,7 +38,7 @@ const addTransition = async (req, res) => {
         },
         data: {
           ...contact,
-          title: contact.first_name,
+          title: `${contact.last_name} ${contact.first_name}`,
           email: [{ value: contact.email }],
           phone: [{ value: contact.phone }],
           registration: ["kurs_perehodu"]
@@ -69,7 +70,35 @@ const addTransition = async (req, res) => {
       // Збереження в локальній базі id контакту та угоди
       await Contact.findByIdAndUpdate(newContact._id, 
         {contactUspacyId, dealUspacyId}
-      )
+      );
+
+      // Відправка привітального листа
+      const welcomeEmail = {
+        to: [{ email: contact.email }],
+        subject: "Вітаємо з реєстрацією на курсі!",
+        html: `
+          <p>${contact.first_name}, Вас зареєстровано на курс "Єдині": 28 днів підтримки у переході на українську мову. </p>
+          <p>Наступний крок: приєднатися до нашої <a target="_blank" href="${courses[0].canal}">Telegram</a> або <a target="_blank" href="${courses[0].viber}">Viber</a>-групи!</p>
+          <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
+          `
+      };
+
+      const isSendingEmail = await sendEmail(welcomeEmail);
+
+       // Встановлення етапу автоматичної відправки посилання в угоді Uspacy
+      if (isSendingEmail) {
+        const moveStageDealOptions = {
+          method: 'POST',
+          url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}/move/stage/${courses[0].welcomeStageId}`,
+          headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            authorization: `Bearer ${jwt}`
+          }
+        };
+  
+        await axios(moveStageDealOptions);
+      }
 
       res.status(201).json({
         message: 'success',
@@ -120,7 +149,7 @@ const addTransition = async (req, res) => {
         },
         data: {
           ...contact,
-          title: contact.first_name,
+          title: `${contact.last_name} ${contact.first_name}`,
           email: [{ value: contact.email }],
           phone: [{ value: contact.phone }],
           registration: ["gramatichniy_kurs"]
@@ -153,6 +182,34 @@ const addTransition = async (req, res) => {
       await Contact.findByIdAndUpdate(newContact._id, 
         {contactUspacyId, dealUspacyId}
       )
+
+       // Відправка привітального листа
+       const welcomeEmail = {
+        to: [{ email: contact.email }],
+        subject: "Вітаємо з реєстрацією на курсі!",
+        html: `
+          <p>${contact.first_name}, Вас зареєстровано на курс "Єдині": 28 днів вдосконалення Вашої української мови. </p>
+          <p>Наступний крок: приєднатися до нашого <a target="_blank" href="${courses[1].canal}">Telegram</a> або <a target="_blank" href="${courses[1].classroom}">Google Classroom</a>!</p>
+          <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
+          `
+      };
+
+      const isSendingEmail = await sendEmail(welcomeEmail);
+
+      // Встановлення етапу автоматичної відправки посилання в угоді Uspacy
+     if (isSendingEmail) {
+       const moveStageDealOptions = {
+         method: 'POST',
+         url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}/move/stage/${courses[1].welcomeStageId}`,
+         headers: {
+           accept: 'application/json',
+           'content-type': 'application/json',
+           authorization: `Bearer ${jwt}`
+         }
+       };
+ 
+       await axios(moveStageDealOptions);
+     }
 
       res.status(201).json({
         message: 'success',

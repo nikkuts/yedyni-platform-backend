@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 const { Client } = require('../models/client');
 const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
+const courses = require('../utils/courses.json');
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;

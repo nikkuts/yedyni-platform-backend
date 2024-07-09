@@ -1,28 +1,21 @@
-const nodemailer = require('nodemailer');
-
+const { MailtrapClient } = require('mailtrap');
 require('dotenv').config();
 
-const nodemailerСonfig = {
-  host: 'smtp.meta.ua',
-  port: 465,
-  secure: true,
-  auth: {
-    user: 'mykolakuts@meta.ua',
-    pass: process.env.PASS,
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-};
+const {MAILTRAP_ENDPOINT, MAILTRAP_API_TOKEN, SENDER_NAME, SENDER_EMAIL} = process.env;
 
-const transporter = nodemailer.createTransport(nodemailerСonfig);
+const client = new MailtrapClient({ endpoint: MAILTRAP_ENDPOINT, token: MAILTRAP_API_TOKEN });
+const sender = { name: SENDER_NAME, email: SENDER_EMAIL };
 
 const sendEmail = async (data) => {
-    const email = {...data, from: 'mykolakuts@meta.ua'};
-    await transporter.sendMail(email)
-    // .then(() => console.log('success email'))
-    // .catch((error) => console.log(error.message));
-    return true;
+  const email = {...data, from: sender};
+  try {
+      await client.send(email);
+      console.log('success email');
+      return true;
+  } catch (error) {
+      console.log(error.message);
+      return false;
+  }
 };
 
 module.exports = sendEmail; 
