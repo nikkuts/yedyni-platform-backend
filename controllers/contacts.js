@@ -8,6 +8,7 @@ const {USPACY_LOGIN, USPACY_PASS} = process.env;
 
 const addTransition = async (req, res) => {
     const contact = req.body;
+    const course = courses.find(elem => elem.title === 'Курс переходу');
   
     try {
       // Створення нового контакту в локальній базі даних
@@ -61,7 +62,7 @@ const addTransition = async (req, res) => {
           title: "Курс переходу",
           funnel_id: 3,
           contacts: [contactUspacyId],
-          hvilya: courses[0].wave
+          hvilya: course.wave
         }
       };
   
@@ -79,7 +80,7 @@ const addTransition = async (req, res) => {
         subject: "Вітаємо з реєстрацією на курсі!",
         html: `
           <p>${contact.first_name}, Вас зареєстровано на курс "Єдині": 28 днів підтримки у переході на українську мову. </p>
-          <p>Наступний крок: приєднатися до нашої <a target="_blank" href="${courses[0].canal}">Telegram</a> або <a target="_blank" href="${courses[0].viber}">Viber</a>-групи!</p>
+          <p>Наступний крок: приєднатися до нашої <a target="_blank" href="${course.canal}">Telegram</a> або <a target="_blank" href="${course.viber}">Viber</a>-групи!</p>
           <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
           `
       };
@@ -90,7 +91,7 @@ const addTransition = async (req, res) => {
       if (isSendingEmail) {
         const moveStageDealOptions = {
           method: 'POST',
-          url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}/move/stage/${courses[0].welcomeStageId}`,
+          url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}/move/stage/${course.welcomeStageId}`,
           headers: {
             accept: 'application/json',
             'content-type': 'application/json',
@@ -120,6 +121,7 @@ const addTransition = async (req, res) => {
 
   const addGrammatical = async (req, res) => {
     const contact = req.body;
+    const course = courses.find(elem => elem.title === 'Граматичний курс');
   
     try {
       // Створення нового контакту в локальній базі даних
@@ -173,7 +175,7 @@ const addTransition = async (req, res) => {
           title: "Граматичний курс",
           funnel_id: 4,
           contacts: [contactUspacyId],
-          hvilya: courses[1].wave
+          hvilya: course.wave
         }
       };
   
@@ -191,7 +193,7 @@ const addTransition = async (req, res) => {
         subject: "Вітаємо з реєстрацією на курсі!",
         html: `
           <p>${contact.first_name}, Вас зареєстровано на курс "Єдині": 28 днів вдосконалення Вашої української мови. </p>
-          <p>Наступний крок: приєднатися до нашого <a target="_blank" href="${courses[1].canal}">Telegram</a> або <a target="_blank" href="${courses[1].classroom}">Google Classroom</a>!</p>
+          <p>Наступний крок: приєднатися до нашого <a target="_blank" href="${course.canal}">Telegram</a> або <a target="_blank" href="${course.classroom}">Google Classroom</a>!</p>
           <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
           `
       };
@@ -202,7 +204,7 @@ const addTransition = async (req, res) => {
      if (isSendingEmail) {
        const moveStageDealOptions = {
          method: 'POST',
-         url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}/move/stage/${courses[1].welcomeStageId}`,
+         url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}/move/stage/${course.welcomeStageId}`,
          headers: {
            accept: 'application/json',
            'content-type': 'application/json',

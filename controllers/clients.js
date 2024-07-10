@@ -16,6 +16,7 @@ const {USPACY_LOGIN, USPACY_PASS} = process.env;
 
 const addServant = async (req, res) => {
   const {first_name, last_name, email, phone} = req.body;
+  const course = courses.find(elem => elem.title === 'Курс для держслужбовців');
 
   try {
     const newClient = await Client.create({
@@ -119,9 +120,9 @@ const addServant = async (req, res) => {
       data: {
         title: "Курс з підготовки до держіспиту",
         funnel_id: 5,
-        amount_of_the_deal: {currency: "UAH", value: "950"},
+        amount_of_the_deal: {currency: "UAH", value: course.amount},
         contacts: [contactUspacyId],
-        hvilya: courses[2].wave
+        hvilya: course.wave
       }
     };
 
@@ -147,6 +148,7 @@ const addServant = async (req, res) => {
 
 const addCreative = async (req, res) => {
   const {first_name, last_name, email, phone} = req.body;
+  const course = courses.find(elem => elem.title === 'Видноколо');
 
   try {
     const newClient = await Client.create({
@@ -250,9 +252,9 @@ const addCreative = async (req, res) => {
       data: {
         title: "Видноколо",
         funnel_id: 6,
-        amount_of_the_deal: {currency: "UAH", value: "750"},
+        amount_of_the_deal: {currency: "UAH", value: course.amount},
         contacts: [contactUspacyId],
-        hvilya: courses[3].wave
+        hvilya: course.wave
       }
     };
 
@@ -278,6 +280,7 @@ const addCreative = async (req, res) => {
 
 const addProukrainian = async (req, res) => {
   const {first_name, last_name, email, phone} = req.body;
+  const course = courses.find(elem => elem.title === 'Проукраїнська');
 
   try {
     const newClient = await Client.create({
@@ -381,9 +384,9 @@ const addProukrainian = async (req, res) => {
       data: {
         title: "Проукраїнська",
         funnel_id: 7,
-        amount_of_the_deal: {currency: "UAH", value: "1100"},
+        amount_of_the_deal: {currency: "UAH", value: course.amount},
         contacts: [contactUspacyId],
-        hvilya: courses[4].wave
+        hvilya: course.wave
       }
     };
 
@@ -420,8 +423,6 @@ const processesClient = async (req, res) => {
   const result = JSON.parse(dataString);
 
   const { status, customer } = result;
-  let dealUspacyId;
-  let stageId;
 
   if (status === 'success') {
 
@@ -432,22 +433,7 @@ const processesClient = async (req, res) => {
         { new: true }
       );
 
-      dealUspacyId = client.dealUspacyId;
-
-      // const welcomeEmail = {
-      //   to: client.email,
-      //   subject: 'Реєстрація на курс руху "Єдині"',
-      //   html: `
-      //   <h1>Дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</h1>
-      //   <p>Внесена Вами грошова пожертва в розмірі 900 грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
-      //   <p>Наступний крок: приєднатися до нашого Telegram!</p>
-      //   <p>Просимо не поширювати це посилання серед осіб, незареєстрованих на курс.</p>
-      //   <a target="_blank" href="https://t.me/+s_ebd987jWA1MTQy">Приєднатися до курсу</a>
-      //   `
-      // };
-
-      // await sendEmail(welcomeEmail);
-    
+      const course = courses.find(elem => elem.title === client.product);
 
       // Отримання JWT токена від Uspacy
       const authOptions = {
@@ -460,24 +446,52 @@ const processesClient = async (req, res) => {
       const authResponse = await axios(authOptions);
       const jwt = authResponse.data.jwt;
 
-      // Встановлення етапу успішного завершення угоди в Uspacy
-      switch (client.product) {
-        case "Курс для держслужбовців":
-          stageId = 19;
-          break;
-      
-        case "Видноколо":
-          stageId = 22;
-          break;
+      // Відправка привітального листа
+      const welcomeEmail = {
+        to: [{ email: client.email }],
+        subject: "Вітаємо на курсі!",
+        html: `
+          <p>${client.first_name}, дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</p>
+          <p>Внесена Вами грошова пожертва в розмірі ${course.amount} грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
+          <p>Наступний крок: приєднатися до нашого Telegram!</p>
+          <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
+          <p><a target="_blank" href="${course.canal}">Приєднатися до курсу</a></p>
+          `
+      };
 
-        case "Проукраїнська":
-          stageId = 25;
-          break;
-      }
+      const isSendingEmail = await sendEmail(welcomeEmail);
+
+       // Встановлення етапу в угоді Uspacy
+      const stageId = isSendingEmail ? course.welcomeStageId : course.paymentStageId;
+
+      // Встановлення етапу успішного завершення угоди в Uspacy
+      // switch (client.product) {
+      //   case "Курс для держслужбовців":
+      //     stageId = 19;
+      //     break;
+      
+      //   case "Видноколо":
+      //     stageId = 22;
+      //     break;
+
+      //   case "Проукраїнська":
+      //     stageId = 25;
+      //     break;
+      // }
+
+      // const moveStageDealOptions = {
+      //   method: 'POST',
+      //   url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}/move/stage/${stageId}`,
+      //   headers: {
+      //     accept: 'application/json',
+      //     'content-type': 'application/json',
+      //     authorization: `Bearer ${jwt}`
+      //   }
+      // };
 
       const moveStageDealOptions = {
         method: 'POST',
-        url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}/move/stage/${stageId}`,
+        url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${client.dealUspacyId}/move/stage/${stageId}`,
         headers: {
           accept: 'application/json',
           'content-type': 'application/json',
@@ -490,7 +504,7 @@ const processesClient = async (req, res) => {
       // Отримання угоди з Uspacy
       const getDealOptions = {
         method: 'GET',
-        url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}`,
+        url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${client.dealUspacyId}`,
         headers: {
           accept: 'application/json',
           authorization: `Bearer ${jwt}`
@@ -514,6 +528,7 @@ const processesClient = async (req, res) => {
       }
     }
   }
+
   res.status(200).json({message: 'success'})
 };
 
@@ -573,7 +588,3 @@ module.exports = {
     getServants: ctrlWrapper(getServants),
     getCreatives: ctrlWrapper(getCreatives),
 };
-
-// res.status(201).json({
-//   message: 'Дані збережено',
-// });

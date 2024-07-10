@@ -39,7 +39,7 @@
         "wave": "1",
         "start": "2024-07-22",
         "canal": "",
-        "paymentStageId": "",
-        "welcomeStageId": ""
+        "paymentStageId": "27",
+        "welcomeStageId": "29"
     }
 ]
