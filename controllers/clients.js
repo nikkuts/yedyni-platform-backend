@@ -9,8 +9,8 @@ const { Client } = require('../models/client');
 const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
 const courses = require('../utils/courses.json');
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
-const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
+const PUBLIC_KEY = process.env.PUBLIC_KEY;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const BASE_SERVER_URL = process.env.BASE_SERVER_URL;
 const {USPACY_LOGIN, USPACY_PASS} = process.env;
 
@@ -451,8 +451,10 @@ const processesClient = async (req, res) => {
         to: [{ email: client.email }],
         subject: "Вітаємо на курсі!",
         html: `
-          <p>${client.first_name}, дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"! Внесена Вами грошова пожертва в розмірі ${course.amount} грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
-          <p>Наступний крок: приєднатися до нашого Telegram! Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
+          <p>${client.first_name}, дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</p> 
+          <p>Внесена Вами грошова пожертва в розмірі ${course.amount} грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
+          <p>Наступний крок: приєднатися до нашого Telegram!</p> 
+          <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
           <p><a target="_blank" href="${course.canal}">Приєднатися до курсу</a></p>
           `
       };
