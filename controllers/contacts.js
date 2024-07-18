@@ -162,6 +162,8 @@ const courses = require('../utils/courses.json');
       }
     }
 
+    console.log(`Створено угоду ${course.title}, ${user.last_name} ${user.first_name}`);
+
     res.status(201).json({
       message: 'success',
     });
@@ -316,6 +318,8 @@ const courses = require('../utils/courses.json');
         })
       }
     }
+
+    console.log(`Створено угоду ${course.title}, ${user.last_name} ${user.first_name}`);
 
     res.status(201).json({
       message: 'success',

@@ -480,7 +480,7 @@ const processesDeal = async (req, res) => {
   const dataString = Utf8.stringify(Base64.parse(data));
   const result = JSON.parse(dataString);
 
-  const { status, customer } = result;
+  const { status, customer, description } = result;
 
   if (status === 'success') {
 
@@ -515,44 +515,13 @@ const processesDeal = async (req, res) => {
         stageId: isSendingEmail ? course.welcomeStageId : course.paymentStageId,
       })
 
-      // Отримання угоди з Uspacy
-      const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: deal.dealUspacyId});
-      const dealStatus = dealUspacy.kanban_status;
-
-      // if (dealStatus === course.welcomeStageId) {
-      //   console.log('Встановлено статус угоди', 'Автоматична відправка посилання по email');
-      // } else if (dealStatus === course.paymentStageId) {
-      //   console.log('Встановлено статус угоди', 'Оплата');
-      // } else {
-      //   console.log('Статус угоди', dealStatus);
-      // }
-
-      switch (dealStatus) {
-        case course.welcomeStageId:
-          console.log('Встановлено статус угоди', 'Автоматична відправка посилання по email');
-          break;
-
-        case course.paymentStageId:
-          console.log('Встановлено статус угоди', 'Оплата');
-          break;
-
-        default:
-          console.log('Статус угоди', dealStatus);
-      }
+      console.log(`Успішна обробка платежу ${description}`);
 
     } catch (error) {
-      if (error.response) {
-        // Логування повної відповіді помилки, якщо вона є
-        console.error('Error during the process:', error.message, error.response.data);
-        res.status(error.response.status).json({ success: false, message: error.response.data.message || 'Помилка при обробці запиту' });
-      } else {
-        // Логування помилки без відповіді
-        console.error('Error during the process:', error.message);
-        res.status(500).json({ success: false, message: 'Помилка при обробці запиту' });
-      }
+      console.error(error)
     }
   } else {
-    console.log('Статус платежу', status);
+    console.log('Неуспішний платіж', result);
   }
 
   res.status(200).json({message: 'success'})
