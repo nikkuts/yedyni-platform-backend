@@ -5,7 +5,9 @@
         "start": "2024-07-01",
         "canal": "https://t.me/+LYFRXXFQv784OGQ6",
         "viber": "https://invite.viber.com/?g2=AQAcUY%2B3ydJse1MSVuQTQlErpDR9YefoAiPsg%2BeNerEv9p7WOxlPHnCt23p5gIHq",
-        "welcomeStageId": "30"
+        "funnelId": 3,
+        "welcomeStageId": 30,
+        "registration": "kurs_perehodu"
     },
     {
         "title": "Граматичний курс",
@@ -13,33 +15,41 @@
         "start": "2024-07-01",
         "canal": "https://t.me/+DF_nowJ66sBmZWJi",
         "classroom": "https://classroom.google.com/c/Njk1MjI5NjQ5NjU0?cjc=y5tkc6b",
-        "welcomeStageId": "33"
+        "funnelId": 4,
+        "welcomeStageId": 33,
+        "registration": "gramatichniy_kurs"
     },
     {
-        "title": "Курс для держслужбовців",
-        "amount": "950",
+        "title": "Курс з підготовки до держіспиту",
+        "amount": 950,
         "wave": "2",
         "start": "2024-07-08",
         "canal": "https://t.me/+7dGtTxhjSvYwMjcy",
-        "paymentStageId": "39",
-        "welcomeStageId": "40"
+        "funnelId": 5,
+        "paymentStageId": 39,
+        "welcomeStageId": 40,
+        "registration": "kurs_z_pidgotovki_do_derzhispitu"
     },
     {
         "title": "Видноколо",
-        "amount": "750",
+        "amount": 750,
         "wave": "5",
         "start": "2024-07-15",
-        "canal": "https://t.me/+-V2iiwAEpyA5MTg6",
-        "paymentStageId": "36",
-        "welcomeStageId": "37"
+        "canal": "https://t.me/+22ZpxRvxt4FkMWNi",
+        "funnelId": 6,
+        "paymentStageId": 36,
+        "welcomeStageId": 37,
+        "registration": "kurs_vidnokolo"
     },
     {
         "title": "Проукраїнська",
-        "amount": "1100",
+        "amount": 1100,
         "wave": "1",
         "start": "2024-07-22",
         "canal": "",
-        "paymentStageId": "27",
-        "welcomeStageId": "29"
+        "funnelId": 7,
+        "paymentStageId": 27,
+        "welcomeStageId": 29,
+        "registration": "kurs_proukrayinska_new"
     }
 ]

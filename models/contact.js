@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose');
-// const Joi = require('joi');
 const {handleMongooseError} = require('../helpers');
 
 const contactSchema = new Schema({
@@ -21,15 +20,12 @@ const contactSchema = new Schema({
       },
       vik: {
         type: Number,
-        required: true,
       },
       city: {
         type: String,
-        required: true,
       },
       work: {
         type: String,
-        required: true,
       },
       mova: {
         type: String,
@@ -48,7 +44,6 @@ const contactSchema = new Schema({
       },
       kurs_ended: {
         type: String,
-        required: true,
       },
       registration: {
         type: [
@@ -56,15 +51,15 @@ const contactSchema = new Schema({
             type: String,
             enum: [
               "kurs_perehodu", 
-              "gramatichniy_kurs", 
+              "gramatichniy_kurs",
+              "kurs_z_pidgotovki_do_derzhispitu",
+              "kurs_vidnokolo",
+              "kurs_proukrayinska_new"
             ], 
           }
         ]
       },
       contactUspacyId: {
-        type: String,
-      },
-      dealUspacyId: {
         type: String,
       }
 }, {versionKey: false, timestamps: true});

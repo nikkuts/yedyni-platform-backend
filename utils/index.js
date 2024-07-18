@@ -13,6 +13,16 @@ const {
     getFileInfo,
     deleteImageFromCloudinary,
   } = require("./cloudinary");
+
+  const {
+    authUspacy,
+    getContactByIdUspacy,
+    getDealByIdUspacy,
+    createContactUspacy,
+    createDealUspacy,
+    editContactUspacy,
+    moveStageDealUspacy
+  } = require("./uspacy");
   
   
   module.exports = {
@@ -26,4 +36,11 @@ const {
     uploadImageToCloudinary,
     getFileInfo,
     deleteImageFromCloudinary,
+    authUspacy,
+    getContactByIdUspacy,
+    getDealByIdUspacy,
+    createContactUspacy,
+    createDealUspacy,
+    editContactUspacy,
+    moveStageDealUspacy
   };
