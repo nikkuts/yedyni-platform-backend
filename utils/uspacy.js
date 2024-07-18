@@ -123,7 +123,7 @@ const editContactUspacy = async ({token, contactId, user, registration}) => {
         title: `${user.last_name} ${user.first_name}`,
         email: [{ value: user.email }],
         phone: [{ value: user.phone }],
-        registration: [...registration],
+        registration,
       }
     };
 
