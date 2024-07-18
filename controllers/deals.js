@@ -361,7 +361,7 @@ const addProukrainian = async (req, res) => {
         description: `${user.last_name} ${user.first_name} Донат за Курс ${course.title}`,
         order_id: orderId,
         result_url: `https://yedyni.org/testpayment?deal_id=${dealId}`,
-        server_url: `${BASE_SERVER_URL}/api/clients/process`,
+        server_url: `${BASE_SERVER_URL}/api/deals/process`,
         customer: dealId,
       };
 
