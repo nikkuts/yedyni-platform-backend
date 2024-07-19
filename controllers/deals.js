@@ -399,7 +399,7 @@ const addProukrainian = async (req, res) => {
 
     res.send(paymentForm);
 
-    try {
+    // try {
       // Отримання JWT токена від Uspacy
       const jwt = await authUspacy();
 
@@ -468,9 +468,9 @@ const addProukrainian = async (req, res) => {
       }
 
       console.log(`Створено угоду ${course.title}, ${user.last_name} ${user.first_name}`);
-    } catch (error) {
-      console.error(error);
-    }
+    // } catch (error) {
+    //   console.error(error);
+    // }
   // } catch (error) {
   //   next(error);
   // }
