@@ -288,7 +288,7 @@ const addCreative = async (req, res) => {
   }
 };
 
-const addProukrainian = async (req, res) => {
+const addProukrainian = async (req, res, next) => {
   const user = req.body;
   const course = courses.find(elem => elem.title === 'Проукраїнська');
   let contactId = null;
@@ -297,6 +297,7 @@ const addProukrainian = async (req, res) => {
   let dealId = null;
   let dealUspacyId = null;
 
+  try {
     // Перевірка, чи є контакт у базі
     const contact = await Contact.findOne({email: user.email});
 
@@ -398,74 +399,81 @@ const addProukrainian = async (req, res) => {
 
     res.send(paymentForm);
 
-    // Отримання JWT токена від Uspacy
-    const jwt = await authUspacy();
+    try {
+      // Отримання JWT токена від Uspacy
+      const jwt = await authUspacy();
 
-    if (contact) {
-      // Перевірка, чи є контакт в Uspacy
-      const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contact.contactUspacyId});
-      
-      if (contactUspacy) {
-        contactUspacyId = contactUspacy.id;
-      }
-    } 
-
-    if (dealUspacyId) {
-      // Перевірка, чи є угода в Uspacy
-      const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
+      if (contact) {
+        // Перевірка, чи є контакт в Uspacy
+        const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contact.contactUspacyId});
         
-      if (!dealUspacy) {
-        dealUspacyId = null;
+        if (contactUspacy) {
+          contactUspacyId = contactUspacy.id;
+        }
       } 
-    }
 
-    if (!contactUspacyId) {
-      // Створення контакту в Uspacy
-      const newContactUspacy = await createContactUspacy({
-        token: jwt, 
-        user,
-        registration: [course.registration]
-      });
-
-      if (newContactUspacy) {
-        contactUspacyId = newContactUspacy.id;
+      if (dealUspacyId) {
+        // Перевірка, чи є угода в Uspacy
+        const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
+          
+        if (!dealUspacy) {
+          dealUspacyId = null;
+        } 
       }
 
-      // Оновлення контакту в локальній базі даних
-      await Contact.findByIdAndUpdate(
-        contactId,
-        {$set: {contactUspacyId}}
-      )
-    } else {
-      // Оновлення контакту в Uspacy
-      await editContactUspacy({
-        token: jwt, 
-        contactId: contactUspacyId,
-        user,
-        registration: arrayRegistration
-      })
-    } 
+      if (!contactUspacyId) {
+        // Створення контакту в Uspacy
+        const newContactUspacy = await createContactUspacy({
+          token: jwt, 
+          user,
+          registration: [course.registration]
+        });
 
-    if (!dealUspacyId) {
-      // Створення угоди для контакту в Uspacy
-      const newDealUspacy = await createDealUspacy({
-        token: jwt, 
-        course,
-        contactId: contactUspacyId
-      })
+        if (newContactUspacy) {
+          contactUspacyId = newContactUspacy.id;
+        }
 
-      if (newDealUspacy) {
-        dealUspacyId = newDealUspacy.id;
-
-        // Оновлення угоди в локальній базі даних
-        await Deal.findByIdAndUpdate(
-          dealId,
-          {$set: {dealUspacyId}}
+        // Оновлення контакту в локальній базі даних
+        await Contact.findByIdAndUpdate(
+          contactId,
+          {$set: {contactUspacyId}}
         )
-      }
-    }
+      } else {
+        // Оновлення контакту в Uspacy
+        await editContactUspacy({
+          token: jwt, 
+          contactId: contactUspacyId,
+          user,
+          registration: arrayRegistration
+        })
+      } 
 
-    console.log(`Створено угоду ${course.title}, ${user.last_name} ${user.first_name}`);
+      if (!dealUspacyId) {
+        // Створення угоди для контакту в Uspacy
+        const newDealUspacy = await createDealUspacy({
+          token: jwt, 
+          course,
+          contactId: contactUspacyId
+        })
+
+        if (newDealUspacy) {
+          dealUspacyId = newDealUspacy.id;
+
+          // Оновлення угоди в локальній базі даних
+          await Deal.findByIdAndUpdate(
+            dealId,
+            {$set: {dealUspacyId}}
+          )
+        }
+      }
+
+      console.log(`Створено угоду ${course.title}, ${user.last_name} ${user.first_name}`);
+    } catch (error) {
+      console.error(error);
+    }
+  } catch (error) {
+    next(error);
+  }
 };
 
 const processesDeal = async (req, res) => {
