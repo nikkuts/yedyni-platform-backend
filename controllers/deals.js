@@ -289,8 +289,10 @@ const addCreative = async (req, res) => {
 };
 
 const addProukrainian = async (req, res) => {
-  const user = req.body;
+  const {first_name, last_name, email, phone} = req.body;
+  const user = {first_name, last_name, email, phone};
   const course = courses.find(elem => elem.title === 'Проукраїнська');
+
   let contactId = null;
   let contactUspacyId = null;
   let arrayRegistration = null;
@@ -299,7 +301,7 @@ const addProukrainian = async (req, res) => {
 
   // try {
     // Перевірка, чи є контакт у базі
-    const contact = await Contact.findOne({email: user.email});
+    const contact = await Contact.findOne({email});
 
     if (!contact) {
       // Створення нового контакту в локальній базі даних
@@ -360,7 +362,7 @@ const addProukrainian = async (req, res) => {
         action: 'pay',
         amount: course.amount,
         currency: 'UAH',
-        description: `${user.last_name} ${user.first_name} Донат за Курс ${course.title}`,
+        description: `${last_name} ${first_name} Донат за Курс ${course.title}`,
         order_id: orderId,
         result_url: `https://yedyni.org/testpayment?deal_id=${dealId}`,
         server_url: `${BASE_SERVER_URL}/api/deals/process`,
@@ -400,7 +402,6 @@ const addProukrainian = async (req, res) => {
 
     res.send(paymentForm);
 
-    // try {
       // Отримання JWT токена від Uspacy
       const jwt = await authUspacy();
 
@@ -426,7 +427,7 @@ const addProukrainian = async (req, res) => {
         const newContactUspacy = await createContactUspacy({
           token: jwt, 
           user,
-          // registration: [course.registration]
+          registration: [course.registration]
         });
 
         if (newContactUspacy) {
@@ -469,12 +470,6 @@ const addProukrainian = async (req, res) => {
       }
 
       console.log(`Створено угоду ${course.title}, ${user.last_name} ${user.first_name}`);
-    // } catch (error) {
-    //   console.error(error);
-    // }
-  // } catch (error) {
-  //   next(error);
-  // }
 };
 
 const processesDeal = async (req, res) => {

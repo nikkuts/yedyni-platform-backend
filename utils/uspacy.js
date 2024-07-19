@@ -17,7 +17,7 @@ const authUspacy = async () => {
         const authResponse = await axios(authOptions);
         return authResponse.data.jwt;
     } catch (error) {
-        console.error(error.response.status, error.response.data.errors.text);
+        console.error(error.response.status, error.response.data);
     }
 };
 
@@ -35,7 +35,7 @@ const getContactByIdUspacy = async ({token, contactId}) => {
         const response = await axios(getContactOptions);
         return response.data;
     } catch (error) {
-        console.error(error.response.status, error.response.data.errors.text);
+        console.error(error.response.status, error.response.data);
     }
 };
 
@@ -53,11 +53,11 @@ const getDealByIdUspacy = async ({token, dealId}) => {
         const response = await axios(getDealOptions);
         return response.data;
     } catch (error) {
-        console.error(error.response.status, error.response.data.errors.text);
+        console.error(error.response.status, error.response.data);
     }
 };
 
-const createContactUspacy = async ({token, user}) => {
+const createContactUspacy = async ({token, user, registration}) => {
     const createContactOptions = {
         method: 'POST',
         url: 'https://yedyni.uspacy.ua/crm/v1/entities/contacts',
@@ -71,7 +71,7 @@ const createContactUspacy = async ({token, user}) => {
         title: `${user.last_name} ${user.first_name}`,
         email: [{ value: user.email }],
         phone: [{ value: user.phone }],
-        // registration,
+        registration,
       }
     };
 
@@ -79,7 +79,7 @@ const createContactUspacy = async ({token, user}) => {
         const response = await axios(createContactOptions);
         return response.data;
     } catch (error) {
-        console.error(error.response.status, error.response);
+        console.error(error.response.status, error.response.data);
     }
 };
 
@@ -131,7 +131,7 @@ const editContactUspacy = async ({token, contactId, user, registration}) => {
         const response = await axios(editContactOptions);
         return response.data;
     } catch (error) {
-        console.error(error.response.status, error.response.data.errors.text);
+        console.error(error.response.status, error.response.data);
     }
 };
 
@@ -150,7 +150,7 @@ const moveStageDealUspacy = async ({token, dealId, stageId}) => {
         const response = await axios(moveStageDealOptions);
         return response.data;
     } catch (error) {
-        console.error(error.response.status, error.response.data.errors.text);
+        console.error(error.response.status, error.response.data);
     }
 };
 
