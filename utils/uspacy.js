@@ -57,7 +57,7 @@ const getDealByIdUspacy = async ({token, dealId}) => {
     }
 };
 
-const createContactUspacy = async ({token, user, registration}) => {
+const createContactUspacy = async ({token, user}) => {
     const createContactOptions = {
         method: 'POST',
         url: 'https://yedyni.uspacy.ua/crm/v1/entities/contacts',
@@ -71,7 +71,7 @@ const createContactUspacy = async ({token, user, registration}) => {
         title: `${user.last_name} ${user.first_name}`,
         email: [{ value: user.email }],
         phone: [{ value: user.phone }],
-        registration,
+        // registration,
       }
     };
 
@@ -79,7 +79,7 @@ const createContactUspacy = async ({token, user, registration}) => {
         const response = await axios(createContactOptions);
         return response.data;
     } catch (error) {
-        console.error(error.response.status, error.response.data);
+        console.error(error.response.status, error.response);
     }
 };
 

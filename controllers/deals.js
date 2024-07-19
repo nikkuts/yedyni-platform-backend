@@ -426,7 +426,7 @@ const addProukrainian = async (req, res) => {
         const newContactUspacy = await createContactUspacy({
           token: jwt, 
           user,
-          registration: [course.registration]
+          // registration: [course.registration]
         });
 
         if (newContactUspacy) {
