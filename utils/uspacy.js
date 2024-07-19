@@ -97,7 +97,7 @@ const createDealUspacy = async ({token, course, contactId}) => {
         funnel_id: course.funnelId,
         contacts: [contactId],
         hvilya: course.wave,
-        amount_of_the_deal: {currency: "UAH", value: course.amount}
+        amount_of_the_deal: {currency: "UAH", value: course.amount.toString()}
       }
     };
 

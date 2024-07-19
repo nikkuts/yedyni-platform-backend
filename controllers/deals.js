@@ -288,7 +288,7 @@ const addCreative = async (req, res) => {
   }
 };
 
-const addProukrainian = async (req, res, next) => {
+const addProukrainian = async (req, res) => {
   const user = req.body;
   const course = courses.find(elem => elem.title === 'Проукраїнська');
   let contactId = null;
@@ -297,7 +297,7 @@ const addProukrainian = async (req, res, next) => {
   let dealId = null;
   let dealUspacyId = null;
 
-  try {
+  // try {
     // Перевірка, чи є контакт у базі
     const contact = await Contact.findOne({email: user.email});
 
@@ -471,9 +471,9 @@ const addProukrainian = async (req, res, next) => {
     } catch (error) {
       console.error(error);
     }
-  } catch (error) {
-    next(error);
-  }
+  // } catch (error) {
+  //   next(error);
+  // }
 };
 
 const processesDeal = async (req, res) => {
