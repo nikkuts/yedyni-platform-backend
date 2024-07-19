@@ -299,7 +299,6 @@ const addProukrainian = async (req, res) => {
   let dealId = null;
   let dealUspacyId = null;
 
-  // try {
     // Перевірка, чи є контакт у базі
     const contact = await Contact.findOne({email});
 
@@ -339,6 +338,10 @@ const addProukrainian = async (req, res) => {
       if (deal) { 
         dealId = deal._id;
         dealUspacyId = deal.dealUspacyId;
+
+        if (deal.payment && deal.payment.status === 'success') {
+          return res.redirect(course.welcome);
+        }
       }
     }
 
