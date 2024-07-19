@@ -34,6 +34,7 @@ const courses = require('../utils/courses.json');
       contactId = newContact._id;
     } else { 
       contactId = contact._id;
+      contactUspacyId = contact.contactUspacyId;
 
       // Перевірка та додавання нової реєстрації контакту
       arrayRegistration = contact.registration;
@@ -76,23 +77,22 @@ const courses = require('../utils/courses.json');
     // Отримання JWT токена від Uspacy
     const jwt = await authUspacy();
 
-    if (contact) {
+    if (contactUspacyId) {
       // Перевірка, чи є контакт в Uspacy
-      const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contact.contactUspacyId});
+      const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contactUspacyId});
       
       if (contactUspacy) {
-        contactUspacyId = contactUspacy.id;
+        // Оновлення контакту в Uspacy
+        await editContactUspacy({
+          token: jwt, 
+          contactId: contactUspacyId,
+          user,
+          registration: arrayRegistration
+        })
+      } else {
+        contactUspacyId = null;
       }
     } 
-
-    if (dealUspacyId) {
-      // Перевірка, чи є угода в Uspacy
-      const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
-        
-      if (!dealUspacy) {
-        dealUspacyId = null;
-      } 
-    }
 
     if (!contactUspacyId) {
       // Створення контакту в Uspacy
@@ -111,15 +111,16 @@ const courses = require('../utils/courses.json');
         contactId,
         {$set: {contactUspacyId}}
       )
-    } else {
-      // Оновлення контакту в Uspacy
-      await editContactUspacy({
-        token: jwt, 
-        contactId: contactUspacyId,
-        user,
-        registration: arrayRegistration
-      })
-    } 
+    }  
+
+    if (dealUspacyId) {
+      // Перевірка, чи є угода в Uspacy
+      const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
+        
+      if (!dealUspacy) {
+        dealUspacyId = null;
+      } 
+    }
 
     if (!dealUspacyId) {
       // Створення угоди для контакту в Uspacy
