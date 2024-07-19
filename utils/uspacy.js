@@ -79,7 +79,7 @@ const createContactUspacy = async ({token, user, registration}) => {
         const response = await axios(createContactOptions);
         return response.data;
     } catch (error) {
-        console.error(error.response.status, error.response.data.errors.text);
+        console.error(error.response.status, error.response.data);
     }
 };
 
