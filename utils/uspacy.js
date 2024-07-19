@@ -105,7 +105,7 @@ const createDealUspacy = async ({token, course, contactId}) => {
         const response = await axios(createDealOptions);
         return response.data;
     } catch (error) {
-        console.error(error.response.status, error.response.data.errors.text);
+        console.error(error.response.status, error.response.data);
     }
 };
 
