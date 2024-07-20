@@ -1,6 +1,4 @@
 const axios = require('axios');
-const {HttpError} = require('../helpers');
-const courses = require('./courses.json');
 require('dotenv').config();
 
 const {USPACY_LOGIN, USPACY_PASS} = process.env;

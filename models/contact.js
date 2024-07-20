@@ -64,7 +64,9 @@ const contactSchema = new Schema({
       }
 }, {versionKey: false, timestamps: true});
 
-contactSchema.post('save', handleMongooseError);
+contactSchema.post('save', function(error, doc, next) {
+  handleMongooseError(error, doc, next);
+});
 
 const Contact = model('Contact', contactSchema);
 

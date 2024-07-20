@@ -31,7 +31,9 @@ const dealSchema = new Schema({
       }
 }, {versionKey: false, timestamps: true});
 
-dealSchema.post('save', handleMongooseError);
+dealSchema.post('save', function(error, doc, next) {
+  handleMongooseError(error, doc, next);
+});
 
 const Deal = model('Deal', dealSchema);
 
