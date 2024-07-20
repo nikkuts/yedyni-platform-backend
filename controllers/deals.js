@@ -1,5 +1,3 @@
-const axios = require('axios');
-const querystring = require('querystring');
 const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
 const Utf8 = require('crypto-js/enc-utf8');
@@ -22,21 +20,76 @@ const courses = require('../utils/courses.json');
 const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
 const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
 const BASE_SERVER_URL = process.env.BASE_SERVER_URL;
-const {USPACY_LOGIN, USPACY_PASS} = process.env;
 
 const addServant = async (req, res) => {
   const {first_name, last_name, email, phone} = req.body;
+  const user = {first_name, last_name, email, phone};
   const course = courses.find(elem => elem.title === 'Курс з підготовки до держіспиту');
 
-  try {
-    const newClient = await Deal.create({
-      first_name,
-      last_name, 
-      email,
-      phone,
-      product: course.title,
-    });
+  let contactId = null;
+  let contactUspacyId = null;
+  let arrayRegistration = null;
+  let dealId = null;
+  let dealUspacyId = null;
 
+    // Перевірка, чи є контакт у базі
+    const contact = await Contact.findOne({email});
+
+    if (!contact) {
+      // Створення нового контакту в локальній базі даних
+      const newContact = await Contact.create({
+        ...user,
+        registration: [course.registration],
+      });
+
+      contactId = newContact._id;
+    } else { 
+      contactId = contact._id;
+      contactUspacyId = contact.contactUspacyId;
+
+      // Перевірка та додавання нової реєстрації контакту
+      arrayRegistration = contact.registration;
+      const isCurrentRegistration = arrayRegistration.find(elem => elem === course.registration);
+
+      if (!isCurrentRegistration) {
+        arrayRegistration.push(course.registration);
+      }
+
+      // Оновлення контакту в локальній базі
+      await Contact.findByIdAndUpdate(
+        contact._id,
+        {$set: {...user, registration: arrayRegistration}}
+      )
+
+      // Перевірка, чи є угода в базі
+      const deal = await Deal.findOne({
+        contact: contact._id,
+        title: course.title,
+        wave: course.wave,
+      });
+
+      if (deal) { 
+        dealId = deal._id;
+        dealUspacyId = deal.dealUspacyId;
+
+        if (deal.payment && deal.payment.status === 'success') {
+          return res.redirect(course.welcome);
+        }
+      }
+    }
+
+    if (!dealUspacyId) {
+      // Створення нової угоди в локальній базі даних
+      const newDeal = await Deal.create({
+        contact: contactId,
+        title: course.title,
+        wave: course.wave,
+      });
+
+      dealId = newDeal._id;
+    }
+  
+    // Створення та відправка форми до Liqpay
     const orderId = uuidv4();
 
       const dataObj = {
@@ -45,11 +98,11 @@ const addServant = async (req, res) => {
         action: 'pay',
         amount: course.amount,
         currency: 'UAH',
-        description: `${last_name} ${first_name} Донат за ${course.title}`,
+        description: `${last_name} ${first_name} Донат за Курс ${course.title}`,
         order_id: orderId,
-        result_url: `https://yedyni.org/testpayment?client_id=${newClient._id}`,
-        server_url: `${BASE_SERVER_URL}/api/clients/process`,
-        customer: newClient._id,
+        result_url: `https://yedyni.org/testpayment?deal_id=${dealId}`,
+        server_url: `${BASE_SERVER_URL}/api/deals/process`,
+        customer: dealId,
       };
 
     // Кодуємо дані JSON у рядок та потім у Base64
@@ -85,103 +138,158 @@ const addServant = async (req, res) => {
 
     res.send(paymentForm);
 
-    // Отримання JWT токена від Uspacy
-    const authOptions = {
-      method: 'POST',
-      url: 'https://yedyni.uspacy.ua/auth/v1/auth/sign_in',
-      headers: { accept: 'application/json', 'content-type': 'application/json' },
-      data: { email: USPACY_LOGIN, password: USPACY_PASS }
-    };
+      // Отримання JWT токена від Uspacy
+      const jwt = await authUspacy();
 
-    const authResponse = await axios(authOptions);
-    const jwt = authResponse.data.jwt;
+      if (contactUspacyId) {
+        // Перевірка, чи є контакт в Uspacy
+        const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contactUspacyId});
+        
+        if (contactUspacy) {
+          // Оновлення контакту в Uspacy
+          await editContactUspacy({
+            token: jwt, 
+            contactId: contactUspacyId,
+            user,
+            registration: arrayRegistration
+          })
+        } else {
+          contactUspacyId = null;
+        }
+      } 
 
-    // Створення контакту в Uspacy
-    const createContactOptions = {
-      method: 'POST',
-      url: 'https://yedyni.uspacy.ua/crm/v1/entities/contacts',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: `Bearer ${jwt}`
-      },
-      data: {
-        title: `${last_name} ${first_name}`,
-        first_name,
-        last_name,
-        email: [{ value: email }],
-        phone: [{ value: phone }],
-        registration: ["kurs_z_pidgotovki_do_derzhispitu"]
+      if (!contactUspacyId) {
+        // Створення контакту в Uspacy
+        const newContactUspacy = await createContactUspacy({
+          token: jwt, 
+          user,
+          registration: [course.registration]
+        });
+
+        if (newContactUspacy) {
+          contactUspacyId = newContactUspacy.id;
+        }
+
+        // Оновлення контакту в локальній базі даних
+        await Contact.findByIdAndUpdate(
+          contactId,
+          {$set: {contactUspacyId}}
+        )
+      }  
+
+      if (dealUspacyId) {
+        // Перевірка, чи є угода в Uspacy
+        const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
+          
+        if (!dealUspacy) {
+          dealUspacyId = null;
+        } 
       }
-    };
 
-    const createContactResponse = await axios(createContactOptions);
-    const contactUspacyId = createContactResponse.data.id;
+      if (!dealUspacyId) {
+        // Створення угоди для контакту в Uspacy
+        const newDealUspacy = await createDealUspacy({
+          token: jwt, 
+          course,
+          contactId: contactUspacyId
+        })
 
-    // Створення угоди для контакту в Uspacy
-    const createDealOptions = {
-      method: 'POST',
-      url: 'https://yedyni.uspacy.ua/crm/v1/entities/deals',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: `Bearer ${jwt}`
-      },
-      data: {
-        title: "Курс з підготовки до держіспиту",
-        funnel_id: 5,
-        amount_of_the_deal: {currency: "UAH", value: course.amount},
-        contacts: [contactUspacyId],
-        hvilya: course.wave
+        if (newDealUspacy) {
+          dealUspacyId = newDealUspacy.id;
+
+          // Оновлення угоди в локальній базі даних
+          await Deal.findByIdAndUpdate(
+            dealId,
+            {$set: {dealUspacyId}}
+          )
+        }
       }
-    };
 
-    const createDealResponse = await axios(createDealOptions);
-    const dealUspacyId = createDealResponse.data.id;
-
-    // Збереження в локальній базі id контакту та угоди
-    await Deal.findByIdAndUpdate(newClient._id, {contactUspacyId, dealUspacyId});
-    console.log('Створено угоду "Курс з підготовки до держіспиту"', `${last_name} ${first_name}`);
-
-  } catch (error) {
-    if (error.response) {
-        // Логування повної відповіді помилки, якщо вона є
-        console.error('Error during the process:', error.message, error.response.data);
-        res.status(error.response.status).json({ success: false, message: error.response.data.message || 'Помилка при обробці запиту' });
-      } else {
-        // Логування помилки без відповіді
-        console.error('Error during the process:', error.message);
-        res.status(500).json({ success: false, message: 'Помилка при обробці запиту' });
-      }
-  }
+      console.log(`Створено угоду ${course.title}, ${user.last_name} ${user.first_name}`);
 };
 
 const addCreative = async (req, res) => {
   const {first_name, last_name, email, phone} = req.body;
+  const user = {first_name, last_name, email, phone};
   const course = courses.find(elem => elem.title === 'Видноколо');
 
-  try {
-    const newClient = await Deal.create({
-      first_name,
-      last_name, 
-      email,
-      phone,
-      product: course.title,
-    });
+  let contactId = null;
+  let contactUspacyId = null;
+  let arrayRegistration = null;
+  let dealId = null;
+  let dealUspacyId = null;
 
+    // Перевірка, чи є контакт у базі
+    const contact = await Contact.findOne({email});
+
+    if (!contact) {
+      // Створення нового контакту в локальній базі даних
+      const newContact = await Contact.create({
+        ...user,
+        registration: [course.registration],
+      });
+
+      contactId = newContact._id;
+    } else { 
+      contactId = contact._id;
+      contactUspacyId = contact.contactUspacyId;
+
+      // Перевірка та додавання нової реєстрації контакту
+      arrayRegistration = contact.registration;
+      const isCurrentRegistration = arrayRegistration.find(elem => elem === course.registration);
+
+      if (!isCurrentRegistration) {
+        arrayRegistration.push(course.registration);
+      }
+
+      // Оновлення контакту в локальній базі
+      await Contact.findByIdAndUpdate(
+        contact._id,
+        {$set: {...user, registration: arrayRegistration}}
+      )
+
+      // Перевірка, чи є угода в базі
+      const deal = await Deal.findOne({
+        contact: contact._id,
+        title: course.title,
+        wave: course.wave,
+      });
+
+      if (deal) { 
+        dealId = deal._id;
+        dealUspacyId = deal.dealUspacyId;
+
+        if (deal.payment && deal.payment.status === 'success') {
+          return res.redirect(course.welcome);
+        }
+      }
+    }
+
+    if (!dealUspacyId) {
+      // Створення нової угоди в локальній базі даних
+      const newDeal = await Deal.create({
+        contact: contactId,
+        title: course.title,
+        wave: course.wave,
+      });
+
+      dealId = newDeal._id;
+    }
+  
+    // Створення та відправка форми до Liqpay
     const orderId = uuidv4();
 
       const dataObj = {
         public_key: PUBLIC_KEY, 
         version: '3',
         action: 'pay',
-        amount: 750,
+        amount: course.amount,
         currency: 'UAH',
         description: `${last_name} ${first_name} Донат за Курс ${course.title}`,
         order_id: orderId,
-        result_url: `https://yedyni.org/testpayment?client_id=${newClient._id}`,
-        server_url: `${BASE_SERVER_URL}/api/clients/process`,
-        customer: newClient._id,
+        result_url: `https://yedyni.org/testpayment?deal_id=${dealId}`,
+        server_url: `${BASE_SERVER_URL}/api/deals/process`,
+        customer: dealId,
       };
 
     // Кодуємо дані JSON у рядок та потім у Base64
@@ -217,75 +325,74 @@ const addCreative = async (req, res) => {
 
     res.send(paymentForm);
 
-    // Отримання JWT токена від Uspacy
-    const authOptions = {
-      method: 'POST',
-      url: 'https://yedyni.uspacy.ua/auth/v1/auth/sign_in',
-      headers: { accept: 'application/json', 'content-type': 'application/json' },
-      data: { email: USPACY_LOGIN, password: USPACY_PASS }
-    };
+      // Отримання JWT токена від Uspacy
+      const jwt = await authUspacy();
 
-    const authResponse = await axios(authOptions);
-    const jwt = authResponse.data.jwt;
+      if (contactUspacyId) {
+        // Перевірка, чи є контакт в Uspacy
+        const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contactUspacyId});
+        
+        if (contactUspacy) {
+          // Оновлення контакту в Uspacy
+          await editContactUspacy({
+            token: jwt, 
+            contactId: contactUspacyId,
+            user,
+            registration: arrayRegistration
+          })
+        } else {
+          contactUspacyId = null;
+        }
+      } 
 
-    // Створення контакту в Uspacy
-    const createContactOptions = {
-      method: 'POST',
-      url: 'https://yedyni.uspacy.ua/crm/v1/entities/contacts',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: `Bearer ${jwt}`
-      },
-      data: {
-        title: `${last_name} ${first_name}`,
-        first_name,
-        last_name,
-        email: [{ value: email }],
-        phone: [{ value: phone }],
-        registration: ["kurs_vidnokolo"]
+      if (!contactUspacyId) {
+        // Створення контакту в Uspacy
+        const newContactUspacy = await createContactUspacy({
+          token: jwt, 
+          user,
+          registration: [course.registration]
+        });
+
+        if (newContactUspacy) {
+          contactUspacyId = newContactUspacy.id;
+        }
+
+        // Оновлення контакту в локальній базі даних
+        await Contact.findByIdAndUpdate(
+          contactId,
+          {$set: {contactUspacyId}}
+        )
+      }  
+
+      if (dealUspacyId) {
+        // Перевірка, чи є угода в Uspacy
+        const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
+          
+        if (!dealUspacy) {
+          dealUspacyId = null;
+        } 
       }
-    };
 
-    const createContactResponse = await axios(createContactOptions);
-    const contactUspacyId = createContactResponse.data.id;
+      if (!dealUspacyId) {
+        // Створення угоди для контакту в Uspacy
+        const newDealUspacy = await createDealUspacy({
+          token: jwt, 
+          course,
+          contactId: contactUspacyId
+        })
 
-    // Створення угоди для контакту в Uspacy
-    const createDealOptions = {
-      method: 'POST',
-      url: 'https://yedyni.uspacy.ua/crm/v1/entities/deals',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: `Bearer ${jwt}`
-      },
-      data: {
-        title: "Видноколо",
-        funnel_id: 6,
-        amount_of_the_deal: {currency: "UAH", value: course.amount},
-        contacts: [contactUspacyId],
-        hvilya: course.wave
+        if (newDealUspacy) {
+          dealUspacyId = newDealUspacy.id;
+
+          // Оновлення угоди в локальній базі даних
+          await Deal.findByIdAndUpdate(
+            dealId,
+            {$set: {dealUspacyId}}
+          )
+        }
       }
-    };
 
-    const createDealResponse = await axios(createDealOptions);
-    const dealUspacyId = createDealResponse.data.id;
-
-    // Збереження в локальній базі id контакту та угоди
-    await Deal.findByIdAndUpdate(newClient._id, {contactUspacyId, dealUspacyId});
-    console.log('Створено угоду "Видноколо"', `${last_name} ${first_name}`);
-
-  } catch (error) {
-    if (error.response) {
-        // Логування повної відповіді помилки, якщо вона є
-        console.error('Error during the process:', error.message, error.response.data);
-        res.status(error.response.status).json({ success: false, message: error.response.data.message || 'Помилка при обробці запиту' });
-      } else {
-        // Логування помилки без відповіді
-        console.error('Error during the process:', error.message);
-        res.status(500).json({ success: false, message: 'Помилка при обробці запиту' });
-      }
-  }
+      console.log(`Створено угоду ${course.title}, ${user.last_name} ${user.first_name}`);
 };
 
 const addProukrainian = async (req, res) => {
@@ -500,13 +607,14 @@ const processesDeal = async (req, res) => {
       // Відправка привітального листа
       const welcomeEmail = {
         to: [{ email: deal.contact.email }],
-        subject: "Вітаємо на курсі!",
+        subject: "Вітаємо на курсі від Руху «Єдині»!",
         html: `
-          <p>${deal.contact.first_name}, дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</p> 
+          <p>Пане/пані! Дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</p> 
           <p>Внесена Вами грошова пожертва в розмірі ${course.amount} грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
-          <p>Наступний крок: приєднатися до нашого Telegram!</p> 
+          <p>Наступний крок: приєднатися до нашого <a target="_blank" href="${course.canal}">Telegram</a> каналу! Наші модератори вже з нетерпінням чекають на Вас!</p>
           <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
-          <p><a target="_blank" href="${course.canal}">Приєднатися до курсу</a></p>
+          <p>Дякуємо, що Ви з нами!</p>
+          <p>Ваша спільнота однодумців, Всеукраїнський Рух «Єдині»</p>
           `
       };
 

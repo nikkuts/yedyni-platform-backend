@@ -1,6 +1,6 @@
 const { Contact } = require('../models/contact');
 const { Deal } = require('../models/deal');
-const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
+const {ctrlWrapper, sendEmail} = require('../helpers');
 const {
   authUspacy,
   getContactByIdUspacy,
@@ -143,11 +143,14 @@ const courses = require('../utils/courses.json');
       // Відправка привітального листа
       const welcomeEmail = {
         to: [{ email: user.email }],
-        subject: "Вітаємо з реєстрацією на курсі!",
+        subject: 'Вітаємо з реєстрацією на курсі від Руху «Єдині»!',
         html: `
-          <p>${user.first_name}, Вас зареєстровано на курс "Єдині": 28 днів підтримки у переході на українську мову. </p>
-          <p>Наступний крок: приєднатися до нашої <a target="_blank" href="${course.canal}">Telegram</a> або <a target="_blank" href="${course.viber}">Viber</a>-групи!</p>
-          <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
+          <p>Пане/пані! Раді вітати Вас в нашій спільноті Руху «Єдині» та дякуємо за долучення до мовної боротьби! Українська - мова Перемоги!</p>
+          <p>Ваша реєстрація пройшла успішно і тепер Ви є учасником курсу «28 днів підтримки у переході на українську мову». Відтепер ми наближаємо перемогу разом та будемо завжди поруч на Вашому шляху до рідної мови.</p>
+          <p>Наступний крок: приєднатися до нашої <a target="_blank" href="${course.canal}">Telegram</a> або <a target="_blank" href="${course.viber}">Viber</a>-групи! Наші модератори вже з нетерпінням чекають на Вас!</p>
+          <p>Також ми просимо не поширювати ці посилання серед осіб, не зареєстрованих на курс. А ось рекомендувати наші курси своїм друзями та родичам - класна ідея!</p>
+          <p>Дякуємо, що Ви з нами!</p>
+          <p>Ваша спільнота однодумців, Всеукраїнський Рух «Єдині»</p>
           `
       };
 
@@ -192,6 +195,7 @@ const courses = require('../utils/courses.json');
       contactId = newContact._id;
     } else { 
       contactId = contact._id;
+      contactUspacyId = contact.contactUspacyId;
 
       // Перевірка та додавання нової реєстрації контакту
       arrayRegistration = contact.registration;
@@ -234,23 +238,22 @@ const courses = require('../utils/courses.json');
     // Отримання JWT токена від Uspacy
     const jwt = await authUspacy();
 
-    if (contact) {
+    if (contactUspacyId) {
       // Перевірка, чи є контакт в Uspacy
-      const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contact.contactUspacyId});
+      const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contactUspacyId});
       
       if (contactUspacy) {
-        contactUspacyId = contactUspacy.id;
+        // Оновлення контакту в Uspacy
+        await editContactUspacy({
+          token: jwt, 
+          contactId: contactUspacyId,
+          user,
+          registration: arrayRegistration
+        })
+      } else {
+        contactUspacyId = null;
       }
     } 
-
-    if (dealUspacyId) {
-      // Перевірка, чи є угода в Uspacy
-      const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
-        
-      if (!dealUspacy) {
-        dealUspacyId = null;
-      } 
-    }
 
     if (!contactUspacyId) {
       // Створення контакту в Uspacy
@@ -269,15 +272,16 @@ const courses = require('../utils/courses.json');
         contactId,
         {$set: {contactUspacyId}}
       )
-    } else {
-      // Оновлення контакту в Uspacy
-      await editContactUspacy({
-        token: jwt, 
-        contactId: contactUspacyId,
-        user,
-        registration: arrayRegistration
-      })
-    } 
+    }  
+
+    if (dealUspacyId) {
+      // Перевірка, чи є угода в Uspacy
+      const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
+        
+      if (!dealUspacy) {
+        dealUspacyId = null;
+      } 
+    }
 
     if (!dealUspacyId) {
       // Створення угоди для контакту в Uspacy
@@ -300,11 +304,14 @@ const courses = require('../utils/courses.json');
       // Відправка привітального листа
       const welcomeEmail = {
         to: [{ email: user.email }],
-        subject: "Вітаємо з реєстрацією на курсі!",
+        subject: "Вітаємо з реєстрацією на курсі від Руху «Єдині»!",
         html: `
-          <p>${user.first_name}, Вас зареєстровано на курс "Єдині": 28 днів вдосконалення Вашої української мови. </p>
-          <p>Наступний крок: приєднатися до нашого <a target="_blank" href="${course.canal}">Telegram</a> або <a target="_blank" href="${course.classroom}">Google Classroom</a>!</p>
-          <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
+          <p>Пане/пані! Раді вітати Вас в нашій спільноті Руху «Єдині» та дякуємо за долучення до мовної боротьби! Українська - мова Перемоги!</p>
+          <p>Ваша реєстрація пройшла успішно і тепер Ви є учасником курсу «28 днів вдосконалення Вашої української мови». Відтепер ми наближаємо перемогу разом та будемо завжди поруч на Вашому шляху до рідної мови.</p>
+          <p>Наступний крок: приєднатися до нашого <a target="_blank" href="${course.canal}">Telegram</a> або <a target="_blank" href="${course.classroom}">Google Classroom</a>! Наші модератори вже з нетерпінням чекають на Вас!</p>
+          <p>Також ми просимо не поширювати ці посилання серед осіб, не зареєстрованих на курс. А ось рекомендувати наші курси своїм друзями та родичам - класна ідея!</p>
+          <p>Дякуємо, що Ви з нами!</p>
+          <p>Ваша спільнота однодумців, Всеукраїнський Рух «Єдині»</p>
           `
       };
 
