@@ -6,6 +6,9 @@ require('dotenv').config();
 const { Contact } = require('../models/contact');
 const { Deal } = require('../models/deal');
 const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
+const handleContactDB = require('../helpers/handleContactDB');
+const createPaymentForm = require('../helpers/createPaymentForm');
+const handleContactUspacy = require('../helpers/handleContactUspacy');
 const {
   authUspacy,
   getContactByIdUspacy,
@@ -400,186 +403,31 @@ const addProukrainian = async (req, res) => {
   const user = {first_name, last_name, email, phone};
   const course = courses.find(elem => elem.title === 'Проукраїнська');
 
-  let contactId = null;
-  let contactUspacyId = null;
-  let arrayRegistration = null;
-  let dealId = null;
-  let dealUspacyId = null;
+  const { 
+    contactId, 
+    contactUspacyId, 
+    dealId, 
+    dealUspacyId, 
+    arrayRegistration,
+    redirectUrl,
+  } = await handleContactDB({user, course});
 
-    // Перевірка, чи є контакт у базі
-    const contact = await Contact.findOne({email});
-
-    if (!contact) {
-      // Створення нового контакту в локальній базі даних
-      const newContact = await Contact.create({
-        ...user,
-        registration: [course.registration],
-      });
-
-      contactId = newContact._id;
-    } else { 
-      contactId = contact._id;
-      contactUspacyId = contact.contactUspacyId;
-
-      // Перевірка та додавання нової реєстрації контакту
-      arrayRegistration = contact.registration;
-      const isCurrentRegistration = arrayRegistration.find(elem => elem === course.registration);
-
-      if (!isCurrentRegistration) {
-        arrayRegistration.push(course.registration);
-      }
-
-      // Оновлення контакту в локальній базі
-      await Contact.findByIdAndUpdate(
-        contact._id,
-        {$set: {...user, registration: arrayRegistration}}
-      )
-
-      // Перевірка, чи є угода в базі
-      const deal = await Deal.findOne({
-        contact: contact._id,
-        title: course.title,
-        wave: course.wave,
-      });
-
-      if (deal) { 
-        dealId = deal._id;
-        dealUspacyId = deal.dealUspacyId;
-
-        if (deal.payment && deal.payment.status === 'success') {
-          return res.redirect(course.welcome);
-        }
-      }
-    }
-
-    if (!dealUspacyId) {
-      // Створення нової угоди в локальній базі даних
-      const newDeal = await Deal.create({
-        contact: contactId,
-        title: course.title,
-        wave: course.wave,
-      });
-
-      dealId = newDeal._id;
-    }
-  
-    // Створення та відправка форми до Liqpay
-    const orderId = uuidv4();
-
-      const dataObj = {
-        public_key: PUBLIC_KEY, 
-        version: '3',
-        action: 'pay',
-        amount: course.amount,
-        currency: 'UAH',
-        description: `${last_name} ${first_name} Донат за Курс ${course.title}`,
-        order_id: orderId,
-        result_url: `https://yedyni.org/testpayment?deal_id=${dealId}`,
-        server_url: `${BASE_SERVER_URL}/api/deals/process`,
-        customer: dealId,
-      };
-
-    // Кодуємо дані JSON у рядок та потім у Base64
-    const dataString = JSON.stringify(dataObj);
-    const data = Base64.stringify(Utf8.parse(dataString));
-
-    // Створюємо підпис
-    const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
-    const signature = Base64.stringify(hash);
-
-    const paymentForm = `
-      <form id="paymentForm" method="POST" action="https://www.liqpay.ua/api/3/checkout" accept-charset="utf-8">
-        <input type="hidden" name="data" value='${data}' />
-        <input type="hidden" name="signature" value='${signature}' />
-        <input type="image" src="//static.liqpay.ua/buttons/payUk.png"/>
-      </form>
-      <script>
-        document.addEventListener("DOMContentLoaded", function() {
-        const paymentForm = document.getElementById("paymentForm");
-            try {
-              paymentForm.submit();
-            }
-            catch (error) {
-              console.error('Помилка під час відправлення форми:', error);
-              alert('Помилка відправки форми. Будь ласка, спробуйте повторити.');
-            }
-            finally {
-              paymentForm.reset();
-            }   
-        });
-      </script>
-    `;
-
+  if (redirectUrl) {
+    res.redirect(redirectUrl);
+  } else {
+    const paymentForm = await createPaymentForm({user, course, dealId});
     res.send(paymentForm);
+  }
 
-      // Отримання JWT токена від Uspacy
-      const jwt = await authUspacy();
-
-      if (contactUspacyId) {
-        // Перевірка, чи є контакт в Uspacy
-        const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contactUspacyId});
-        
-        if (contactUspacy) {
-          // Оновлення контакту в Uspacy
-          await editContactUspacy({
-            token: jwt, 
-            contactId: contactUspacyId,
-            user,
-            registration: arrayRegistration
-          })
-        } else {
-          contactUspacyId = null;
-        }
-      } 
-
-      if (!contactUspacyId) {
-        // Створення контакту в Uspacy
-        const newContactUspacy = await createContactUspacy({
-          token: jwt, 
-          user,
-          registration: [course.registration]
-        });
-
-        if (newContactUspacy) {
-          contactUspacyId = newContactUspacy.id;
-        }
-
-        // Оновлення контакту в локальній базі даних
-        await Contact.findByIdAndUpdate(
-          contactId,
-          {$set: {contactUspacyId}}
-        )
-      }  
-
-      if (dealUspacyId) {
-        // Перевірка, чи є угода в Uspacy
-        const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
-          
-        if (!dealUspacy) {
-          dealUspacyId = null;
-        } 
-      }
-
-      if (!dealUspacyId) {
-        // Створення угоди для контакту в Uspacy
-        const newDealUspacy = await createDealUspacy({
-          token: jwt, 
-          course,
-          contactId: contactUspacyId
-        })
-
-        if (newDealUspacy) {
-          dealUspacyId = newDealUspacy.id;
-
-          // Оновлення угоди в локальній базі даних
-          await Deal.findByIdAndUpdate(
-            dealId,
-            {$set: {dealUspacyId}}
-          )
-        }
-      }
-
-      console.log(`Створено угоду ${course.title}, ${user.last_name} ${user.first_name}`);
+  await handleContactUspacy({
+    user,
+    course,
+    contactId, 
+    contactUspacyId, 
+    dealId, 
+    dealUspacyId, 
+    arrayRegistration,
+  })
 };
 
 const processesDeal = async (req, res) => {
@@ -609,7 +457,7 @@ const processesDeal = async (req, res) => {
         to: [{ email: deal.contact.email }],
         subject: "Вітаємо на курсі від Руху «Єдині»!",
         html: `
-          <p>Пане/пані! Дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</p> 
+          <p>Дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</p> 
           <p>Внесена Вами грошова пожертва в розмірі ${course.amount} грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
           <p>Наступний крок: приєднатися до нашого <a target="_blank" href="${course.canal}">Telegram</a> каналу! Наші модератори вже з нетерпінням чекають на Вас!</p>
           <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>

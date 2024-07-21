@@ -1,7 +1,8 @@
 // const { Contact } = require('../models/contact');
 // const { Deal } = require('../models/deal');
-const {ctrlWrapper, sendEmail} = require('../helpers');
-const handleContact = require('../helpers/handleContact');
+const {ctrlWrapper} = require('../helpers');
+const handleContactDB = require('../helpers/handleContactDB');
+const handleContactUspacy = require('../helpers/handleContactUspacy');
 // const {
 //   authUspacy,
 //   getContactByIdUspacy,
@@ -17,7 +18,23 @@ const courses = require('../utils/courses.json');
     const user = req.body;
     const course = courses.find(elem => elem.title === 'Курс переходу');
 
-    await handleContact({user, course});
+    const { 
+      contactId, 
+      contactUspacyId, 
+      dealId, 
+      dealUspacyId, 
+      arrayRegistration
+    } = await handleContactDB({user, course});
+
+    await handleContactUspacy({
+      user,
+      course,
+      contactId, 
+      contactUspacyId, 
+      dealId, 
+      dealUspacyId, 
+      arrayRegistration,
+    })
 
     // let contactId = null;
     // let contactUspacyId = null;
