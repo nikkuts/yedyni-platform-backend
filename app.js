@@ -31,7 +31,6 @@ app.use('/api/partners', partnersRouter)
 app.use('/api/payments', paymentsRouter)
 app.use('/api/exercises', exercisesRouter)
 app.use('/api/diary', diaryRouter)
-app.use('/api/deals', dealsRouter)
 app.use('/api/contacts', contactsRouter)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

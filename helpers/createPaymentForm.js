@@ -4,11 +4,15 @@ const Utf8 = require('crypto-js/enc-utf8');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
-const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
 const BASE_SERVER_URL = process.env.BASE_SERVER_URL;
 
-const createPaymentForm = async ({user, course, dealId}) => {
+const createPaymentForm = async ({
+    PUBLIC_KEY,
+    PRIVATE_KEY,
+    user, 
+    course, 
+    dealId
+}) => {
     // Створення та відправка форми до Liqpay
     const orderId = uuidv4();
 
@@ -21,7 +25,7 @@ const createPaymentForm = async ({user, course, dealId}) => {
         description: `${user.last_name} ${user.first_name} Донат за Курс ${course.title}`,
         order_id: orderId,
         result_url: `https://yedyni.org/testpayment?deal_id=${dealId}`,
-        server_url: `${BASE_SERVER_URL}/api/deals/process`,
+        server_url: `${BASE_SERVER_URL}/api/contacts/process`,
         customer: dealId,
       };
 
