@@ -12,7 +12,6 @@ const partnersRouter = require('./routes/api/partners')
 const paymentsRouter = require('./routes/api/payments')
 const exercisesRouter = require('./routes/api/exercises')
 const diaryRouter = require('./routes/api/diary')
-const dealsRouter = require('./routes/api/deals')
 const contactsRouter = require('./routes/api/contacts')
 
 const app = express()

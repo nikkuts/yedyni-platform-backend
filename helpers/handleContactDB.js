@@ -10,7 +10,7 @@ const { Deal } = require('../models/deal');
     let redirectUrl = null;
 
     // Перевірка, чи є контакт у базі
-    const contact = await Contact.findOne({email: user.email});
+    const contact = await Contact.findOne({ email: { $regex: new RegExp(`^${user.email}$`, 'i') } });
 
     if (!contact) {
       // Створення нового контакту в локальній базі даних
