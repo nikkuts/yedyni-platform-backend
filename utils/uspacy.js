@@ -144,8 +144,8 @@ const editDealUspacy = async ({token, dealId, promokod, amountDeal}) => {
             authorization: `Bearer ${token}` 
         },
       data: {
-        ...(promokod ? {promokod} : ''),
-        ...(amountDeal && { amount_of_the_deal: { currency: "UAH", value: amountDeal.toString() } })
+        promokod: promokod || "",
+        amount_of_the_deal: { currency: "UAH", value: amountDeal.toString() } 
       }
     };
 
