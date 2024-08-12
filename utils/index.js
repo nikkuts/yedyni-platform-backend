@@ -19,8 +19,9 @@ const {
     getContactByIdUspacy,
     getDealByIdUspacy,
     createContactUspacy,
-    createDealUspacy,
     editContactUspacy,
+    createDealUspacy,
+    editDealUspacy,
     moveStageDealUspacy
   } = require("./uspacy");
   
@@ -40,7 +41,8 @@ const {
     getContactByIdUspacy,
     getDealByIdUspacy,
     createContactUspacy,
-    createDealUspacy,
     editContactUspacy,
+    createDealUspacy,
+    editDealUspacy,
     moveStageDealUspacy
   };

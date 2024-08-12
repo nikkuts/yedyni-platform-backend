@@ -9,7 +9,7 @@ const {
   editContactUspacy,
   createDealUspacy,
   editDealUspacy,
-  moveStageDealUspacy
+  moveStageDealUspacy,
 } = require('../utils');
 
   const handleContactUspacy = async ({
@@ -68,7 +68,7 @@ const {
         
       if (dealUspacy) {
         // Оновлення угоди в Uspacy
-        await editContactUspacy({
+        await editDealUspacy({
           token: jwt, 
           dealId: dealUspacyId,
           promokod,

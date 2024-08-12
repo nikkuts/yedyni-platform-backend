@@ -135,7 +135,7 @@ const createDealUspacy = async ({token, course, contactId, promokod, amountDeal}
 };
 
 const editDealUspacy = async ({token, dealId, promokod, amountDeal}) => {
-    const editContactOptions = {
+    const editDealOptions = {
         method: 'PATCH',
         url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealId}`,
         headers: { 
@@ -150,7 +150,7 @@ const editDealUspacy = async ({token, dealId, promokod, amountDeal}) => {
     };
 
     try {
-        const response = await axios(editContactOptions);
+        const response = await axios(editDealOptions);
         return response.data;
     } catch (error) {
         console.error(error.response.status, error.response.data);
