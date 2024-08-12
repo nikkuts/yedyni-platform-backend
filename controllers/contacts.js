@@ -10,13 +10,61 @@ const {authUspacy, moveStageDealUspacy} = require('../utils');
 const courses = require('../utils/courses.json');
 require('dotenv').config();
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
-const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
+const PUBLIC_KEY = process.env.PUBLIC_KEY;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const addServant = async (req, res) => {
   const {first_name, last_name, email, phone, promo_code} = req.body;
   const user = {first_name, last_name, email, phone};
   const course = courses.find(elem => elem.title === 'Курс з підготовки до держіспиту');
+
+  const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
+
+  const amountDeal = promokod ? 
+    (1 - course.discountPercentage / 100) * course.amount 
+    : course.amount;
+
+  const { 
+    contactId, 
+    contactUspacyId, 
+    dealId, 
+    dealUspacyId, 
+    arrayRegistration,
+    redirectUrl,
+  } = await handleContactDB({user, course, promokod});
+
+  if (!redirectUrl) {
+    const paymentForm = await createPaymentForm({
+      PUBLIC_KEY,
+      PRIVATE_KEY,
+      user, 
+      course, 
+      dealId,
+      amountDeal,
+    });
+
+    res.send(paymentForm);
+
+    await handleContactUspacy({
+      user,
+      course,
+      contactId, 
+      contactUspacyId, 
+      dealId, 
+      dealUspacyId, 
+      arrayRegistration,
+      promokod,
+      amountDeal,
+    })
+  } else {
+    res.redirect(redirectUrl);
+  }
+};
+
+const addCreative = async (req, res) => {
+  const {first_name, last_name, email, phone, promo_code} = req.body;
+  const user = {first_name, last_name, email, phone};
+  const course = courses.find(elem => elem.title === 'Видноколо');
 
   const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
 
@@ -61,49 +109,17 @@ const addServant = async (req, res) => {
   }
 };
 
-const addCreative = async (req, res) => {
-  const {first_name, last_name, email, phone} = req.body;
-  const user = {first_name, last_name, email, phone};
-  const course = courses.find(elem => elem.title === 'Видноколо');
-
-  const { 
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration,
-    redirectUrl,
-  } = await handleContactDB({user, course});
-
-  if (redirectUrl) {
-    res.redirect(redirectUrl);
-  } else {
-    const paymentForm = await createPaymentForm({
-      PUBLIC_KEY,
-      PRIVATE_KEY,
-      user, 
-      course, 
-      dealId
-    });
-    res.send(paymentForm);
-  }
-
-  await handleContactUspacy({
-    user,
-    course,
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration,
-  })
-};
-
 const addProukrainian = async (req, res) => {
-  const {first_name, last_name, email, phone} = req.body;
+  const {first_name, last_name, email, phone, promo_code} = req.body;
   const user = {first_name, last_name, email, phone};
   const course = courses.find(elem => elem.title === 'Проукраїнська');
 
+  const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
+
+  const amountDeal = promokod ? 
+    (1 - course.discountPercentage / 100) * course.amount 
+    : course.amount;
+
   const { 
     contactId, 
     contactUspacyId, 
@@ -111,30 +127,34 @@ const addProukrainian = async (req, res) => {
     dealUspacyId, 
     arrayRegistration,
     redirectUrl,
-  } = await handleContactDB({user, course});
+  } = await handleContactDB({user, course, promokod});
 
-  if (redirectUrl) {
-    res.redirect(redirectUrl);
-  } else {
+  if (!redirectUrl) {
     const paymentForm = await createPaymentForm({
       PUBLIC_KEY,
       PRIVATE_KEY,
       user, 
       course, 
-      dealId
+      dealId,
+      amountDeal,
     });
+    
     res.send(paymentForm);
-  }
 
-  await handleContactUspacy({
-    user,
-    course,
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration,
-  })
+    await handleContactUspacy({
+      user,
+      course,
+      contactId, 
+      contactUspacyId, 
+      dealId, 
+      dealUspacyId, 
+      arrayRegistration,
+      promokod,
+      amountDeal,
+    })
+  } else {
+    res.redirect(redirectUrl);
+  }
 };
 
 const processesDeal = async (req, res) => {
