@@ -33,9 +33,7 @@ const addServant = async (req, res) => {
     redirectUrl,
   } = await handleContactDB({user, course, promokod});
 
-  if (redirectUrl) {
-    res.redirect(redirectUrl);
-  } else {
+  if (!redirectUrl) {
     const paymentForm = await createPaymentForm({
       PUBLIC_KEY,
       PRIVATE_KEY,
@@ -44,20 +42,23 @@ const addServant = async (req, res) => {
       dealId,
       amountDeal,
     });
+    
     res.send(paymentForm);
-  }
 
-  await handleContactUspacy({
-    user,
-    course,
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration,
-    promokod,
-    amountDeal,
-  })
+    await handleContactUspacy({
+      user,
+      course,
+      contactId, 
+      contactUspacyId, 
+      dealId, 
+      dealUspacyId, 
+      arrayRegistration,
+      promokod,
+      amountDeal,
+    })
+  } else {
+    res.redirect(redirectUrl);
+  }
 };
 
 const addCreative = async (req, res) => {
