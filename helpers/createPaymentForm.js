@@ -11,7 +11,8 @@ const createPaymentForm = async ({
     PRIVATE_KEY,
     user, 
     course, 
-    dealId
+    dealId,
+    amountDeal,
 }) => {
     // Створення та відправка форми до Liqpay
     const orderId = uuidv4();
@@ -20,11 +21,11 @@ const createPaymentForm = async ({
         public_key: PUBLIC_KEY, 
         version: '3',
         action: 'pay',
-        amount: course.amount,
+        amount: amountDeal,
         currency: 'UAH',
         description: `${user.last_name} ${user.first_name} Донат за Курс ${course.title}`,
         order_id: orderId,
-        result_url: `https://yedyni.org/testpayment?deal_id=${dealId}`,
+        result_url: `https://yedyni.org/testpayment?deal_id=${dealId}&amount=${amountDeal}`,
         server_url: `${BASE_SERVER_URL}/api/contacts/process`,
         customer: dealId,
       };

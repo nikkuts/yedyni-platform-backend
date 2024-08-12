@@ -10,13 +10,19 @@ const {authUspacy, moveStageDealUspacy} = require('../utils');
 const courses = require('../utils/courses.json');
 require('dotenv').config();
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY;
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
+const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
 
 const addServant = async (req, res) => {
-  const {first_name, last_name, email, phone} = req.body;
+  const {first_name, last_name, email, phone, promo_code} = req.body;
   const user = {first_name, last_name, email, phone};
   const course = courses.find(elem => elem.title === 'Курс з підготовки до держіспиту');
+
+  const promokod = promo_code && promo_code === course.promoCode ? promo_code : null;
+
+  const amountDeal = promokod ? 
+    (1 - course.discountPercentage / 100) * course.amount 
+    : course.amount;
 
   const { 
     contactId, 
@@ -25,7 +31,7 @@ const addServant = async (req, res) => {
     dealUspacyId, 
     arrayRegistration,
     redirectUrl,
-  } = await handleContactDB({user, course});
+  } = await handleContactDB({user, course, promokod});
 
   if (redirectUrl) {
     res.redirect(redirectUrl);
@@ -35,7 +41,8 @@ const addServant = async (req, res) => {
       PRIVATE_KEY,
       user, 
       course, 
-      dealId
+      dealId,
+      amountDeal,
     });
     res.send(paymentForm);
   }
@@ -48,6 +55,8 @@ const addServant = async (req, res) => {
     dealId, 
     dealUspacyId, 
     arrayRegistration,
+    promokod,
+    amountDeal,
   })
 };
 
@@ -139,7 +148,7 @@ const processesDeal = async (req, res) => {
   const dataString = Utf8.stringify(Base64.parse(data));
   const result = JSON.parse(dataString);
 
-  const { status, customer, description } = result;
+  const { status, customer, amount, description } = result;
 
   if (status === 'success') {
 
@@ -155,7 +164,7 @@ const processesDeal = async (req, res) => {
         subject: "Вітаємо на курсі від Руху «Єдині»!",
         html: `
           <p>Дякуємо за реєстрацію на курс і фінансову підтримку Руху "Єдині"!</p> 
-          <p>Внесена Вами грошова пожертва в розмірі ${course.amount} грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
+          <p>Внесена Вами грошова пожертва в розмірі ${amount} грн піде на розвиток проєкту і створення масових безоплатних курсів з освітньої та психологічної підтримки в переході на українську мову.</p>
           <p>Наступний крок: приєднатися до нашого <a target="_blank" href="${course.canal}">Telegram</a> каналу! Наші модератори вже з нетерпінням чекають на Вас!</p>
           <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
           <p>Дякуємо, що Ви з нами!</p>

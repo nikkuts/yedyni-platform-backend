@@ -22,6 +22,9 @@ const dealSchema = new Schema({
         type: String,
         required: true,
       },
+      promoCode: {
+        type: String,
+      },
       dealUspacyId: {
         type: String,
       },

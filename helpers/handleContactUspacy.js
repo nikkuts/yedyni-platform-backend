@@ -19,6 +19,8 @@ const {
     dealId, 
     dealUspacyId, 
     arrayRegistration,
+    promokod,
+    amountDeal,
   }) => {
     // Отримання JWT токена від Uspacy
     const jwt = await authUspacy();
@@ -71,9 +73,11 @@ const {
     if (!dealUspacyId) {
       // Створення угоди для контакту в Uspacy
       const newDealUspacy = await createDealUspacy({
-        token: jwt, 
+        token: jwt,
         course,
-        contactId: contactUspacyId
+        contactId: contactUspacyId,
+        promokod,
+        amountDeal,
       })
 
       if (newDealUspacy) {

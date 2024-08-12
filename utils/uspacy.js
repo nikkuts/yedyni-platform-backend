@@ -81,7 +81,7 @@ const createContactUspacy = async ({token, user, registration}) => {
     }
 };
 
-const createDealUspacy = async ({token, course, contactId}) => {
+const createDealUspacy = async ({token, course, contactId, promokod, amountDeal}) => {
     const createDealOptions = {
         method: 'POST',
         url: 'https://yedyni.uspacy.ua/crm/v1/entities/deals',
@@ -95,7 +95,8 @@ const createDealUspacy = async ({token, course, contactId}) => {
         funnel_id: course.funnelId,
         contacts: [contactId],
         hvilya: course.wave,
-        ...(course.amount && { amount_of_the_deal: { currency: "UAH", value: course.amount.toString() } })
+        ...(promokod && {promokod}),
+        ...(amountDeal && { amount_of_the_deal: { currency: "UAH", value: amountDeal.toString() } })
       }
     };
 

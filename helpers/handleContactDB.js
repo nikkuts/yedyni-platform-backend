@@ -1,7 +1,7 @@
 const { Contact } = require('../models/contact');
 const { Deal } = require('../models/deal');
 
-  const handleContactDB = async ({user, course}) => {
+  const handleContactDB = async ({user, course, promokod}) => {
     let contactId = null;
     let contactUspacyId = null;
     let arrayRegistration = null;
@@ -61,6 +61,7 @@ const { Deal } = require('../models/deal');
         contact: contactId,
         title: course.title,
         wave: course.wave,
+        ...(promokod && {promoCode: promokod})
       });
 
       dealId = newDeal._id;
