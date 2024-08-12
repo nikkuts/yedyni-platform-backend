@@ -50,7 +50,15 @@ const { Deal } = require('../models/deal');
         dealUspacyId = deal.dealUspacyId;
 
         if (deal.payment && deal.payment.status === 'success') {
-          redirectUrl = course.welcome;
+          redirectUrl = `${course.welcome}?amount=${deal.payment.amount}`;
+        }
+
+        if (promokod) {
+          // Оновлення угоди в локальній базі
+          await Deal.findByIdAndUpdate(
+            deal._id,
+            {$set: {promoCode: promokod}}
+          )
         }
       }
     }

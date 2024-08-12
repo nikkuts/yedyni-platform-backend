@@ -6,8 +6,9 @@ const {
   getContactByIdUspacy,
   getDealByIdUspacy,
   createContactUspacy,
-  createDealUspacy,
   editContactUspacy,
+  createDealUspacy,
+  editDealUspacy,
   moveStageDealUspacy
 } = require('../utils');
 
@@ -65,9 +66,17 @@ const {
       // Перевірка, чи є угода в Uspacy
       const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
         
-      if (!dealUspacy) {
-        dealUspacyId = null;
-      } 
+      if (dealUspacy) {
+        // Оновлення угоди в Uspacy
+        await editContactUspacy({
+          token: jwt, 
+          dealId: dealUspacyId,
+          promokod,
+          amountDeal,
+        })
+      } else {
+        contactUspacyId = null;
+      }
     }
 
     if (!dealUspacyId) {

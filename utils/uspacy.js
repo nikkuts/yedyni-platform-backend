@@ -81,6 +81,32 @@ const createContactUspacy = async ({token, user, registration}) => {
     }
 };
 
+const editContactUspacy = async ({token, contactId, user, registration}) => {
+    const editContactOptions = {
+        method: 'PATCH',
+        url: `https://yedyni.uspacy.ua/crm/v1/entities/contacts/${contactId}`,
+        headers: { 
+            accept: 'application/json',
+            'content-type': 'application/json',
+            authorization: `Bearer ${token}` 
+        },
+      data: {
+        ...user,
+        title: `${user.last_name} ${user.first_name}`,
+        email: [{ value: user.email }],
+        phone: [{ value: user.phone }],
+        registration,
+      }
+    };
+
+    try {
+        const response = await axios(editContactOptions);
+        return response.data;
+    } catch (error) {
+        console.error(error.response.status, error.response.data);
+    }
+};
+
 const createDealUspacy = async ({token, course, contactId, promokod, amountDeal}) => {
     const createDealOptions = {
         method: 'POST',
@@ -108,21 +134,18 @@ const createDealUspacy = async ({token, course, contactId, promokod, amountDeal}
     }
 };
 
-const editContactUspacy = async ({token, contactId, user, registration}) => {
+const editDealUspacy = async ({token, dealId, promokod, amountDeal}) => {
     const editContactOptions = {
         method: 'PATCH',
-        url: `https://yedyni.uspacy.ua/crm/v1/entities/contacts/${contactId}`,
+        url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealId}`,
         headers: { 
             accept: 'application/json',
             'content-type': 'application/json',
             authorization: `Bearer ${token}` 
         },
       data: {
-        ...user,
-        title: `${user.last_name} ${user.first_name}`,
-        email: [{ value: user.email }],
-        phone: [{ value: user.phone }],
-        registration,
+        ...(promokod && {promokod}),
+        ...(amountDeal && { amount_of_the_deal: { currency: "UAH", value: amountDeal.toString() } })
       }
     };
 
@@ -158,7 +181,8 @@ module.exports = {
     getContactByIdUspacy,
     getDealByIdUspacy,
     createContactUspacy,
+    editContactUspacy,
     createDealUspacy,
-    editContactUspacy, 
+    editDealUspacy, 
     moveStageDealUspacy
 };
