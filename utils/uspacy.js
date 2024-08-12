@@ -121,7 +121,7 @@ const createDealUspacy = async ({token, course, contactId, promokod, amountDeal}
         funnel_id: course.funnelId,
         contacts: [contactId],
         hvilya: course.wave,
-        ...(promokod && {promokod}),
+        ...(promokod && { promokod }),
         ...(amountDeal && { amount_of_the_deal: { currency: "UAH", value: amountDeal.toString() } })
       }
     };
@@ -144,7 +144,7 @@ const editDealUspacy = async ({token, dealId, promokod, amountDeal}) => {
             authorization: `Bearer ${token}` 
         },
       data: {
-        ...(promokod && {promokod}),
+        ...(promokod ? {promokod} : ''),
         ...(amountDeal && { amount_of_the_deal: { currency: "UAH", value: amountDeal.toString() } })
       }
     };

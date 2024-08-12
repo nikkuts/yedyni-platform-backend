@@ -53,13 +53,11 @@ const { Deal } = require('../models/deal');
           redirectUrl = `${course.welcome}?amount=${deal.payment.amount}`;
         }
 
-        if (promokod) {
-          // Оновлення угоди в локальній базі
-          await Deal.findByIdAndUpdate(
-            deal._id,
-            {$set: {promoCode: promokod}}
-          )
-        }
+        // Оновлення угоди в локальній базі
+        await Deal.findByIdAndUpdate(
+          deal._id,
+          { $set: { promoCode: promokod || "" } }
+        )
       }
     }
 
