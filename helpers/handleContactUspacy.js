@@ -75,7 +75,7 @@ const {
           amountDeal,
         })
       } else {
-        contactUspacyId = null;
+        dealUspacyId = null;
       }
     }
 

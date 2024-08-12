@@ -18,7 +18,7 @@ const addServant = async (req, res) => {
   const user = {first_name, last_name, email, phone};
   const course = courses.find(elem => elem.title === 'Курс з підготовки до держіспиту');
 
-  const promokod = promo_code && promo_code === course.promoCode ? promo_code : null;
+  const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
 
   const amountDeal = promokod ? 
     (1 - course.discountPercentage / 100) * course.amount 
