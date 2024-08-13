@@ -292,6 +292,15 @@ const addGrammatical = async (req, res) => {
   });
 };
 
+const addDonat = async (req, res) => {
+  const payload = JSON.parse(req.body);
+  console.log(payload);
+
+  res.status(201).json({
+    message: 'success',
+  });
+};
+
 const sendEmailContact = async (req, res) => {
   const payload = JSON.parse(req.body);
   const message = JSON.parse(payload.Message);
@@ -319,6 +328,7 @@ module.exports = {
     getByIdDeal: ctrlWrapper(getByIdDeal),
     addTransition: ctrlWrapper(addTransition),
     addGrammatical: ctrlWrapper(addGrammatical),
+    addDonat: ctrlWrapper(addDonat),
     sendEmailContact: ctrlWrapper(sendEmailContact),
     editLead: ctrlWrapper(editLead),
 };

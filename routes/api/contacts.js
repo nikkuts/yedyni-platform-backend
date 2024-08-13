@@ -18,6 +18,10 @@ router.post('/transition', ctrl.addTransition);
 
 router.post('/grammatical', ctrl.addGrammatical);
 
+router.post('/donat', ctrl.addDonat);
+
+
+
 router.post('/editcontact', ctrl.sendEmailContact);
 
 router.post('/edituspacy', ctrl.editLead);
