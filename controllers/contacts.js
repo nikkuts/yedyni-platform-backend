@@ -2,9 +2,10 @@ const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
 const Utf8 = require('crypto-js/enc-utf8');
 const { Deal } = require('../models/deal');
+const { Donat } = require('../models/donat');
 const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
 const handleContactDB = require('../helpers/handleContactDB');
-const createPaymentForm = require('../helpers/createPaymentForm');
+const {createPaymentForm, createDonatForm} = require('../helpers/createPaymentForm');
 const handleContactUspacy = require('../helpers/handleContactUspacy');
 const {authUspacy, moveStageDealUspacy} = require('../utils');
 const courses = require('../utils/courses.json');
@@ -293,12 +294,40 @@ const addGrammatical = async (req, res) => {
 };
 
 const addDonat = async (req, res) => {
-  // const payload = JSON.parse(req.body);
-  console.log(req.body);
-
-  res.status(201).json({
-    message: 'success',
+  const {pay_type, paid} = req.body;
+  const amount = parseFloat(paid);
+  
+  const donatForm = await createDonatForm({
+    PUBLIC_KEY,
+    PRIVATE_KEY,
+    pay_type,
+    amount,
   });
+  
+  res.send(donatForm);
+};
+
+const processesDonat = async (req, res) => {
+  const {data, signature} = req.body;
+  const hash = SHA1(PRIVATE_KEY + data + PRIVATE_KEY);
+  const sign = Base64.stringify(hash);
+
+  if (sign !== signature) {
+    throw HttpError(400, "Несправжня відповідь LiqPay");
+  }
+
+  const dataString = Utf8.stringify(Base64.parse(data));
+  const result = JSON.parse(dataString);
+
+  await Donat.create({data: result});
+
+  if (result.status === 'success') {
+    console.log('Успішний платіж', result);
+  } else {
+    console.log('Неуспішний платіж', result);
+  }
+
+  res.status(200).json({message: 'success'})
 };
 
 const sendEmailContact = async (req, res) => {
@@ -329,6 +358,7 @@ module.exports = {
     addTransition: ctrlWrapper(addTransition),
     addGrammatical: ctrlWrapper(addGrammatical),
     addDonat: ctrlWrapper(addDonat),
+    processesDonat: ctrlWrapper(processesDonat),
     sendEmailContact: ctrlWrapper(sendEmailContact),
     editLead: ctrlWrapper(editLead),
 };

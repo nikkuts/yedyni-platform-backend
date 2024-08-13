@@ -20,6 +20,8 @@ router.post('/grammatical', ctrl.addGrammatical);
 
 router.post('/donat', ctrl.addDonat);
 
+router.post('/process-donat', ctrl.processesDonat);
+
 
 
 router.post('/editcontact', ctrl.sendEmailContact);
