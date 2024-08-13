@@ -293,8 +293,8 @@ const addGrammatical = async (req, res) => {
 };
 
 const addDonat = async (req, res) => {
-  const payload = JSON.parse(req.body);
-  console.log(payload);
+  // const payload = JSON.parse(req.body);
+  console.log(req.body);
 
   res.status(201).json({
     message: 'success',
