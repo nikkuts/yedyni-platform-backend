@@ -11,8 +11,8 @@ const {authUspacy, moveStageDealUspacy} = require('../utils');
 const courses = require('../utils/courses.json');
 require('dotenv').config();
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
-const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
+const PUBLIC_KEY = process.env.PUBLIC_KEY;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const addServant = async (req, res) => {
   const {first_name, last_name, email, phone, promo_code} = req.body;
@@ -321,8 +321,14 @@ const processesDonat = async (req, res) => {
 
   await Donat.create({data: result});
 
-  if (result.status === 'success') {
-    console.log('Успішний платіж', result);
+  const { action, status } = result;
+
+  if (action === 'pay' && status === 'success') {
+    console.log('Успішний разовий платіж', result);
+  } else if (action === 'regular' && status === 'success') {
+    console.log('Успішний платіж по підписці', result);
+  } else if (action === 'subscribe' && status === 'subscribed') {
+    console.log('Створення підписки', result);
   } else {
     console.log('Неуспішний платіж', result);
   }
