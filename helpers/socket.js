@@ -2,7 +2,17 @@ const socketIo = require('socket.io');
 const checkAndSaveMessage = require('./checkAndSaveMessage.js')
 
 const initializeSocket = (server) => {
-  const io = socketIo(server);
+  const io = socketIo(server, {
+    cors: {
+      origin: [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'https://platform.yedyni.org',
+      ], 
+      methods: ["GET", "POST", "PATCH", "DELETE"],
+      credentials: true
+    }
+  });
 
   io.on('connection', (socket) => {
     console.log('A user connected');

@@ -20,7 +20,15 @@ const app = express()
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(logger(formatsLogger))
-app.use(cors())
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://platform.yedyni.org',
+  ],
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  credentials: true
+}))
 app.use(express.json())
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }));
