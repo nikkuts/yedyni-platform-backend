@@ -10,7 +10,8 @@ const initializeSocket = (server) => {
         'https://platform.yedyni.org',
       ], 
       methods: ["GET", "POST", "PATCH", "DELETE"],
-      credentials: true
+      credentials: true,
+      transports: ['websocket'], // Використовуйте тільки WebSocket для підключень
     }
   });
 
