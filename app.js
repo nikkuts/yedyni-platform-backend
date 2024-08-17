@@ -13,6 +13,7 @@ const paymentsRouter = require('./routes/api/payments')
 const exercisesRouter = require('./routes/api/exercises')
 const diaryRouter = require('./routes/api/diary')
 const contactsRouter = require('./routes/api/contacts')
+const chatsRouter = require('./routes/api/chats')
 
 const app = express()
 
@@ -31,6 +32,7 @@ app.use('/api/payments', paymentsRouter)
 app.use('/api/exercises', exercisesRouter)
 app.use('/api/diary', diaryRouter)
 app.use('/api/contacts', contactsRouter)
+app.use('/api/chats', chatsRouter)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res) => {

@@ -15,7 +15,7 @@ const checkFileSize = async (req, res, next) => {
 if (!file) {
     next();
   } else if (file.size > maxFileSize) {
-    fs.unlink(file.path);
+    await fs.unlink(file.path);
     next(HttpError(400, "Розмір файлу перевищує 1 MB"));
   } else {
     next();

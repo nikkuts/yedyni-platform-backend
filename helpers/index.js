@@ -9,5 +9,5 @@ module.exports = {
     ctrlWrapper,
     handleMongooseError,
     sendEmail,
-    handleIndicators
+    handleIndicators,
 };
