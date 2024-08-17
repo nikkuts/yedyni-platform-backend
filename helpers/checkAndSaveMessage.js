@@ -31,14 +31,14 @@ const validateMessage = ({chat, text}) => {
 }
 
 const checkAndSaveMessage = async ({token, chat, text, fileURL}) => {
-    const sender = await checkUserAuthentication(token);
+    const user = await checkUserAuthentication(token);
     validateMessage({chat, text});
 
     const newMessage = await Message.create({
         chat,
         text,
         fileURL,
-        sender,
+        sender: user._id,
       });
 
     return {
@@ -47,6 +47,10 @@ const checkAndSaveMessage = async ({token, chat, text, fileURL}) => {
         text: newMessage.text,
         fileURL: newMessage.fileURL,
         date: newMessage.date,
+        sender: {
+            _id: user._id,
+            name: user.name
+          }
     }
 }
 
