@@ -1,4 +1,5 @@
 const { Message } = require('../models/message');
+const { User } = require('../models/user');
 const {
   uploadImageToCloudinary,
   getFileInfo,
@@ -48,20 +49,25 @@ const addMessage = async (req, res) => {
     sender,
   });
 
+  const user = await User.findById(sender);
+
   res.status(201).json({
     _id: newMessage._id,
     chat: newMessage.chat,
     text: newMessage.text,
     fileURL: newMessage.fileURL,
     date: newMessage.date,
+    sender: {
+      _id: user._id,
+      name: user.name
+    }
   });
 };
 
 const updateMessage = async (req, res) => {
-  const {messageId, text, likes} = req.body;
+  const {messageId, text} = req.body;
   const update = { 
-    text,
-    likes, 
+    text, 
   };
 
   if (req.file) {

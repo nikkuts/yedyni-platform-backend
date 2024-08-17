@@ -25,9 +25,6 @@ const messageSchema = new Schema({
     type: Number,
     default: Date.now
   },
-  likes: {
-    type: Number,
-  },
 }, {versionKey: false, timestamps: true});
 
 messageSchema.post('save', handleMongooseError);
@@ -39,8 +36,7 @@ const addMessageSchema = Joi.object({
 
 const updateMessageSchema = Joi.object({
   messageId: Joi.string().required(),
-  text: Joi.string().max(500),
-  likes: Joi.number().integer().min(1),
+  text: Joi.string().max(500).required(),
 });
 
 const deleteFileSchema = Joi.object({
