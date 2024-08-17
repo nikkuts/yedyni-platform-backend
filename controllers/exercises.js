@@ -306,7 +306,7 @@ const deleteComment = async (req, res) => {
   }
 }
 
-const getMessages = async (req, res) => {
+const getNotifications = async (req, res) => {
   const {_id: owner, status } = req.user;
   let result;
 
@@ -349,9 +349,9 @@ const getMessages = async (req, res) => {
     });
   }
 
-  const countMessages = result.length;
+  const countNotifications = result.length;
 
-  return res.status(200).json({messages: result, countMessages});
+  return res.status(200).json({notifications: result, countNotifications});
 };
 
 const getExerciseById = async (req, res) => {
@@ -390,6 +390,6 @@ module.exports = {
     updateComment: ctrlWrapper(updateComment),
     updateCommentStatus: ctrlWrapper(updateCommentStatus),
     deleteComment: ctrlWrapper(deleteComment),
-    getMessages: ctrlWrapper(getMessages),
+    getNotifications: ctrlWrapper(getNotifications),
     getExerciseById: ctrlWrapper(getExerciseById),
 };

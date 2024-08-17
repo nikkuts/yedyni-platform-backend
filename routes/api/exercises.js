@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get('/', authenticate, ctrl.getExercise);
 
-router.get('/messages', authenticate, ctrl.getMessages);
+router.get('/notifications', authenticate, ctrl.getNotifications);
 
 router.get('/:exerciseId', authenticate, ctrl.getExerciseById);
 
