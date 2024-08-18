@@ -8,7 +8,7 @@ const {
 const {HttpError, ctrlWrapper} = require('../helpers');
 
 const getMessages = async (req, res) => {
-  const {chat} = req.body;
+  const {chat} = req.query;
 
   const result = await Message.find(
     { chat }, 
@@ -16,8 +16,10 @@ const getMessages = async (req, res) => {
   ).sort({ date: 1 })
   .populate("sender", "_id name");
   
-  if (!result) {
-    return res.status(204).send("В чаті ще не має повідомлень");
+  if (result.length === 0) {
+    return res.status(200).json({ 
+      message: "В чаті ще не має повідомлень" 
+    });
   }
 
   return res.status(200).json(result);
