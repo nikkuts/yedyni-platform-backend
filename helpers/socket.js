@@ -16,7 +16,7 @@ const initializeSocket = (server) => {
   io.on('connection', (socket) => {
     console.log('A user connected');
 
-    socket.on('message', async (msg, callback) => {
+    socket.on('message', async (msg) => {
       try {
         // Перевіряємо і зберігаємо повідомлення
         const newMessage = await checkAndSaveMessage(msg);
@@ -25,12 +25,12 @@ const initializeSocket = (server) => {
         io.emit('message', newMessage);
 
         // Виклик зворотного виклику з відповіддю відправнику
-        callback(newMessage);
+        // callback(newMessage);
       } catch (error) {
         console.error('Error processing message:', error.message);
         // Надсилаємо помилку відправнику
-        // socket.emit('error', { message: error.message });
-        callback({error: error.message});
+        socket.emit('error', { message: error.message });
+        // callback({error: error.message});
       }
     });
 
