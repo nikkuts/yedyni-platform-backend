@@ -21,7 +21,7 @@
     },
     {
         "title": "Курс з підготовки до держіспиту",
-        "amount": 990,
+        "amount": 950,
         "discountPercentage": 10,
         "promoCode": "zabih-2024-10",
         "wave": "3",
@@ -35,7 +35,7 @@
     },
     {
         "title": "Видноколо",
-        "amount": 890,
+        "amount": 750,
         "discountPercentage": 10,
         "promoCode": "zabih-2024-10",
         "wave": "6",
@@ -49,7 +49,7 @@
     },
     {
         "title": "Проукраїнська",
-        "amount": 1290,
+        "amount": 1100,
         "discountPercentage": 10,
         "promoCode": "zabih-2024-10",
         "wave": "1",
