@@ -25,6 +25,9 @@ app.use(cors({
     'http://localhost:3000',
     'http://localhost:3001',
     'https://platform.yedyni.org',
+    'https://yedyni.org',
+    'https://www.liqpay.ua',
+    'https://yedyni.uspacy.ua',
   ],
   methods: ["GET", "POST", "PATCH", "DELETE"],
   credentials: true

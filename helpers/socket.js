@@ -8,23 +8,25 @@ const initializeSocket = (server) => {
         'http://localhost:3000',
         'http://localhost:3001',
         'https://platform.yedyni.org',
+        'https://yedyni.org',
       ], 
-      methods: ["GET", "POST", "PATCH", "DELETE"],
-      credentials: true,
-      transports: ['websocket'], // Використовуйте тільки WebSocket для підключень
+      transports: ['websocket'], // Використовуємо тільки WebSocket для підключень
     }
   });
 
   io.on('connection', (socket) => {
     console.log('A user connected');
 
-    socket.on('message', async (msg) => {
+    socket.on('message', async (msg, callback) => {
       try {
         // Перевіряємо і зберігаємо повідомлення
         const newMessage = await checkAndSaveMessage(msg);
 
         // Відправляємо збережене повідомлення всім клієнтам
         io.emit('message', newMessage);
+
+        // Виклик зворотного виклику з відповіддю відправнику
+        callback(newMessage);
       } catch (error) {
         console.error('Error processing message:', error.message);
         // Надсилаємо помилку відправнику
