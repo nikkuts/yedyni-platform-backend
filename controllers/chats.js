@@ -17,9 +17,7 @@ const getMessages = async (req, res) => {
   .populate("sender", "_id name");
   
   if (result.length === 0) {
-    return res.status(200).json({ 
-      message: "В чаті ще не має повідомлень" 
-    });
+    return res.status(204);
   }
 
   return res.status(200).json(result);
