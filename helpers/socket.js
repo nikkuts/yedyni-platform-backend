@@ -8,7 +8,6 @@ const initializeSocket = (server) => {
         'http://localhost:3000',
         'http://localhost:3001',
         'https://platform.yedyni.org',
-        'https://yedyni.org',
       ], 
       transports: ['websocket'], // Використовуємо тільки WebSocket для підключень
     }
@@ -30,7 +29,8 @@ const initializeSocket = (server) => {
       } catch (error) {
         console.error('Error processing message:', error.message);
         // Надсилаємо помилку відправнику
-        socket.emit('error', { message: error.message });
+        // socket.emit('error', { message: error.message });
+        callback({error: error.message});
       }
     });
 
