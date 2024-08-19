@@ -23,14 +23,10 @@ const initializeSocket = (server) => {
 
         // Відправляємо збережене повідомлення всім клієнтам
         io.emit('message', newMessage);
-
-        // Виклик зворотного виклику з відповіддю відправнику
-        // callback(newMessage);
       } catch (error) {
         console.error('Error processing message:', error.message);
         // Надсилаємо помилку відправнику
         socket.emit('error', { message: error.message });
-        // callback({error: error.message});
       }
     });
 
