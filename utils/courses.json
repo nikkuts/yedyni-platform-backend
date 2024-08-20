@@ -1,20 +1,19 @@
 [
     {
         "title": "Курс переходу",
-        "wave": "28",
-        "start": "2024-08-05",
-        "canal": "https://t.me/+SWnzeOp41EViYzBi",
-        "viber": "https://invite.viber.com/?g2=AQBgKptQsbjFo1M84dgjoUCJ6yQK6k6bwm%2FuaCLOC7m7u1L6TzuJXYlSZXhvk5or",
+        "wave": "29",
+        "start": "2024-09-02",
+        "canal": "https://t.me/+ppApKGXMuxU5MDVi",
+        "viber": "https://invite.viber.com/?g2=AQBjkqMApVKPI1NbEeiKpWKrMi%2BL4iXJrgBVTncUwGHbUXPiQXyp9HqqrDRMqROn",
         "funnelId": 3,
         "welcomeStageId": 30,
         "registration": "kurs_perehodu"
     },
     {
         "title": "Граматичний курс",
-        "wave": "21",
-        "start": "2024-08-05",
-        "canal": "https://t.me/+gJOPB6Z9hQU0NzYy",
-        "classroom": "https://classroom.google.com/c/NzAxNTg4MTg0OTA3?cjc=amhkjkt",
+        "wave": "22",
+        "start": "2024-09-02",
+        "canal": "https://t.me/+pVFO8U01DyEzNzQy",
         "funnelId": 4,
         "welcomeStageId": 33,
         "registration": "gramatichniy_kurs"
