@@ -13,51 +13,24 @@ const initializeSocket = (server) => {
     }
   });
 
-  // io.on('connection', (socket) => {
-  //   console.log('A user connected');
-
-  //   socket.on('message', async (msg) => {
-  //     try {
-  //       // Перевіряємо і зберігаємо повідомлення
-  //       const newMessage = await checkAndSaveMessage(msg);
-
-  //       // Відправляємо збережене повідомлення всім клієнтам
-  //       io.emit('message', newMessage);
-  //     } catch (error) {
-  //       console.error('Error processing message:', error.message);
-  //       // Надсилаємо помилку відправнику
-  //       socket.emit('error', { message: error.message });
-  //     }
-  //   });
-
-  //   socket.on('disconnect', () => {
-  //     console.log('A user disconnected');
-  //   });
-  // });
-
-  io.sockets.on('connection', (client) => {
+  io.on('connection', (socket) => {
     console.log('A user connected');
 
-    const broadcast = (event, data) => {
-      client.emit(event, data);
-      client.broadcast.emit(event, data);
-    };
-
-    client.on('message', async (msg) => {
+    socket.on('message', async (msg) => {
       try {
         // Перевіряємо і зберігаємо повідомлення
         const newMessage = await checkAndSaveMessage(msg);
 
         // Відправляємо збережене повідомлення всім клієнтам
-        broadcast('message', newMessage);
+        io.emit('message', newMessage);
       } catch (error) {
         console.error('Error processing message:', error.message);
         // Надсилаємо помилку відправнику
-        client.emit('error', { message: error.message });
+        socket.emit('error', { message: error.message });
       }
     });
 
-    client.on('disconnect', () => {
+    socket.on('disconnect', () => {
       console.log('A user disconnected');
     });
   });
