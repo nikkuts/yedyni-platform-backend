@@ -36,7 +36,7 @@ const checkAndSaveMessage = async ({token, chat, text, fileURL}) => {
 
     const newMessage = await Message.create({
         chat,
-        text,
+        text: text.trim(),
         fileURL,
         sender: user._id,
       });
