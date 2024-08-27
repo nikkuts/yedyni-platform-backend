@@ -48,13 +48,13 @@ const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, isDel
         return {_id: messageId, isDeleteMessage};
     }
 
-    text = text?.trim();
+    // text = text?.trim();
     validateMessage({chat, messageId, text, fileURL});
 
     if (chat) {
         const newMessage = await Message.create({
             chat,
-            text,
+            text: text.trim(),
             fileURL,
             sender: user._id,
           });
@@ -75,7 +75,10 @@ const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, isDel
     if (messageId) {
         const updatedMessage = await Message.findByIdAndUpdate(
             messageId,
-            { text, fileURL },
+            { 
+                text: text.trim(), 
+                fileURL, 
+            },
             { new: true }
         );
 
