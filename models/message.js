@@ -10,7 +10,7 @@ const messageSchema = new Schema({
   text: {
     type: String,
     maxlength: 500,
-    required: true,
+    default: '',
   },
   fileURL: {
     type: String,
