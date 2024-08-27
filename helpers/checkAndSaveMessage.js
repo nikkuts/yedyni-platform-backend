@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
-const {User} = require('../models/user');
+const { User } = require('../models/user');
 const { Message } = require('../models/message');
-const {HttpError} = require('./HttpError');
+const { deleteImageFromCloudinary } = require("../utils");
+const { HttpError } = require('./HttpError');
 
 const {SECRET_KEY} = process.env;
 
@@ -20,38 +21,76 @@ const checkUserAuthentication = async (token) => {
     }
 };
 
-const validateMessage = ({chat, text}) => {
-    if (!chat || !text || text === '') {
-        throw HttpError(400, "Відсутні обов'язкові chat або text")
+const validateMessage = ({chat, messageId, text, fileURL}) => {
+    if (!chat && !messageId) {
+        throw HttpError(400, "Відсутні обов'язкові chat і messageId")
     }
 
-    if (text.trim().length > 500) {
+    if (!text?.trim() && !fileURL) {
+        throw HttpError(400, "Відсутні і текст, і файл");
+    }
+    
+    if (text && text.trim().length > 500) {
         throw HttpError(400, "Текст повідомлення має містити не більше 500 символів")
     }
 }
 
-const checkAndSaveMessage = async ({token, chat, text, fileURL}) => {
+const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, isDeleteMessage}) => {
     const user = await checkUserAuthentication(token);
-    validateMessage({chat, text});
 
-    const newMessage = await Message.create({
-        chat,
-        text: text.trim(),
-        fileURL,
-        sender: user._id,
-      });
+    if (messageId && isDeleteMessage) {
+        if (fileURL && fileURL !== '') {
+            await deleteImageFromCloudinary(fileURL);
+        }
 
-    return {
-        _id: newMessage._id,
-        chat: newMessage.chat,
-        text: newMessage.text,
-        fileURL: newMessage.fileURL,
-        date: newMessage.date,
-        sender: {
-            _id: user._id,
-            name: user.name
-          }
+        await Message.findByIdAndDelete(messageId);
+
+        return {_id: messageId, isDeleteMessage};
     }
+
+    text = text?.trim();
+    validateMessage({chat, messageId, text, fileURL});
+
+    if (chat) {
+        const newMessage = await Message.create({
+            chat,
+            text,
+            fileURL,
+            sender: user._id,
+          });
+    
+        return {
+            _id: newMessage._id,
+            chat: newMessage.chat,
+            text: newMessage.text,
+            fileURL: newMessage.fileURL,
+            date: newMessage.date,
+            sender: {
+                _id: user._id,
+                name: user.name
+              }
+        }
+    }
+
+    if (messageId) {
+        const updatedMessage = await Message.findByIdAndUpdate(
+            messageId,
+            { text, fileURL },
+            { new: true }
+        );
+
+        if (!updatedMessage) {
+            throw HttpError(404, "Повідомлення не знайдено");
+        }
+    
+        return {
+            _id: messageId,
+            text: updatedMessage.text,
+            fileURL: updatedMessage.fileURL,
+        }
+    }
+
+    throw HttpError(400, "Жодна з обов'язкових умов не виконалася");
 }
 
 module.exports = checkAndSaveMessage;

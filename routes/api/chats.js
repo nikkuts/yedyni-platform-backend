@@ -18,6 +18,6 @@ router.patch('/message', authenticate, upload.single("file"), checkFileSize, val
 
 router.patch('/message/file', authenticate, validateBody(schemas.deleteFileSchema), ctrl.deleteFileAndUpdateMessage);
 
-router.delete('/message/:messageId', authenticate, ctrl.deleteMessage);
+router.delete('/message/:messageId', authenticate, validateBody(schemas.deleteMessageSchema), ctrl.deleteMessage);
 
 module.exports = router;
