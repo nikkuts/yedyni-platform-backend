@@ -35,7 +35,7 @@ const validateMessage = ({chat, messageId, text, fileURL}) => {
     }
 }
 
-const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, isDeleteMessage}) => {
+const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, deletedFile, isDeleteMessage}) => {
     const user = await checkUserAuthentication(token);
 
     if (messageId && isDeleteMessage) {
@@ -73,6 +73,10 @@ const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, isDel
     }
 
     if (messageId) {
+        if (deletedFile) {
+            await deleteImageFromCloudinary(deletedFile);
+        }
+        
         const updatedMessage = await Message.findByIdAndUpdate(
             messageId,
             { 
