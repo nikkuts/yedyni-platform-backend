@@ -35,7 +35,16 @@ const validateMessage = ({chat, messageId, text, fileURL}) => {
     }
 }
 
-const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, deletedFile, isDeleteMessage}) => {
+const checkAndSaveMessage = async ({
+    token, 
+    chat, 
+    messageId, 
+    text, 
+    fileURL, 
+    fileType,
+    deletedFile, 
+    isDeleteMessage,
+}) => {
     const user = await checkUserAuthentication(token);
 
     if (messageId && isDeleteMessage) {
@@ -56,6 +65,7 @@ const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, delet
             chat,
             text: text.trim(),
             fileURL,
+            fileType,
             sender: user._id,
           });
     
@@ -64,6 +74,7 @@ const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, delet
             chat: newMessage.chat,
             text: newMessage.text,
             fileURL: newMessage.fileURL,
+            fileType: newMessage.fileType,
             date: newMessage.date,
             sender: {
                 _id: user._id,
@@ -81,7 +92,8 @@ const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, delet
             messageId,
             { 
                 text: text.trim(), 
-                fileURL: fileURL || '', 
+                fileURL: fileURL || '',
+                fileType: fileType || '', 
             },
             { new: true }
         );
@@ -94,6 +106,7 @@ const checkAndSaveMessage = async ({token, chat, messageId, text, fileURL, delet
             _id: messageId,
             text: updatedMessage.text,
             fileURL: updatedMessage.fileURL,
+            fileType: updatedMessage.fileType,
         }
     }
 

@@ -24,11 +24,12 @@ const getMessages = async (req, res) => {
 };
 
 const uploadFile = async (req, res) => {
-    const { path } = req.file;
+    const { path, mimetype } = req.file;
     const image = await uploadImageToCloudinary(path);
     const fileURL = image.url;
+    const fileType = mimetype;
   
-  res.status(201).json(fileURL);
+  res.status(201).json({fileURL, fileType});
 };
 
 const addMessage = async (req, res) => {
