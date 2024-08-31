@@ -25,11 +25,15 @@ const getMessages = async (req, res) => {
 
 const uploadFile = async (req, res) => {
     const { path, mimetype } = req.file;
-    const image = await uploadImageToCloudinary(path);
-    const fileURL = image.url;
-    const fileType = mimetype;
+    console.log('path', path);
+    console.log('mimetype', mimetype);
+    
+  //   const image = await uploadImageToCloudinary(path);
+  //   const fileURL = image.url;
+  //   const fileType = mimetype;
   
-  res.status(201).json({fileURL, fileType});
+  // res.status(201).json({fileURL, fileType});
+  res.status(201).json({message: 'файл отримав'});
 };
 
 const addMessage = async (req, res) => {
