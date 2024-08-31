@@ -19,9 +19,21 @@ cloudinary.config({
 // };
 
 const uploadFileToCloudinary = async (file) => {
+  const { path, mimetype } = file;
+
   try {
-    const result = await cloudinary.uploader.upload(file);
-    fs.unlink(file);
+    let resourceType = 'image';  // За замовчуванням, обробка як зображення
+
+    if (mimetype.startsWith('video/') || mimetype.startsWith('audio/')) {
+      resourceType = 'video';
+    }
+
+    const result = await cloudinary.uploader.upload(path, {
+      resource_type: resourceType
+    });
+
+    fs.unlink(path);
+
     return result;
   } catch (error) {
     throw HttpError(400, "Invalid request file");
