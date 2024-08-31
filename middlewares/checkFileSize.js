@@ -3,20 +3,13 @@ const { HttpError } = require("../helpers");
 
 const checkFileSize = async (req, res, next) => {
   const { file } = req;
-  const maxFileSize = 10 * 1024 * 1024;
-//   if (!file) {
-//     next(HttpError(400, "No added image"));
-//   } else if (file.size > maxFileSize) {
-//     fs.unlink(file.path);
-//     next(HttpError(400, "File size exceeds 1 MB"));
-//   } else {
-//     next();
-//   }
-if (!file) {
+  const maxFileSize = 5 * 1024 * 1024;
+
+  if (!file) {
     next();
   } else if (file.size > maxFileSize) {
     await fs.unlink(file.path);
-    next(HttpError(400, "Розмір файлу перевищує 1 MB"));
+    next(HttpError(400, "Розмір файлу перевищує 5 MB"));
   } else {
     next();
   }

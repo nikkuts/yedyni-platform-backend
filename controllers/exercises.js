@@ -1,8 +1,7 @@
-const { Exercises } = require('../models/exercise');
+const { Exercise } = require('../models/exercise');
 const {
-  uploadImageToCloudinary,
-  getFileInfo,
-  deleteImageFromCloudinary,
+  uploadFileToCloudinary,
+  deleteFileFromCloudinary,
 } = require("../utils");
 const {HttpError, ctrlWrapper} = require('../helpers');
 
@@ -10,7 +9,7 @@ const getExercise = async (req, res) => {
   const {_id: owner} = req.user;
   const {courseId, lessonId} = req.query;
 
-  const result = await Exercises.findOne(
+  const result = await Exercise.findOne(
     { owner, courseId, lessonId }, 
     "-createdAt -updatedAt"
   )
@@ -24,10 +23,11 @@ const getExercise = async (req, res) => {
 };
 
 const addExercise = async (req, res) => {
+  const { file } = req;
   const { _id: owner } = req.user;
   const {courseId, lessonId, homework} = req.body;
 
-  const exercise = await Exercises.findOne(
+  const exercise = await Exercise.findOne(
     { owner, courseId, lessonId }
   );
 
@@ -36,17 +36,20 @@ const addExercise = async (req, res) => {
   }
 
   let fileURL;
-  if (req.file) {
-    const { path } = req.file;
-    const image = await uploadImageToCloudinary(path);
-    fileURL = image.url;
+  let fileType;
+
+  if (file) {
+    const downloadedFile = await uploadFileToCloudinary(file);
+    fileURL = downloadedFile.url;
+    fileType = file.mimetype;
   }
 
-  const newExercise = await Exercises.create({
+  const newExercise = await Exercise.create({
     courseId,
     lessonId,
     homework,
     fileURL,
+    fileType,
     owner,
   });
 
@@ -56,28 +59,31 @@ const addExercise = async (req, res) => {
     lessonId: newExercise.lessonId,
     homework: newExercise.homework,
     fileURL: newExercise.fileURL,
+    filType: newExercise.fileType,
     comments: newExercise.comments,
   });
 };
 
 const updateExercise = async (req, res) => {
+  const { file } = req;
   const {exerciseId, homework} = req.body;
   const update = { 
     homework,
     status: 'active', 
   };
 
-  if (req.file) {
-    const { path } = req.file;
-    const image = await uploadImageToCloudinary(path);
-    const fileURL = image.url;
+  if (file) {
+    const downloadedFile = await uploadFileToCloudinary(file);
+    const fileURL = downloadedFile.url;
+    const fileType = file.mimetype;
 
     if (fileURL) {
       update.fileURL = fileURL;
+      update.fileType = fileType;
     }
   }
 
-  const result = await Exercises.findByIdAndUpdate(
+  const result = await Exercise.findByIdAndUpdate(
     exerciseId,
     { $set: update },
     { 
@@ -97,7 +103,7 @@ const updateExercise = async (req, res) => {
 const deleteHomeworkAndUpdateExercise = async (req, res) => {
   const {exerciseId} = req.body;
 
-  const result = await Exercises.findByIdAndUpdate(
+  const result = await Exercise.findByIdAndUpdate(
     exerciseId,
     { $set: {homework: ''} },
     { 
@@ -113,11 +119,11 @@ const deleteHomeworkAndUpdateExercise = async (req, res) => {
 const deleteFileAndUpdateExercise = async (req, res) => {
   const {exerciseId, fileURL} = req.body;
 
-  await deleteImageFromCloudinary(fileURL);
+  await deleteFileFromCloudinary(fileURL);
 
-  const result = await Exercises.findByIdAndUpdate(
+  const result = await Exercise.findByIdAndUpdate(
     exerciseId,
-    { $set: {fileURL: ''} },
+    { $set: {fileURL: '', fileType: ''} },
     { 
       new: true,
       projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
@@ -133,7 +139,7 @@ const addComment = async (req, res) => {
   const {exerciseId, comment} = req.body;
   let updatedExercise;
 
-  const exercise = await Exercises.findById(exerciseId, "owner");
+  const exercise = await Exercise.findById(exerciseId, "owner");
 
   if (!exercise) {
     throw HttpError(404, "Відсутня домашня робота");
@@ -142,7 +148,7 @@ const addComment = async (req, res) => {
   if (status === "moderator" || status === "admin") {
 
     if (exercise.owner.toString() === author.toString()) {
-      updatedExercise = await Exercises.findByIdAndUpdate(
+      updatedExercise = await Exercise.findByIdAndUpdate(
         exerciseId,
         {
           $set: {status: 'inactive'},
@@ -157,7 +163,7 @@ const addComment = async (req, res) => {
       )
       .populate("comments.author", "_id name");
     } else {
-      updatedExercise = await Exercises.findByIdAndUpdate(
+      updatedExercise = await Exercise.findByIdAndUpdate(
         exerciseId,
         {
           $set: {status: 'inactive'},
@@ -174,7 +180,7 @@ const addComment = async (req, res) => {
       .populate("comments.author", "_id name");
     }
   } else {
-    updatedExercise = await Exercises.findByIdAndUpdate(
+    updatedExercise = await Exercise.findByIdAndUpdate(
       exerciseId,
       {
         $set: {status: 'active'},
@@ -197,7 +203,7 @@ const updateComment = async (req, res) => {
   const {_id: author, status} = req.user;
   const { exerciseId, commentId, comment } = req.body;
 
-  const exercise = await Exercises.findById(exerciseId, "owner");
+  const exercise = await Exercise.findById(exerciseId, "owner");
 
   if (!exercise) {
     throw HttpError(404, "Відсутня домашня робота");
@@ -206,7 +212,7 @@ const updateComment = async (req, res) => {
   if (status === "moderator" || status === "admin") {
 
     if (exercise.owner.toString() === author.toString()) {
-      await Exercises.findOneAndUpdate(
+      await Exercise.findOneAndUpdate(
         { _id: exerciseId, 'comments._id': commentId },
         {
           $set: {
@@ -217,7 +223,7 @@ const updateComment = async (req, res) => {
         }
       );
     } else {
-      await Exercises.findOneAndUpdate(
+      await Exercise.findOneAndUpdate(
         { _id: exerciseId, 'comments._id': commentId },
         {
           $set: {
@@ -230,7 +236,7 @@ const updateComment = async (req, res) => {
       );
     }
   } else {
-    await Exercises.findOneAndUpdate(
+    await Exercise.findOneAndUpdate(
       { _id: exerciseId, 'comments._id': commentId },
       {
         $set: {
@@ -242,7 +248,7 @@ const updateComment = async (req, res) => {
     );
   }
 
-  const updatedExercise = await Exercises.findOne(
+  const updatedExercise = await Exercise.findOne(
     { _id: exerciseId, 'comments._id': commentId },
     { 'comments.$': 1 }
   )
@@ -259,7 +265,7 @@ const updateCommentStatus = async (req, res) => {
   const { exerciseId } = req.query;
 
   try {
-    const exercise = await Exercises.findById(exerciseId, "-_id comments");
+    const exercise = await Exercise.findById(exerciseId, "-_id comments");
     
     if (!exercise) {
       return res.status(404).send("Вправа не знайдена");
@@ -269,7 +275,7 @@ const updateCommentStatus = async (req, res) => {
     const updatePromises = exercise.comments
       .filter(comment => comment.status === 'active')
       .map(comment => 
-        Exercises.findOneAndUpdate(
+        Exercise.findOneAndUpdate(
           { _id: exerciseId, 'comments._id': comment._id },
           { $set: { 'comments.$.status': 'inactive' } },
           { new: true }
@@ -289,7 +295,7 @@ const deleteComment = async (req, res) => {
   const { exerciseId, commentId } = req.query;
 
   try {
-    await Exercises.findByIdAndUpdate(
+    await Exercise.findByIdAndUpdate(
       exerciseId,
       {
         $pull: {
@@ -311,7 +317,7 @@ const getNotifications = async (req, res) => {
   let result;
 
   if (status === "moderator" || status === "admin") {
-    result = await Exercises.find({  
+    result = await Exercise.find({  
       owner: { $ne: owner }, // $ne - не рівно
       status: "active"
     }, 
@@ -322,7 +328,7 @@ const getNotifications = async (req, res) => {
       select: "name -_id"
     });
   } else {
-    const aggResult = await Exercises.aggregate([
+    const aggResult = await Exercise.aggregate([
       // Спочатку знаходимо вправи власника
       { $match: { owner: owner } },
       
@@ -343,7 +349,7 @@ const getNotifications = async (req, res) => {
     ]);
     
     // Виконуємо популяцію для поля comments.author
-    result = await Exercises.populate(aggResult, { 
+    result = await Exercise.populate(aggResult, { 
       path: "comments.author", 
       select: "-_id name"
     });
@@ -360,12 +366,12 @@ const getExerciseById = async (req, res) => {
   let result;
   
   if (status === "moderator" || status === "admin") {
-    await Exercises.findByIdAndUpdate(
+    await Exercise.findByIdAndUpdate(
       exerciseId,
       { $set: {status: "inactive"} }
     );
 
-    result = await Exercises.findById(
+    result = await Exercise.findById(
       exerciseId,
       '-status -createdAt -updatedAt'
     ).populate('owner', '_id name');

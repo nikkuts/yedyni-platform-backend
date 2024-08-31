@@ -23,27 +23,26 @@ const getMessages = async (req, res) => {
 };
 
 const uploadFile = async (req, res) => {
-    // const { path, mimetype } = req.file;
-    // console.log('path', path);
-    // console.log('mimetype', mimetype);
-    
-    const result = await uploadFileToCloudinary(req.file);
-    const fileURL = result.url;
-    const fileType = req.file.mimetype;
+    const { file } = req;
+    const downloadedFile = await uploadFileToCloudinary(file);
+    const fileURL = downloadedFile.url;
+    const fileType = file.mimetype;
   
   res.status(201).json({fileURL, fileType});
-  // res.status(201).json({message: 'файл отримав'});
 };
 
 const addMessage = async (req, res) => {
+  const { file } = req;
   const { _id: sender } = req.user;
   const {chat, text} = req.body;
 
   let fileURL;
-  if (req.file) {
-    const result = await uploadFileToCloudinary(req.file);
-    const fileURL = result.url;
-    const fileType = req.file.mimetype;
+  let fileType;
+
+  if (file) {
+    const downloadedFile = await uploadFileToCloudinary(file);
+    fileURL = downloadedFile.url;
+    fileType = file.mimetype;
   }
 
   const newMessage = await Message.create({
@@ -71,15 +70,16 @@ const addMessage = async (req, res) => {
 };
 
 const updateMessage = async (req, res) => {
+  const { file } = req;
   const {messageId, text} = req.body;
   const update = { 
     text, 
   };
 
-  if (req.file) {
-    const result = await uploadFileToCloudinary(req.file);
-    const fileURL = result.url;
-    const fileType = req.file.mimetype;
+  if (file) {
+    const downloadedFile = await uploadFileToCloudinary(file);
+    const fileURL = downloadedFile.url;
+    const fileType = file.mimetype;
 
     if (fileURL) {
       update.fileURL = fileURL;

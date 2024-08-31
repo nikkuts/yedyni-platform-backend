@@ -19,6 +19,10 @@ const exerciseSchema = new Schema({
     type: String,
     default: '',
   },
+  fileType: {
+    type: String,
+    default: '',
+  },
   status: {
     type: String,
     enum: ["active", "inactive"],
@@ -91,6 +95,6 @@ const schemas = {
     updateCommentSchema,
 };
 
-const Exercises = model('Exercise', exerciseSchema);
+const Exercise = model('Exercise', exerciseSchema);
 
-module.exports = {Exercises, schemas};
+module.exports = {Exercise, schemas};
