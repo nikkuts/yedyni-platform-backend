@@ -2,8 +2,7 @@ const { Message } = require('../models/message');
 const { User } = require('../models/user');
 const {
   uploadFileToCloudinary,
-  getFileInfo,
-  deleteImageFromCloudinary,
+  deleteFileFromCloudinary,
 } = require("../utils");
 const {HttpError, ctrlWrapper} = require('../helpers');
 
@@ -42,15 +41,16 @@ const addMessage = async (req, res) => {
 
   let fileURL;
   if (req.file) {
-    const { path } = req.file;
-    const image = await uploadImageToCloudinary(path);
-    fileURL = image.url;
+    const result = await uploadFileToCloudinary(req.file);
+    const fileURL = result.url;
+    const fileType = req.file.mimetype;
   }
 
   const newMessage = await Message.create({
     chat,
     text,
     fileURL,
+    fileType,
     sender,
   });
 
@@ -61,6 +61,7 @@ const addMessage = async (req, res) => {
     chat: newMessage.chat,
     text: newMessage.text,
     fileURL: newMessage.fileURL,
+    fileType: newMessage.fileType,
     date: newMessage.date,
     sender: {
       _id: user._id,
@@ -76,16 +77,17 @@ const updateMessage = async (req, res) => {
   };
 
   if (req.file) {
-    const { path } = req.file;
-    const image = await uploadImageToCloudinary(path);
-    const fileURL = image.url;
+    const result = await uploadFileToCloudinary(req.file);
+    const fileURL = result.url;
+    const fileType = req.file.mimetype;
 
     if (fileURL) {
       update.fileURL = fileURL;
+      update.fileType = fileType;
     }
   }
 
-  const result = await Message.findByIdAndUpdate(
+  const updatedMessage = await Message.findByIdAndUpdate(
     messageId,
     { $set: update },
     { 
@@ -95,21 +97,21 @@ const updateMessage = async (req, res) => {
   )
   .populate("sender", "_id name");
 
-  if (!result) {
+  if (!updatedMessage) {
     throw HttpError(404, "Відсутнє повідомлення");
   }
 
-  res.status(201).json(result);
+  res.status(201).json(updatedMessage);
 };
 
 const deleteFileAndUpdateMessage = async (req, res) => {
   const {messageId, fileURL} = req.body;
 
-  await deleteImageFromCloudinary(fileURL);
+  await deleteFileFromCloudinary(fileURL);
 
   const result = await Message.findByIdAndUpdate(
     messageId,
-    { $set: {fileURL: ''} },
+    { $set: {fileURL: '', fileType: ''} },
     { 
       new: true,
       projection: { createdAt: 0, updatedAt: 0 } 

@@ -8,16 +8,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// const uploadImageToCloudinary = async (file) => {
-//   try {
-//     const result = await cloudinary.uploader.upload(file, { quality: 80 });
-//     fs.unlink(file);
-//     return result;
-//   } catch (error) {
-//     throw HttpError(400, "Invalid request file");
-//   }
-// };
-
 const uploadFileToCloudinary = async (file) => {
   const { path, mimetype } = file;
 
@@ -29,14 +19,14 @@ const uploadFileToCloudinary = async (file) => {
     }
 
     const result = await cloudinary.uploader.upload(path, {
-      resource_type: resourceType
+      resource_type: resourceType, quality: 80
     });
 
     fs.unlink(path);
 
     return result;
   } catch (error) {
-    throw HttpError(400, "Invalid request file");
+    throw HttpError(400, "Помилка при збереженні файлу");
   }
 };
 
@@ -49,18 +39,18 @@ const getFileInfo = async (fileUrl) => {
   }
 }
 
-const deleteImageFromCloudinary = async (imageUrlFromCloudinary) => {
+const deleteFileFromCloudinary = async (fileUrlFromCloudinary) => {
   try {
-    const lastDotIndex = imageUrlFromCloudinary.lastIndexOf(".");
-    const lastSlashIndex = imageUrlFromCloudinary.lastIndexOf("/");
-    const imageId = imageUrlFromCloudinary.substring(
+    const lastDotIndex = fileUrlFromCloudinary.lastIndexOf(".");
+    const lastSlashIndex = fileUrlFromCloudinary.lastIndexOf("/");
+    const fileId = fileUrlFromCloudinary.substring(
       lastSlashIndex + 1,
       lastDotIndex
     );
-    await cloudinary.uploader.destroy(imageId);
+    await cloudinary.uploader.destroy(fileId);
   } catch (error) {
-    throw HttpError(400, "Invalid request for deleting image");
+    throw HttpError(400, "Помилка при видаленні файлу");
   }
 };
 
-module.exports = { uploadFileToCloudinary, getFileInfo, deleteImageFromCloudinary };
+module.exports = { uploadFileToCloudinary, getFileInfo, deleteFileFromCloudinary };

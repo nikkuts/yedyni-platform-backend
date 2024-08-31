@@ -11,7 +11,7 @@ const {
   const {
     uploadFileToCloudinary,
     getFileInfo,
-    deleteImageFromCloudinary,
+    deleteFileFromCloudinary,
   } = require("./cloudinary");
 
   const {
@@ -36,7 +36,7 @@ const {
     passwordRegex,
     uploadFileToCloudinary,
     getFileInfo,
-    deleteImageFromCloudinary,
+    deleteFileFromCloudinary,
     authUspacy,
     getContactByIdUspacy,
     getDealByIdUspacy,

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/user');
 const { Message } = require('../models/message');
-const { deleteImageFromCloudinary } = require("../utils");
+const { deleteFileFromCloudinary } = require("../utils");
 const { HttpError } = require('./HttpError');
 
 const {SECRET_KEY} = process.env;
@@ -49,7 +49,7 @@ const checkAndSaveMessage = async ({
 
     if (messageId && isDeleteMessage) {
         if (fileURL && fileURL !== '') {
-            await deleteImageFromCloudinary(fileURL);
+            await deleteFileFromCloudinary(fileURL);
         }
 
         await Message.findByIdAndDelete(messageId);
@@ -85,7 +85,7 @@ const checkAndSaveMessage = async ({
 
     if (messageId) {
         if (deletedFile) {
-            await deleteImageFromCloudinary(deletedFile);
+            await deleteFileFromCloudinary(deletedFile);
         }
         
         const updatedMessage = await Message.findByIdAndUpdate(
