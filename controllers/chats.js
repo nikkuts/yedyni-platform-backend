@@ -1,7 +1,7 @@
 const { Message } = require('../models/message');
 const { User } = require('../models/user');
 const {
-  uploadImageToCloudinary,
+  uploadFileToCloudinary,
   getFileInfo,
   deleteImageFromCloudinary,
 } = require("../utils");
@@ -28,12 +28,12 @@ const uploadFile = async (req, res) => {
     console.log('path', path);
     console.log('mimetype', mimetype);
     
-  //   const image = await uploadImageToCloudinary(path);
-  //   const fileURL = image.url;
-  //   const fileType = mimetype;
+    const response = await uploadFileToCloudinary(path);
+    const fileURL = response.url;
+    const fileType = mimetype;
   
-  // res.status(201).json({fileURL, fileType});
-  res.status(201).json({message: 'файл отримав'});
+  res.status(201).json({fileURL, fileType});
+  // res.status(201).json({message: 'файл отримав'});
 };
 
 const addMessage = async (req, res) => {

@@ -8,9 +8,19 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadImageToCloudinary = async (file) => {
+// const uploadImageToCloudinary = async (file) => {
+//   try {
+//     const result = await cloudinary.uploader.upload(file, { quality: 80 });
+//     fs.unlink(file);
+//     return result;
+//   } catch (error) {
+//     throw HttpError(400, "Invalid request file");
+//   }
+// };
+
+const uploadFileToCloudinary = async (file) => {
   try {
-    const result = await cloudinary.uploader.upload(file, { quality: 80 });
+    const result = await cloudinary.uploader.upload(file);
     fs.unlink(file);
     return result;
   } catch (error) {
@@ -41,4 +51,4 @@ const deleteImageFromCloudinary = async (imageUrlFromCloudinary) => {
   }
 };
 
-module.exports = { uploadImageToCloudinary, getFileInfo, deleteImageFromCloudinary };
+module.exports = { uploadFileToCloudinary, getFileInfo, deleteImageFromCloudinary };

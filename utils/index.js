@@ -9,7 +9,7 @@ const {
   } = require("./regexp");
 
   const {
-    uploadImageToCloudinary,
+    uploadFileToCloudinary,
     getFileInfo,
     deleteImageFromCloudinary,
   } = require("./cloudinary");
@@ -34,7 +34,7 @@ const {
     phoneRegexp,
     workScheduleRegexp,
     passwordRegex,
-    uploadImageToCloudinary,
+    uploadFileToCloudinary,
     getFileInfo,
     deleteImageFromCloudinary,
     authUspacy,
