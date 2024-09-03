@@ -11,13 +11,14 @@ const getMessages = async (req, res) => {
   
   const pageNum = parseInt(page, 10);
   const limitNum = parseInt(limit, 10);
+  const lastMessageDateNum = parseInt(lastMessageDate, 10);
 
   const skip = lastMessageDate ? 0 : (pageNum - 1) * limitNum;
 
   const query = { chat };
     
   if (lastMessageDate) {
-    query.date = { $lt: new Date(lastMessageDate) }; 
+    query.date = { $lt: new Date(lastMessageDateNum) }; 
   }
 
   const result = await Message.find(
