@@ -14,18 +14,15 @@ const getMessages = async (req, res) => {
 
   const skip = (pageNum - 1) * limitNum;
 
-  const messages = await Message.find(
+  const result = await Message.find(
     { chat }, 
     "-createdAt -updatedAt"
-  ).sort({ date: 1 })
+  )
+  .sort({ date: -1 })
+  .skip(skip)
+  .limit(limitNum)
   .populate("sender", "_id name");
   
-  if (messages.length === 0) {
-    return res.status(204);
-  }
-
-  const result = messages.slice(skip, skip + limitNum);
-
   return res.status(200).json(result);
 };
 
