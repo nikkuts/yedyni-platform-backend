@@ -22,7 +22,7 @@ const addServant = async (req, res) => {
   const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
 
   const amountDeal = promokod ? 
-    (1 - course.discountPercentage / 100) * course.amount 
+    950 
     : course.amount;
 
   const { 
