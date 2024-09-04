@@ -32,9 +32,8 @@ const getMessages = async (req, res) => {
 
   const result = { messages };
 
-  if (pageNum === 1) {
-    const firstMessageDate = messages[0]?.date;
-    result.firstMessageDate = firstMessageDate;
+  if (pageNum === 1 && !firstMessageDate) {
+    result.firstMessageDate = messages[0]?.date;;
   }
   
   return res.status(200).json(result);
