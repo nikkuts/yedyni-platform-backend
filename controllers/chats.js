@@ -7,21 +7,21 @@ const {
 const {HttpError, ctrlWrapper} = require('../helpers');
 
 const getMessages = async (req, res) => {
-  const { chat, page = 1, limit = 10, lastMessageDate } = req.query;
+  const { chat, page = 1, limit = 10, firstMessageDate } = req.query;
   
   const pageNum = parseInt(page, 10);
   const limitNum = parseInt(limit, 10);
-  const lastMessageDateNum = parseInt(lastMessageDate, 10);
+  const firstMessageDateNum = parseInt(firstMessageDate, 10);
 
-  const skip = lastMessageDate ? 0 : (pageNum - 1) * limitNum;
+  const skip = (pageNum - 1) * limitNum;
 
   const query = { chat };
     
-  if (lastMessageDate) {
-    query.date = { $lt: new Date(lastMessageDateNum) }; 
+  if (firstMessageDate) {
+    query.date = { $lte: new Date(firstMessageDateNum) }; 
   }
 
-  const result = await Message.find(
+  const messages = await Message.find(
     query, 
     "-createdAt -updatedAt"
   )
@@ -29,6 +29,13 @@ const getMessages = async (req, res) => {
   .skip(skip)
   .limit(limitNum)
   .populate("sender", "_id name");
+
+  const result = { messages };
+
+  if (pageNum === 1) {
+    const firstMessageDate = messages[0]?.date;
+    result.firstMessageDate = firstMessageDate;
+  }
   
   return res.status(200).json(result);
 };
