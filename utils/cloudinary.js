@@ -16,10 +16,13 @@ const uploadFileToCloudinary = async (file) => {
 
     if (mimetype.startsWith('video/') || mimetype.startsWith('audio/')) {
       resourceType = 'video';
+    } else if (!mimetype.startsWith('image/')) {
+      resourceType = 'raw';  // Для текстових, Excel та інших файлів
     }
 
     const result = await cloudinary.uploader.upload(path, {
-      resource_type: resourceType, quality: 80
+      resource_type: resourceType, 
+      quality: resourceType === 'image' ? 80 : undefined
     });
 
     fs.unlink(path);
