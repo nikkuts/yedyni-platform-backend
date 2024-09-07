@@ -59,7 +59,7 @@ const addExercise = async (req, res) => {
     lessonId: newExercise.lessonId,
     homework: newExercise.homework,
     fileURL: newExercise.fileURL,
-    filType: newExercise.fileType,
+    fileType: newExercise.fileType,
     comments: newExercise.comments,
   });
 };
