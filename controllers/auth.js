@@ -36,6 +36,7 @@ const register = async (req, res) => {
     const hasPassword = await bcrypt.hash(password, 10);
     const avatarURL = gravavatar.url(email);
     const verificationToken = nanoid();
+    const courses = inviterId === '666ad6fd5d3cb232f39728fb' ? ['id-3'] : ['id-1', 'id-2'];
     
     const newUser = await User.create({
         name,
@@ -44,6 +45,7 @@ const register = async (req, res) => {
         avatarURL, 
         verificationToken, 
         inviter: inviterId,
+        courses,
         ukrainianMark: BASE_UKRAINIAN_MARK,
         historyUkrainianMark: [{
             points: BASE_UKRAINIAN_MARK,
@@ -86,6 +88,7 @@ const register = async (req, res) => {
             id: newUser._id,
             name: newUser.name,
             email: newUser.email,
+            courses: newUser.courses,
             registerDate: newUser.createdAt,
             inviter: inviter.name,
           }
@@ -154,7 +157,7 @@ const login = async (req, res) => {
         throw HttpError(401, 'Недійсний пароль');
     }
 
-    const {_id, name, inviter = MAIN_ID, createdAt} = user;
+    const {_id, name, courses, inviter = MAIN_ID, createdAt} = user;
 
     const payload = {id: _id,};
     const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
@@ -169,6 +172,7 @@ const login = async (req, res) => {
             id: _id,
             name,
             email,
+            courses,
             registerDate: createdAt,
             inviter: inviterUser.name,
           }
@@ -176,13 +180,14 @@ const login = async (req, res) => {
 };
 
 const getCurrent = async (req, res) => {
-    const {_id, name, email, inviter = MAIN_ID, createdAt} = req.user;
+    const {_id, name, email, courses, inviter = MAIN_ID, createdAt} = req.user;
     const inviterUser = await User.findById(inviter.toString());
 
     res.json({
         id: _id,
         name,
         email,
+        courses,
         registerDate: createdAt,
         inviter: inviterUser.name,
     });

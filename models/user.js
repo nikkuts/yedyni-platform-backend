@@ -51,6 +51,10 @@ const userSchema = new Schema({
           }
         ],
       },
+      courses: {
+        type: [String],
+        default: [],
+      },
       donats: {
         type: [
           {
