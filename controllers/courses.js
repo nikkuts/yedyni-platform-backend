@@ -31,7 +31,7 @@ const getScheduledDateLesson = async (req, res) => {
     if (status === "moderator" || status === "admin") {
       const result = await Course.findOne(
         {
-          id: courseId, 
+          courseId: courseId, 
           'lessons.day': lessonId
         }, 
         {
@@ -56,7 +56,7 @@ const updateScheduledDateLesson = async (req, res) => {
   if (status === "moderator" || status === "admin") {
       const updatedCourse = await Course.findOneAndUpdate(
           {
-              id: courseId, 
+            courseId: courseId, 
               'lessons.day': lessonId
           }, 
           { $set: { 'lessons.$.scheduledDate': scheduledDate } },
