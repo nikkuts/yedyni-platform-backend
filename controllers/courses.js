@@ -39,7 +39,7 @@ const getScheduledDateLesson = async (req, res) => {
         }
       );
   
-      if (!result) {
+      if (!result || !result.lessons || result.lessons.length === 0) {
         throw HttpError(404, 'Курс або урок не знайдено');
       }
 
