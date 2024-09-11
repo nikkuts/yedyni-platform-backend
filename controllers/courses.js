@@ -35,7 +35,7 @@ const getScheduledDateLesson = async (req, res) => {
           'lessons.day': lessonId
         }, 
         {
-          projection: { 'lessons.$': 1 } // Вибираємо тільки необхідний урок
+          'lessons.$': 1  // Вибираємо тільки необхідний урок
         }
       );
   
