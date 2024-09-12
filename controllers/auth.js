@@ -36,7 +36,9 @@ const register = async (req, res) => {
     const hasPassword = await bcrypt.hash(password, 10);
     const avatarURL = gravavatar.url(email);
     const verificationToken = nanoid();
-    const courses = inviterId === '666ad6fd5d3cb232f39728fb' ? ['id-3'] : ['id-1', 'id-2'];
+    const courses = inviterId === '666ad6fd5d3cb232f39728fb' ? 
+        ['66e057f98475aec7b81e613c'] 
+        : ['66e2c70e5122f6140e1ad568', '66e2c7885122f6140e1ad56a'];
     
     const newUser = await User.create({
         name,
@@ -63,10 +65,15 @@ const register = async (req, res) => {
 
     const payload = {id: newUser._id,};
     const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
-    await User.findByIdAndUpdate(
+    
+    const registeredUser = await User.findByIdAndUpdate(
         newUser._id, 
-        {token}
-    );
+        { token },
+        { new: true }  
+    )
+    .select('_id name email status courses createdAt inviter')
+    .populate('courses', '_id title')
+    .populate('inviter', 'name');
 
     const ukrainianMarkInviter = inviter.ukrainianMark += BASE_UKRAINIAN_MARK;
 
@@ -82,16 +89,20 @@ const register = async (req, res) => {
           }
       });
 
+    // res.status(201).json({
+    //     token: token,
+    //     user: {
+    //         id: newUser._id,
+    //         name: newUser.name,
+    //         email: newUser.email,
+    //         courses: newUser.courses,
+    //         registerDate: newUser.createdAt,
+    //         inviter: inviter.name,
+    //       }
+    // })
     res.status(201).json({
         token: token,
-        user: {
-            id: newUser._id,
-            name: newUser.name,
-            email: newUser.email,
-            courses: newUser.courses,
-            registerDate: newUser.createdAt,
-            inviter: inviter.name,
-          }
+        user: registeredUser,
     })
 };
 
@@ -157,42 +168,69 @@ const login = async (req, res) => {
         throw HttpError(401, 'Недійсний пароль');
     }
 
-    const {_id, name, status, courses, inviter, createdAt} = user;
+    // const {_id, name, status, courses, inviter, createdAt} = user;
 
-    const payload = {id: _id,};
+    const payload = {id: user._id,};
     const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
     
-    await User.findByIdAndUpdate(_id, {token});
+    // await User.findByIdAndUpdate(_id, {token});
 
-    const inviterUser = await User.findById(inviter.toString());
+    // const inviterUser = await User.findById(inviter.toString());
 
-    return res.json({
+    // return res.json({
+    //     token: token,
+    //     user: {
+    //         id: _id,
+    //         name,
+    //         email,
+    //         status,
+    //         courses,
+    //         registerDate: createdAt,
+    //         inviter: inviterUser.name,
+    //       }
+    // })
+
+    const authenticatedUser = await User.findByIdAndUpdate(
+        user._id, 
+        { token },
+        { new: true } 
+    )
+    .select('_id name email status courses createdAt inviter')
+    .populate('courses', '_id title')
+    .populate('inviter', 'name');
+
+    res.status(200).json({
         token: token,
-        user: {
-            id: _id,
-            name,
-            email,
-            status,
-            courses,
-            registerDate: createdAt,
-            inviter: inviterUser.name,
-          }
+        user: authenticatedUser,
     })
 };
 
-const getCurrent = async (req, res) => {
-    const {_id, name, status, email, courses, inviter, createdAt} = req.user;
-    const inviterUser = await User.findById(inviter.toString());
+// const getCurrent = async (req, res) => {
+//     const {_id, name, status, email, courses, inviter, createdAt} = req.user;
+//     const inviterUser = await User.findById(inviter.toString());
 
-    res.json({
-        id: _id,
-        name,
-        email,
-        status,
-        courses,
-        registerDate: createdAt,
-        inviter: inviterUser.name,
-    });
+//     res.json({
+//         id: _id,
+//         name,
+//         email,
+//         status,
+//         courses,
+//         registerDate: createdAt,
+//         inviter: inviterUser.name,
+//     });
+// };
+
+const getCurrent = async (req, res) => {
+    const {_id} = req.user;
+    
+    const currentUser = await User.findById(
+        _id, 
+        '_id name email status courses createdAt inviter'
+    )
+    .populate('courses', '_id title')
+    .populate('inviter', 'name');
+
+    res.status(200).json(currentUser);
 };
 
 const logout = async (req, res) => {

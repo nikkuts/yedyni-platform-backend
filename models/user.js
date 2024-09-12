@@ -52,8 +52,12 @@ const userSchema = new Schema({
         ],
       },
       courses: {
-        type: [String],
-        default: [],
+        type: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: 'Course',
+          }
+        ],
       },
       donats: {
         type: [
