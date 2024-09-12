@@ -49,33 +49,6 @@ const getScheduledDateLesson = async (req, res) => {
     throw HttpError(403, 'Недостатньо прав для виконання цієї операції');
 };
 
-// const updateScheduledDateLesson = async (req, res) => {
-//   const {status} = req.user;
-//   const {courseId, lessonId, scheduledDate} = req.body;
-
-//   if (status === "moderator" || status === "admin") {
-//       const updatedCourse = await Course.findOneAndUpdate(
-//           {
-//             courseId: courseId, 
-//               'lessons.day': lessonId
-//           }, 
-//           { $set: { 'lessons.$.scheduledDate': scheduledDate } },
-//           { 
-//               new: true,
-//               projection: { 'lessons.$': 1 } 
-//           }
-//       );
-
-//       if (!updatedCourse) {
-//         throw HttpError(404, 'Курс або урок не знайдено');
-//       }
-
-//       const updatedLesson = updatedCourse.lessons[0]; // Отримуємо оновлений урок  
-//       return res.status(200).json({scheduledDate: updatedLesson.scheduledDate});
-//   }
-//   throw HttpError(403, 'Недостатньо прав для виконання цієї операції');
-// };
-
 const updateScheduledDateLesson = async (req, res) => {
   const {status} = req.user;
   const {courseId, lessonId, scheduledDate} = req.body;
@@ -83,18 +56,18 @@ const updateScheduledDateLesson = async (req, res) => {
   if (status === "moderator" || status === "admin") {
       const updatedCourse = await Course.findOneAndUpdate(
           {
-            courseId: courseId, 
-            'lessons._id': lessonId
+            _id: courseId, 
+            'lessons.day': lessonId
           }, 
           { $set: { 'lessons.$.scheduledDate': scheduledDate } },
-          { new: true }
+          { new: true}
       );
 
       if (!updatedCourse) {
         throw HttpError(404, 'Курс або урок не знайдено');
       }
-      
-      const updatedLesson = updatedCourse.lessons.find(lesson => lesson._id.toString() === lessonId); 
+
+      const updatedLesson = updatedCourse.lessons.find(lesson => lesson.day === lessonId); 
 
       return res.status(200).json({
         lessonId, 
