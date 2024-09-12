@@ -51,8 +51,13 @@ const courseSchema = new Schema({
             default: [],
         },
         video: {
-            type: [String],
-            default: [],
+          type: [
+            {
+              title: String,
+              url: String,
+            }
+          ],
+          default: [],
         },
         test: {
             type: String,
