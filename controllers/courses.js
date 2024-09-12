@@ -1,12 +1,12 @@
 const { Course } = require('../models/course');
 const {HttpError, ctrlWrapper} = require('../helpers');
 
-const getCourse = async (req, res) => {
+const getCourseById = async (req, res) => {
   const {courseId} = req.params;
 
-  const result = await Course.findOne(
-    { id: courseId }, 
-    "-_id -createdAt -updatedAt"
+  const result = await Course.findById(
+    courseId, 
+    "-createdAt -updatedAt"
   );
   
   if (!result) {
@@ -77,7 +77,7 @@ const updateScheduledDateLesson = async (req, res) => {
 };
 
 module.exports = {
-    getCourse: ctrlWrapper(getCourse),
+    getCourseById: ctrlWrapper(getCourseById),
     addCourse: ctrlWrapper(addCourse),
     updateCourse: ctrlWrapper(updateCourse),
     getScheduledDateLesson: ctrlWrapper(getScheduledDateLesson),

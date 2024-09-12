@@ -55,6 +55,7 @@ const register = async (req, res) => {
             finalValue: BASE_UKRAINIAN_MARK,
         }]
     });
+    
     const verifyEmail = {
         to: email,
         subject: 'Підтвердження адреси електронної пошти',
@@ -73,7 +74,7 @@ const register = async (req, res) => {
     )
     .select('_id name email status courses createdAt inviter')
     .populate('courses', '_id title')
-    .populate('inviter', 'name');
+    .populate('inviter', '-_id name');
 
     const ukrainianMarkInviter = inviter.ukrainianMark += BASE_UKRAINIAN_MARK;
 
@@ -197,7 +198,7 @@ const login = async (req, res) => {
     )
     .select('_id name email status courses createdAt inviter')
     .populate('courses', '_id title')
-    .populate('inviter', 'name');
+    .populate('inviter', '-_id name');
 
     res.status(200).json({
         token: token,
@@ -228,7 +229,7 @@ const getCurrent = async (req, res) => {
         '_id name email status courses createdAt inviter'
     )
     .populate('courses', '_id title')
-    .populate('inviter', 'name');
+    .populate('inviter', '-_id name');
 
     res.status(200).json(currentUser);
 };

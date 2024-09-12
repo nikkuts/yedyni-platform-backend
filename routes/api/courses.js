@@ -8,7 +8,7 @@ const {authenticate, validateBody} = require('../../middlewares');
 
 const router = express.Router();
 
-// router.get('/', authenticate, ctrl.getCourse);
+router.get('/:courseId', authenticate, ctrl.getCourseById);
 
 // router.post('/', authenticate, validateBody(schemas.addDiarySchema), ctrl.addCourse);
 
