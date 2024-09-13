@@ -14,8 +14,6 @@ router.get('/:courseId', authenticate, ctrl.getCourseById);
 
 // router.patch('/', authenticate, ctrl.updateCourse);
 
-router.get('/lesson/date', authenticate, ctrl.getScheduledDateLesson);
-
 router.patch('/lesson/date', authenticate, ctrl.updateScheduledDateLesson);
 
 module.exports = router;
