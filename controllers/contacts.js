@@ -105,6 +105,10 @@ const addCreative = async (req, res) => {
       promokod,
       amountDeal,
     })
+
+    res.status(201).json({
+      message: 'success',
+    });
   } else {
     res.redirect(redirectUrl);
   }
@@ -153,6 +157,10 @@ const addProukrainian = async (req, res) => {
       promokod,
       amountDeal,
     })
+
+    res.status(201).json({
+      message: 'success',
+    });
   } else {
     res.redirect(redirectUrl);
   }
@@ -368,117 +376,3 @@ module.exports = {
     sendEmailContact: ctrlWrapper(sendEmailContact),
     editLead: ctrlWrapper(editLead),
 };
-
-
-// const addGrammatical = async (req, res) => {
-  //   const contact = req.body;
-  //   const course = courses.find(elem => elem.title === 'Граматичний курс');
-  
-  //   try {
-  //     // Створення нового контакту в локальній базі даних
-  //     const newContact = await Contact.create({
-  //       ...contact,
-  //       registration: ["gramatichniy_kurs"],
-  //     });
-  
-  //     // Отримання JWT токена від Uspacy
-  //     const authOptions = {
-  //       method: 'POST',
-  //       url: 'https://yedyni.uspacy.ua/auth/v1/auth/sign_in',
-  //       headers: { accept: 'application/json', 'content-type': 'application/json' },
-  //       data: { email: USPACY_LOGIN, password: USPACY_PASS }
-  //     };
-  
-  //     const authResponse = await axios(authOptions);
-  //     const jwt = authResponse.data.jwt;
-  
-  //     // Створення контакту в Uspacy
-  //     const createContactOptions = {
-  //       method: 'POST',
-  //       url: 'https://yedyni.uspacy.ua/crm/v1/entities/contacts',
-  //       headers: {
-  //         accept: 'application/json',
-  //         'content-type': 'application/json',
-  //         authorization: `Bearer ${jwt}`
-  //       },
-  //       data: {
-  //         ...contact,
-  //         title: `${contact.last_name} ${contact.first_name}`,
-  //         email: [{ value: contact.email }],
-  //         phone: [{ value: contact.phone }],
-  //         registration: ["gramatichniy_kurs"]
-  //       }
-  //     };
-  
-  //     const createContactResponse = await axios(createContactOptions);
-  //     const contactUspacyId = createContactResponse.data.id;
-
-  //     // Створення угоди для контакту в Uspacy  
-  //     const createDealOptions = {
-  //       method: 'POST',
-  //       url: 'https://yedyni.uspacy.ua/crm/v1/entities/deals',
-  //       headers: {
-  //         accept: 'application/json',
-  //         'content-type': 'application/json',
-  //         authorization: `Bearer ${jwt}`
-  //       },
-  //       data: {
-  //         title: "Граматичний курс",
-  //         funnel_id: 4,
-  //         contacts: [contactUspacyId],
-  //         hvilya: course.wave
-  //       }
-  //     };
-  
-  //     const createDealResponse = await axios(createDealOptions);
-  //     const dealUspacyId = createDealResponse.data.id;
-
-  //     // Збереження в локальній базі id контакту та угоди
-  //     await Contact.findByIdAndUpdate(newContact._id, 
-  //       {contactUspacyId, dealUspacyId}
-  //     )
-
-  //      // Відправка привітального листа
-  //      const welcomeEmail = {
-  //       to: [{ email: contact.email }],
-  //       subject: "Вітаємо з реєстрацією на курсі!",
-  //       html: `
-  //         <p>${contact.first_name}, Вас зареєстровано на курс "Єдині": 28 днів вдосконалення Вашої української мови. </p>
-  //         <p>Наступний крок: приєднатися до нашого <a target="_blank" href="${course.canal}">Telegram</a> або <a target="_blank" href="${course.classroom}">Google Classroom</a>!</p>
-  //         <p>Просимо не поширювати це посилання серед осіб, не зареєстрованих на курс.</p>
-  //         `
-  //     };
-
-  //     const isSendingEmail = await sendEmail(welcomeEmail);
-
-  //     // Встановлення етапу автоматичної відправки посилання в угоді Uspacy
-  //    if (isSendingEmail) {
-  //      const moveStageDealOptions = {
-  //        method: 'POST',
-  //        url: `https://yedyni.uspacy.ua/crm/v1/entities/deals/${dealUspacyId}/move/stage/${course.welcomeStageId}`,
-  //        headers: {
-  //          accept: 'application/json',
-  //          'content-type': 'application/json',
-  //          authorization: `Bearer ${jwt}`
-  //        }
-  //      };
- 
-  //      await axios(moveStageDealOptions);
-  //    }
-
-  //     res.status(201).json({
-  //       message: 'success',
-  //     });
-  
-  //   } catch (error) {
-  //       if (error.response) {
-  //           // Логування повної відповіді помилки, якщо вона є
-  //           console.error('Error during the process:', error.message, error.response.data);
-  //           res.status(error.response.status).json({ success: false, message: error.response.data.message || 'Помилка при обробці запиту' });
-  //         } else {
-  //           // Логування помилки без відповіді
-  //           console.error('Error during the process:', error.message);
-  //           res.status(500).json({ success: false, message: 'Помилка при обробці запиту' });
-  //         }
-  //   }
-  // };
