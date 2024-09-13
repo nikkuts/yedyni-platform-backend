@@ -106,9 +106,7 @@ const addCreative = async (req, res) => {
       amountDeal,
     })
 
-    res.status(201).json({
-      message: 'success',
-    });
+    res.redirect('https://yedyni.org/');
   } else {
     res.redirect(redirectUrl);
   }
@@ -158,9 +156,7 @@ const addProukrainian = async (req, res) => {
       amountDeal,
     })
 
-    res.status(201).json({
-      message: 'success',
-    });
+    res.redirect('https://yedyni.org/');
   } else {
     res.redirect(redirectUrl);
   }
