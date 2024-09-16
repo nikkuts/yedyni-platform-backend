@@ -22,7 +22,8 @@ const uploadFileToCloudinary = async (file) => {
 
     const result = await cloudinary.uploader.upload(path, {
       resource_type: resourceType, 
-      quality: resourceType === 'image' ? 80 : undefined
+      quality: resourceType === 'image' ? 80 : undefined,
+      secure: true  // Додає HTTPS до URL
     });
 
     fs.unlink(path);
