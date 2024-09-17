@@ -42,7 +42,7 @@ const getMessages = async (req, res) => {
 const uploadFile = async (req, res) => {
     const { file } = req;
     const downloadedFile = await uploadFileToCloudinary(file);
-    const fileURL = downloadedFile.url;
+    const fileURL = downloadedFile.secure_url;
     const fileType = file.mimetype;
   
   res.status(201).json({fileURL, fileType});
@@ -58,7 +58,7 @@ const addMessage = async (req, res) => {
 
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
-    fileURL = downloadedFile.url;
+    fileURL = downloadedFile.secure_url;
     fileType = file.mimetype;
   }
 
@@ -95,7 +95,7 @@ const updateMessage = async (req, res) => {
 
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
-    const fileURL = downloadedFile.url;
+    const fileURL = downloadedFile.secure_url;
     const fileType = file.mimetype;
 
     if (fileURL) {

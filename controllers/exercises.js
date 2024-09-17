@@ -40,7 +40,7 @@ const addExercise = async (req, res) => {
 
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
-    fileURL = downloadedFile.url;
+    fileURL = downloadedFile.secure_url;
     fileType = file.mimetype;
   }
 
@@ -74,7 +74,7 @@ const updateExercise = async (req, res) => {
 
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
-    const fileURL = downloadedFile.url;
+    const fileURL = downloadedFile.secure_url;
     const fileType = file.mimetype;
 
     if (fileURL) {
