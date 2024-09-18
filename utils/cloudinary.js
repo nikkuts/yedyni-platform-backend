@@ -51,6 +51,7 @@ const deleteFileFromCloudinary = async (fileUrlFromCloudinary) => {
       lastSlashIndex + 1,
       lastDotIndex
     );
+    
     await cloudinary.uploader.destroy(fileId);
   } catch (error) {
     throw HttpError(400, "Помилка при видаленні файлу");
