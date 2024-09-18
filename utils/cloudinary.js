@@ -10,7 +10,7 @@ cloudinary.config({
 });
 
 const uploadFileToCloudinary = async (file) => {
-  const { path, mimetype } = file;
+  const { path, mimetype, originalname } = file;
 
   try {
     let resourceType = 'image';  // За замовчуванням, обробка як зображення
@@ -28,7 +28,7 @@ const uploadFileToCloudinary = async (file) => {
 
     fs.unlink(path);
 
-    return result;
+    return {...result, original_filename: originalname};
   } catch (error) {
     throw HttpError(400, "Помилка при збереженні файлу");
   }
