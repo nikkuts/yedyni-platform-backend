@@ -28,7 +28,8 @@ const uploadFileToCloudinary = async (file) => {
 
     fs.unlink(path);
 
-    return {...result, original_filename: originalname};
+    // return {...result, original_filename: originalname};
+    return result;
   } catch (error) {
     throw HttpError(400, "Помилка при збереженні файлу");
   }
@@ -51,7 +52,6 @@ const deleteFileFromCloudinary = async (fileUrlFromCloudinary) => {
       lastSlashIndex + 1,
       lastDotIndex
     );
-    
     await cloudinary.uploader.destroy(fileId);
   } catch (error) {
     throw HttpError(400, "Помилка при видаленні файлу");
