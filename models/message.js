@@ -20,6 +20,10 @@ const messageSchema = new Schema({
     type: String,
     default: '',
   },
+  fileName: {
+    type: String,
+    default: '',
+  },
   sender: {
     type: Schema.Types.ObjectId,
     ref: 'User',

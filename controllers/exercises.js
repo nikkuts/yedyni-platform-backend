@@ -37,10 +37,12 @@ const addExercise = async (req, res) => {
 
   let fileURL;
   let fileType;
+  let fileName;
 
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
     fileURL = downloadedFile.secure_url;
+    fileName = downloadedFile.original_filename;
     fileType = file.mimetype;
   }
 
@@ -50,6 +52,7 @@ const addExercise = async (req, res) => {
     homework,
     fileURL,
     fileType,
+    fileName,
     owner,
   });
 
@@ -60,6 +63,7 @@ const addExercise = async (req, res) => {
     homework: newExercise.homework,
     fileURL: newExercise.fileURL,
     fileType: newExercise.fileType,
+    fileName: newExercise.fileName,
     comments: newExercise.comments,
   });
 };
@@ -75,11 +79,13 @@ const updateExercise = async (req, res) => {
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
     const fileURL = downloadedFile.secure_url;
+    const fileName = downloadedFile.original_filename;
     const fileType = file.mimetype;
 
     if (fileURL) {
       update.fileURL = fileURL;
       update.fileType = fileType;
+      update.fileName = fileName;
     }
   }
 
@@ -123,7 +129,7 @@ const deleteFileAndUpdateExercise = async (req, res) => {
 
   const result = await Exercise.findByIdAndUpdate(
     exerciseId,
-    { $set: {fileURL: '', fileType: ''} },
+    { $set: {fileURL: '', fileType: '', fileName: ''} },
     { 
       new: true,
       projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 

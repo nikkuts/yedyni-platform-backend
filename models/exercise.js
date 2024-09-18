@@ -23,6 +23,10 @@ const exerciseSchema = new Schema({
     type: String,
     default: '',
   },
+  fileName: {
+    type: String,
+    default: '',
+  },
   status: {
     type: String,
     enum: ["active", "inactive"],
