@@ -40,8 +40,10 @@ const getMessages = async (req, res) => {
 };
 
 const uploadFile = async (req, res) => {
-    const { file } = req;
+    const { file, originalname } = req;
     console.log('file', file);
+    console.log('originalname', originalname);
+    
     
     const downloadedFile = await uploadFileToCloudinary(file);
     console.log('downloadedFile', downloadedFile);
@@ -49,14 +51,14 @@ const uploadFile = async (req, res) => {
     const fileURL = downloadedFile.secure_url;
     // const fileName = downloadedFile.original_filename;
     const fileType = file.mimetype;
-    const fileName = file.originalname;
+    const fileName = originalname;
   console.log(fileURL, fileType, fileName);
   
   res.status(201).json({fileURL, fileType, fileName});
 };
 
 const addMessage = async (req, res) => {
-  const { file } = req;
+  const { file, originalname } = req;
   const { _id: sender } = req.user;
   const {chat, text} = req.body;
 
@@ -69,7 +71,7 @@ const addMessage = async (req, res) => {
     fileURL = downloadedFile.secure_url;
     // fileName = downloadedFile.original_filename;
     fileType = file.mimetype;
-    fileName = file.originalname;
+    fileName = originalname;
   }
 
   const newMessage = await Message.create({
@@ -99,7 +101,7 @@ const addMessage = async (req, res) => {
 };
 
 const updateMessage = async (req, res) => {
-  const { file } = req;
+  const { file, originalname } = req;
   const {messageId, text} = req.body;
   const update = { 
     text, 
@@ -110,7 +112,7 @@ const updateMessage = async (req, res) => {
     const fileURL = downloadedFile.secure_url;
     // const fileName = downloadedFile.original_filename;
     const fileType = file.mimetype;
-    const fileName = file.originalname;
+    const fileName = originalname;
 
     if (fileURL) {
       update.fileURL = fileURL;
