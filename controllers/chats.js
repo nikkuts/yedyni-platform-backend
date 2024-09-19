@@ -40,7 +40,8 @@ const getMessages = async (req, res) => {
 };
 
 const uploadFile = async (req, res) => {
-    const { file, originalname } = req;
+    const { file } = req;
+    const { originalname } = req.body;
     console.log('file', file);
     console.log('originalname', originalname);
     
