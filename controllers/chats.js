@@ -41,7 +41,11 @@ const getMessages = async (req, res) => {
 
 const uploadFile = async (req, res) => {
     const { file } = req;
+    console.log('file', file);
+    
     const downloadedFile = await uploadFileToCloudinary(file);
+    console.log('downloadedFile', downloadedFile);
+    
     const fileURL = downloadedFile.secure_url;
     // const fileName = downloadedFile.original_filename;
     const fileType = file.mimetype;
