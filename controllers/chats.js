@@ -46,6 +46,7 @@ const uploadFile = async (req, res) => {
     // const fileName = downloadedFile.original_filename;
     const fileType = file.mimetype;
     const fileName = file.originalname;
+  console.log(fileURL, fileType, fileName);
   
   res.status(201).json({fileURL, fileType, fileName});
 };
