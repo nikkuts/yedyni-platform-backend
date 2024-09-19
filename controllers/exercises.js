@@ -24,6 +24,7 @@ const getExercise = async (req, res) => {
 
 const addExercise = async (req, res) => {
   const { file } = req;
+  const { originalname } = req.body;
   const { _id: owner } = req.user;
   const {courseId, lessonId, homework} = req.body;
 
@@ -41,9 +42,10 @@ const addExercise = async (req, res) => {
 
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
+
     fileURL = downloadedFile.secure_url;
-    fileName = downloadedFile.original_filename;
     fileType = file.mimetype;
+    fileName = originalname;
   }
 
   const newExercise = await Exercise.create({
@@ -70,6 +72,7 @@ const addExercise = async (req, res) => {
 
 const updateExercise = async (req, res) => {
   const { file } = req;
+  const { originalname } = req.body;
   const {exerciseId, homework} = req.body;
   const update = { 
     homework,
@@ -79,8 +82,8 @@ const updateExercise = async (req, res) => {
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
     const fileURL = downloadedFile.secure_url;
-    const fileName = downloadedFile.original_filename;
     const fileType = file.mimetype;
+    const fileName = originalname;
 
     if (fileURL) {
       update.fileURL = fileURL;

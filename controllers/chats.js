@@ -42,24 +42,19 @@ const getMessages = async (req, res) => {
 const uploadFile = async (req, res) => {
     const { file } = req;
     const { originalname } = req.body;
-    console.log('file', file);
-    console.log('originalname', originalname);
-    
     
     const downloadedFile = await uploadFileToCloudinary(file);
-    console.log('downloadedFile', downloadedFile);
     
     const fileURL = downloadedFile.secure_url;
-    // const fileName = downloadedFile.original_filename;
     const fileType = file.mimetype;
     const fileName = originalname;
-  console.log(fileURL, fileType, fileName);
   
   res.status(201).json({fileURL, fileType, fileName});
 };
 
 const addMessage = async (req, res) => {
-  const { file, originalname } = req;
+  const { file } = req;
+  const { originalname } = req.body;
   const { _id: sender } = req.user;
   const {chat, text} = req.body;
 
@@ -69,8 +64,8 @@ const addMessage = async (req, res) => {
 
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
+
     fileURL = downloadedFile.secure_url;
-    // fileName = downloadedFile.original_filename;
     fileType = file.mimetype;
     fileName = originalname;
   }
@@ -102,7 +97,8 @@ const addMessage = async (req, res) => {
 };
 
 const updateMessage = async (req, res) => {
-  const { file, originalname } = req;
+  const { file } = req;
+  const { originalname } = req.body;
   const {messageId, text} = req.body;
   const update = { 
     text, 
@@ -110,8 +106,8 @@ const updateMessage = async (req, res) => {
 
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
+    
     const fileURL = downloadedFile.secure_url;
-    // const fileName = downloadedFile.original_filename;
     const fileType = file.mimetype;
     const fileName = originalname;
 
