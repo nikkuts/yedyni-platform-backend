@@ -10,7 +10,7 @@ const getExercise = async (req, res) => {
   const {courseId, lessonId} = req.query;
 
   const result = await Exercise.findOne(
-    { owner, courseId, lessonId }, 
+    { owner, course: courseId, lessonId }, 
     "-createdAt -updatedAt"
   )
   .populate("comments.author", "_id name");
@@ -29,7 +29,7 @@ const addExercise = async (req, res) => {
   const {courseId, lessonId, homework} = req.body;
 
   const exercise = await Exercise.findOne(
-    { owner, courseId, lessonId }
+    { owner, course: courseId, lessonId }
   );
 
   if (exercise) {
@@ -49,7 +49,7 @@ const addExercise = async (req, res) => {
   }
 
   const newExercise = await Exercise.create({
-    courseId,
+    course: courseId,
     lessonId,
     homework,
     fileURL,
@@ -60,7 +60,7 @@ const addExercise = async (req, res) => {
 
   res.status(201).json({
     _id: newExercise._id,
-    courseId: newExercise.courseId,
+    courseId: newExercise.course,
     lessonId: newExercise.lessonId,
     homework: newExercise.homework,
     fileURL: newExercise.fileURL,
@@ -354,14 +354,20 @@ const getNotifications = async (req, res) => {
       { $replaceRoot: { newRoot: "$doc" } },
       
       // Вибираємо лише необхідні поля для відповіді
-      { $project: { "_id": 1, "courseId": 1, "lessonId": 1, "comments._id": 1, "comments.author": 1, "comments.date": 1 } }
+      { $project: { "_id": 1, "course": 1, "lessonId": 1, "comments._id": 1, "comments.author": 1, "comments.date": 1 } }
     ]);
     
-    // Виконуємо популяцію для поля comments.author
-    result = await Exercise.populate(aggResult, { 
-      path: "comments.author", 
-      select: "-_id name"
-    });
+    // Виконуємо популяцію для полів comments.author і courseId
+    result = await Exercise.populate(aggResult, [
+      { 
+        path: "comments.author", 
+        select: "-_id name"
+      },
+      { 
+        path: "course", 
+        select: "_id title"  
+      }
+    ]);
   }
 
   const countNotifications = result.length;

@@ -3,8 +3,9 @@ const Joi = require('joi');
 const {handleMongooseError} = require('../helpers');
 
 const exerciseSchema = new Schema({
-  courseId: {
-    type: String,
+  course: {
+    type: Schema.Types.ObjectId,
+    ref: 'Course',
     required: true,
   },
   lessonId: {
