@@ -389,7 +389,17 @@ const getExerciseById = async (req, res) => {
     result = await Exercise.findById(
       exerciseId,
       '-status -createdAt -updatedAt'
-    ).populate('owner', '_id name');
+    )
+    .populate([
+      {
+        path: "owner", 
+        select: "-_id name"
+      },
+      {
+        path: "course", 
+        select: "-_id title"
+      }
+    ]);
   } else {
     throw HttpError (401, 'Відсутні права доступу')
   }
