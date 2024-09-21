@@ -404,7 +404,11 @@ const getExerciseById = async (req, res) => {
       {
         path: "course", 
         select: "-_id title"
-      }
+      },
+      {
+        path: "comments.author", 
+        select: "_id name"
+      },
     ]);
   } else {
     throw HttpError (401, 'Відсутні права доступу')
