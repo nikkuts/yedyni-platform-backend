@@ -330,12 +330,18 @@ const getNotifications = async (req, res) => {
       owner: { $ne: owner }, // $ne - не рівно
       status: "active"
     }, 
-    "_id courseId lessonId owner updatedAt"
+    "_id course lessonId owner updatedAt"
     )
-    .populate({
-      path: "owner",
-      select: "name -_id"
-    });
+    .populate([
+      {
+        path: "owner", 
+        select: "-_id name"
+      },
+      {
+        path: "course", 
+        select: "-_id title"
+      }
+    ]);
   } else {
     const aggResult = await Exercise.aggregate([
       // Спочатку знаходимо вправи власника
