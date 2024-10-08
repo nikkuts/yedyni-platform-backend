@@ -16,7 +16,7 @@ router.post("/verify", validateBody(schemas.emailSchema), ctrl.resendVerifyEmail
 
 router.post("/login", validateBody(schemas.loginSchema), ctrl.login);
 
-router.post("/resume", ctrl.getResumeUser);
+router.get("/resume", ctrl.getResumeUser);
 
 router.get("/current", authenticate, ctrl.getCurrent);
 
