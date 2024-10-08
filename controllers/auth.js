@@ -9,7 +9,7 @@ const {nanoid} = require('nanoid');
 const {HttpError, ctrlWrapper, sendEmail} = require('../helpers');
 require('dotenv').config();
 
-const {SECRET_KEY, BASE_URL, MAIN_ID} = process.env;
+const {SECRET_KEY, BASE_SERVER_URL, MAIN_ID, RESUME_USER_ID} = process.env;
 const BASE_UKRAINIAN_MARK = Number(process.env.BASE_UKRAINIAN_MARK);
 
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
@@ -58,11 +58,15 @@ const register = async (req, res) => {
     
     const verifyEmail = {
         to: email,
-        subject: 'Підтвердження адреси електронної пошти',
-        html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Натисніть тут для підтвердження адреси вашої електронної пошти</a>`
+        subject: "Підтвердження адреси електронної пошти на платформі «Єдині»",
+        html: `
+            <p>
+                <a target="_blank" href="${BASE_SERVER_URL}/api/auth/verify/${verificationToken}">Натисніть тут</a> для підтвердження адреси вашої електронної пошти
+            </p>
+            `
     };
 
-    // await sendEmail(verifyEmail);
+    await sendEmail(verifyEmail);
 
     const payload = {id: newUser._id,};
     const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
@@ -90,17 +94,6 @@ const register = async (req, res) => {
           }
       });
 
-    // res.status(201).json({
-    //     token: token,
-    //     user: {
-    //         id: newUser._id,
-    //         name: newUser.name,
-    //         email: newUser.email,
-    //         courses: newUser.courses,
-    //         registerDate: newUser.createdAt,
-    //         inviter: inviter.name,
-    //       }
-    // })
     res.status(201).json({
         token: token,
         user: registeredUser,
@@ -140,8 +133,12 @@ const resendVerifyEmail = async (req, res) => {
 
     const verifyEmail = {
         to: email,
-        subject: 'Verify email',
-        html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${user.verificationToken}">Click verify email</a>`
+        subject: "Підтвердження адреси електронної пошти на платформі «Єдині»",
+        html: `
+            <p>
+                <a target="_blank" href="${BASE_SERVER_URL}/api/auth/verify/${user.verificationToken}">Натисніть тут</a> для підтвердження адреси вашої електронної пошти
+            </p>
+            `
     };
 
     await sendEmail(verifyEmail);
@@ -169,27 +166,8 @@ const login = async (req, res) => {
         throw HttpError(401, 'Недійсний пароль');
     }
 
-    // const {_id, name, status, courses, inviter, createdAt} = user;
-
     const payload = {id: user._id,};
     const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
-    
-    // await User.findByIdAndUpdate(_id, {token});
-
-    // const inviterUser = await User.findById(inviter.toString());
-
-    // return res.json({
-    //     token: token,
-    //     user: {
-    //         id: _id,
-    //         name,
-    //         email,
-    //         status,
-    //         courses,
-    //         registerDate: createdAt,
-    //         inviter: inviterUser.name,
-    //       }
-    // })
 
     const authenticatedUser = await User.findByIdAndUpdate(
         user._id, 
@@ -206,20 +184,24 @@ const login = async (req, res) => {
     })
 };
 
-// const getCurrent = async (req, res) => {
-//     const {_id, name, status, email, courses, inviter, createdAt} = req.user;
-//     const inviterUser = await User.findById(inviter.toString());
+const getResumeUser = async (req, res) => {
+    const payload = {id: RESUME_USER_ID};
+    const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
 
-//     res.json({
-//         id: _id,
-//         name,
-//         email,
-//         status,
-//         courses,
-//         registerDate: createdAt,
-//         inviter: inviterUser.name,
-//     });
-// };
+    const resumeUser = await User.findByIdAndUpdate(
+        RESUME_USER_ID, 
+        { token },
+        { new: true } 
+    )
+    .select('_id name email status courses createdAt inviter')
+    .populate('courses', '_id title')
+    .populate('inviter', '-_id name');
+
+    res.status(200).json({
+        token: token,
+        user: resumeUser,
+    })
+};
 
 const getCurrent = async (req, res) => {
     const {_id} = req.user;
@@ -265,6 +247,7 @@ const updateAvatar = async (req, res) => {
 module.exports = {
     register: ctrlWrapper(register),
     login: ctrlWrapper(login),
+    getResumeUser: ctrlWrapper(getResumeUser),
     getCurrent: ctrlWrapper(getCurrent),
     logout: ctrlWrapper(logout),
     updateStatus: ctrlWrapper(updateStatus),
