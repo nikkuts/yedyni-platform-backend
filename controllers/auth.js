@@ -9,7 +9,7 @@ const {nanoid} = require('nanoid');
 const {HttpError, ctrlWrapper, sendEmail} = require('../helpers');
 require('dotenv').config();
 
-const {SECRET_KEY, BASE_SERVER_URL, MAIN_ID, RESUME_USER_ID} = process.env;
+const {SECRET_KEY, BASE_SERVER_URL, MAIN_ID} = process.env;
 const BASE_UKRAINIAN_MARK = Number(process.env.BASE_UKRAINIAN_MARK);
 
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
@@ -184,25 +184,6 @@ const login = async (req, res) => {
     })
 };
 
-const getResumeUser = async (req, res) => {
-    const payload = {id: RESUME_USER_ID};
-    const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
-
-    const resumeUser = await User.findByIdAndUpdate(
-        RESUME_USER_ID, 
-        { token },
-        { new: true } 
-    )
-    .select('_id name email status courses createdAt inviter')
-    .populate('courses', '_id title')
-    .populate('inviter', '-_id name');
-
-    res.status(200).json({
-        token: token,
-        user: resumeUser,
-    })
-};
-
 const getCurrent = async (req, res) => {
     const {_id} = req.user;
     
@@ -247,7 +228,6 @@ const updateAvatar = async (req, res) => {
 module.exports = {
     register: ctrlWrapper(register),
     login: ctrlWrapper(login),
-    getResumeUser: ctrlWrapper(getResumeUser),
     getCurrent: ctrlWrapper(getCurrent),
     logout: ctrlWrapper(logout),
     updateStatus: ctrlWrapper(updateStatus),
