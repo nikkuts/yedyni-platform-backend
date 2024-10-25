@@ -57,7 +57,7 @@ const register = async (req, res) => {
     });
     
     const verifyEmail = {
-        to: email,
+        to: [{email}],
         subject: "Підтвердження адреси електронної пошти на платформі «Єдині»",
         html: `
             <p>
@@ -132,7 +132,7 @@ const resendVerifyEmail = async (req, res) => {
     }
 
     const verifyEmail = {
-        to: email,
+        to: [{email}],
         subject: "Підтвердження адреси електронної пошти на платформі «Єдині»",
         html: `
             <p>
