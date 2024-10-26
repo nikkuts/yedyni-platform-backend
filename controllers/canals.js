@@ -8,23 +8,18 @@ const sendGift = async (req, res) => {
     const { message } = req.body;
     console.log(req.body);
     
-    /* const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
+    const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 
-    if (message && message.new_chat_members) {
-        const chatId = message.chat.id;
+    if (message && message.new_chat_member) {
+        const chatId = message.new_chat_member.id;
        
-        message.new_chat_members.forEach((newMember) => {
-            console.log('newMember', newMember);
-            
-            const welcomeMessage = `Ласкаво просимо, ${newMember.first_name}! 🎉`;
-            bot.sendMessage(chatId, welcomeMessage);
-         
-            const giftFilePath = 'https://res.cloudinary.com/dwnbra6yc/image/upload/v1727889954/lm2hlqoe4ojvev4iat1b.png';
-            bot.sendDocument(chatId, giftFilePath, { caption: "Ось ваш подарунок!" });
-        });
-        console.log('OK');
-    } */
-console.log('ok');
+        const welcomeMessage = `Ласкаво просимо, ${message.new_chat_member.first_name}! 🎉`;
+        bot.sendMessage(chatId, welcomeMessage);
+        
+        const giftFilePath = 'https://res.cloudinary.com/dwnbra6yc/image/upload/v1727889954/lm2hlqoe4ojvev4iat1b.png';
+        bot.sendDocument(chatId, giftFilePath, { caption: "Ось ваш подарунок!" });
+
+    }
 
     res.sendStatus(200);
 };
