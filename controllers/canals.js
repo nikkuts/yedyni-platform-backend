@@ -8,7 +8,7 @@ const sendGift = async (req, res) => {
     const { message } = req.body;
     console.log(req.body);
     
-    const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
+    /* const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 
     if (message && message.new_chat_members) {
         const chatId = message.chat.id;
@@ -23,8 +23,7 @@ const sendGift = async (req, res) => {
             bot.sendDocument(chatId, giftFilePath, { caption: "Ось ваш подарунок!" });
         });
         console.log('OK');
-        
-    }
+    } */
 console.log('ok');
 
     res.sendStatus(200);
