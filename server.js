@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const http = require('http');
 const app = require('./app');
 const initializeSocket = require('./helpers/socket');
-// const initializeBot = require('./helpers/bot');
 
 const { DB_HOST, PORT = 3000 } = process.env;
 
@@ -18,9 +17,6 @@ mongoose.connect(DB_HOST)
 
     // Ініціалізація Socket.io через зовнішню функцію
     initializeSocket(server);
-
-    // Ініціалізація Bot через зовнішню функцію
-    // initializeBot();
 
     // Запуск серверу
     server.listen(PORT, () => {
