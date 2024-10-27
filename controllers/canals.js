@@ -9,7 +9,8 @@ const sendGift = async (req, res) => {
 
     if (message && message.new_chat_member) {
         const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
-
+        console.log('message', message);
+        
         const chatId = message.new_chat_member.id;
         const giftFilePath = 'https://res.cloudinary.com/dwnbra6yc/image/upload/v1727889954/lm2hlqoe4ojvev4iat1b.png';
 
