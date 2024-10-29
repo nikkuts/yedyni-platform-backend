@@ -5,6 +5,8 @@ require('dotenv').config();
 const { TELEGRAM_BOT_TOKEN } = process.env;
 
 const sendGift = async (req, res) => {
+    console.log(req.body);
+    
     const { message } = req.body;
 
     if (message && message.new_chat_member) {
@@ -18,7 +20,7 @@ const sendGift = async (req, res) => {
 
         const chatId = message.chat.id;
         const newMember = message.new_chat_member;
-        const welcomeMessage = `Ласкаво просимо, ${newMember.first_name}! 🎉 Натисніть [тут](https://t.me/YedyniBot), щоб отримати ваш подарунок.`;
+        const welcomeMessage = `Ласкаво просимо, ${newMember.first_name}! 🎉 Натисніть [тут](https://t.me/YedinyBot), щоб отримати ваш подарунок.`;
         bot.sendMessage(chatId, welcomeMessage, { parse_mode: 'Markdown' });
     }
 
