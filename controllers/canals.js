@@ -4,19 +4,12 @@ require('dotenv').config();
 
 const { TELEGRAM_BOT_TOKEN } = process.env;
 
-const sendGift = async (req, res) => {
-    console.log(req.body);
-    
+const sendWelcomeMessage = async (req, res) => { 
     const { message } = req.body;
+    console.log('message', message);
 
     if (message && message.new_chat_member) {
         const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
-        console.log('message', message);
-        
-        /* const chatId = message.new_chat_member.id;
-        const giftFilePath = 'https://res.cloudinary.com/dwnbra6yc/image/upload/v1727889954/lm2hlqoe4ojvev4iat1b.png';
-
-        bot.sendDocument(chatId, giftFilePath, { caption: "Вітаємо на курсі від руху 'Єдині'! 🎉 Ось ваш подарунок!" }); */
 
         const chatId = message.chat.id;
         const newMember = message.new_chat_member;
@@ -27,6 +20,23 @@ const sendGift = async (req, res) => {
     res.sendStatus(200);
 };
 
+const sendGift = async (req, res) => { 
+    const { message } = req.body;
+    console.log('message', message);
+
+    if (message && message.chat) {
+        const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
+        
+        const chatId = message.chat.id;
+        const giftFilePath = 'https://res.cloudinary.com/dwnbra6yc/image/upload/v1727889954/lm2hlqoe4ojvev4iat1b.png';
+
+        bot.sendDocument(chatId, giftFilePath, { caption: "Вітаємо на курсі від руху 'Єдині'! 🎉 Ось ваш подарунок!" });
+    }
+
+    res.sendStatus(200);
+};
+
 module.exports = {
+    sendWelcomeMessage: ctrlWrapper(sendWelcomeMessage),
     sendGift: ctrlWrapper(sendGift),
 };
