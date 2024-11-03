@@ -31,7 +31,7 @@ const getMessages = async (req, res) => {
   .populate({
     path: "sender",
     select: "_id name",
-    match: { _id: { $ne: null } }, // перевіряє наявність користувача
+    match: { $ne: null }, // перевіряє наявність користувача
   }); 
 
   const result = { messages };
