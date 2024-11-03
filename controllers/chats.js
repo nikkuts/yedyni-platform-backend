@@ -21,19 +21,16 @@ const getMessages = async (req, res) => {
     query.date = { $lte: new Date(firstMessageDateNum) }; 
   }
 
-  const messages = await Message.find(
-    query, 
+  const messages = await Message.find({
+    ...query,
+    sender: { $exists: true, $ne: null } // відбираємо тільки існуючих користувачів
+  }, 
     "-createdAt -updatedAt"
   )
   .sort({ date: -1 })
   .skip(skip)
   .limit(limitNum)
-  .populate({
-    path: "sender",
-    select: "_id name",
-    match: { $ne: null }, // перевіряє наявність користувача
-  }); 
-console.log(messages);
+  .populate("sender", "_id name"); 
 
   const result = { messages };
 
