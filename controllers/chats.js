@@ -33,6 +33,7 @@ const getMessages = async (req, res) => {
     select: "_id name",
     match: { $ne: null }, // перевіряє наявність користувача
   }); 
+console.log(messages);
 
   const result = { messages };
 
