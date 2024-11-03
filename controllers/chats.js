@@ -21,17 +21,14 @@ const getMessages = async (req, res) => {
     query.date = { $lte: new Date(firstMessageDateNum) }; 
   }
 
-  const messages = await Message.find({
-    ...query,
-    sender: { $exists: true, $ne: null } // відбираємо тільки існуючих користувачів
-  }, 
-    "-createdAt -updatedAt"
-  )
+  let messages = await Message.find(query, "-createdAt -updatedAt")
   .sort({ date: -1 })
   .skip(skip)
   .limit(limitNum)
   .populate("sender", "_id name"); 
-
+  
+  messages = messages.filter(message => message.sender !== null);
+  
   const result = { messages };
 
   if (pageNum === 1 && !firstMessageDate) {
