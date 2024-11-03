@@ -28,7 +28,11 @@ const getMessages = async (req, res) => {
   .sort({ date: -1 })
   .skip(skip)
   .limit(limitNum)
-  .populate("sender", "_id name");
+  .populate({
+    path: "sender",
+    select: "_id name",
+    match: { _id: { $exists: true } } // перевіряє наявність користувача
+  });
 
   const result = { messages };
 
