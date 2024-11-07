@@ -87,7 +87,7 @@ const register = async (req, res) => {
         { new: true }  
     )
     .select('_id name email status courses createdAt inviter')
-    .populate('courses._id', '-_id title')
+    .populate('courses._id', '_id title')
     .populate('inviter', '-_id name');
 
     const ukrainianMarkInviter = inviter.ukrainianMark += BASE_UKRAINIAN_MARK;
@@ -185,7 +185,7 @@ const login = async (req, res) => {
         { new: true } 
     )
     .select('_id name email status courses createdAt inviter')
-    .populate('courses._id', '-_id title')
+    .populate('courses._id', '_id title')
     .populate('inviter', '-_id name');
 
     res.status(200).json({
@@ -201,7 +201,7 @@ const getCurrent = async (req, res) => {
         _id, 
         '_id name email status courses createdAt inviter'
     )
-    .populate('courses._id', '-_id title')
+    .populate('courses._id', '_id title')
     .populate('inviter', '-_id name');
 
     res.status(200).json(currentUser);
