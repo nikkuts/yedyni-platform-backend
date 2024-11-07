@@ -1,6 +1,7 @@
 const {isValidObjectId} = require('mongoose');
 const bcrypt = require('bcrypt');
-const {User} = require('../models/user');
+const { User } = require('../models/user');
+const { Course } = require('../models/course');
 const jwt = require('jsonwebtoken');
 const gravavatar = require('gravatar');
 const path = require('path');
@@ -36,9 +37,18 @@ const register = async (req, res) => {
     const hasPassword = await bcrypt.hash(password, 10);
     const avatarURL = gravavatar.url(email);
     const verificationToken = nanoid();
+
+    const courseTransitionId = await Course.findOne({ title: 'Курс переходу' }, '_id');
+    const courseGrammaticalId = await Course.findOne({ title: 'Граматичний курс' }, '_id');
+    const courseNewId = await Course.findOne({ title: 'Новий курс' }, '_id');
+
     const courses = inviterId === '666ad6fd5d3cb232f39728fb' ? 
-        ['66e057f98475aec7b81e613c'] 
-        : ['66e2c70e5122f6140e1ad568', '66e2c7885122f6140e1ad56a'];
+        [courseNewId] 
+        : [courseTransitionId, courseGrammaticalId];
+    
+    // const courses = inviterId === '666ad6fd5d3cb232f39728fb' ? 
+    //     ['66e057f98475aec7b81e613c'] 
+    //     : ['66e2c70e5122f6140e1ad568', '66e2c7885122f6140e1ad56a'];
     
     const newUser = await User.create({
         name,
@@ -77,7 +87,7 @@ const register = async (req, res) => {
         { new: true }  
     )
     .select('_id name email status courses createdAt inviter')
-    .populate('courses', '_id title')
+    .populate('courses._id', '-_id title')
     .populate('inviter', '-_id name');
 
     const ukrainianMarkInviter = inviter.ukrainianMark += BASE_UKRAINIAN_MARK;
@@ -175,7 +185,7 @@ const login = async (req, res) => {
         { new: true } 
     )
     .select('_id name email status courses createdAt inviter')
-    .populate('courses', '_id title')
+    .populate('courses._id', '-_id title')
     .populate('inviter', '-_id name');
 
     res.status(200).json({
@@ -191,7 +201,7 @@ const getCurrent = async (req, res) => {
         _id, 
         '_id name email status courses createdAt inviter'
     )
-    .populate('courses', '_id title')
+    .populate('courses._id', '-_id title')
     .populate('inviter', '-_id name');
 
     res.status(200).json(currentUser);
