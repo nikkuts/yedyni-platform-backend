@@ -21,6 +21,21 @@ const courseSchema = new Schema({
   chat: {
     type: String,
   },
+  nextWave: {
+    type: String,
+  },
+  nextStart: {
+    type: String,
+  },
+  nextCanal: {
+    type: String,
+  },
+  nextChat: {
+    type: String,
+  },
+  addedNextWave: {
+    type: Date,
+  },
   lessons: {
     type: [
       {
@@ -71,6 +86,18 @@ const courseSchema = new Schema({
 
 courseSchema.post('save', handleMongooseError);
 
+const updateNextWaveSchema = Joi.object({
+  courseId: Joi.string().required(),
+  nextWave: Joi.string().required(),
+  nextStart: Joi.string().required(),
+  nextCanal: Joi.string().required(),
+  nextChat: Joi.string(),
+});
+
+const schemas = {
+    updateNextWaveSchema,
+};
+
 const Course = model('Course', courseSchema);
 
-module.exports = {Course};
+module.exports = {Course, schemas};

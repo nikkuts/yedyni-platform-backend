@@ -20,8 +20,34 @@ const addCourse = async (req, res) => {
   
 };
 
-const updateCourse = async (req, res) => {
-  
+const updateNextWaveCourse = async (req, res) => {
+  const {status} = req.user;
+  const {courseId, nextWave, nextStart, nextCanal, nextChat} = req.body;
+
+  if (status === "moderator" || status === "admin") {
+    const updateData = {
+      nextWave,
+      nextStart,
+      nextCanal,
+      addedNextWave: new Date(),
+    };
+
+    if (nextChat !== undefined) updateData.nextChat = nextChat;
+
+      const updatedCourse = await Course.findByIdAndUpdate(
+        courseId, 
+        updateData,
+        { new: true}
+      )
+      .select('_id nextWave nextStart nextCanal nextChat addedNextWave');
+
+      if (!updatedCourse) {
+        throw HttpError(404, 'Курс не знайдено');
+      }
+
+      return res.status(200).json(updatedCourse);
+  }
+  throw HttpError(403, 'Недостатньо прав для виконання цієї операції');
 };
 
 const updateScheduledDateLesson = async (req, res) => {
@@ -55,6 +81,6 @@ const updateScheduledDateLesson = async (req, res) => {
 module.exports = {
     getCourseById: ctrlWrapper(getCourseById),
     addCourse: ctrlWrapper(addCourse),
-    updateCourse: ctrlWrapper(updateCourse),
+    updateNextWaveCourse: ctrlWrapper(updateNextWaveCourse),
     updateScheduledDateLesson: ctrlWrapper(updateScheduledDateLesson),
 };
