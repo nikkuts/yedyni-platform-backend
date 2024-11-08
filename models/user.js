@@ -54,14 +54,8 @@ const userSchema = new Schema({
       courses: {
         type: [
           {
-            new: {
-              type: Boolean,
-              default: true,
-            },
-            _id: {
-              type: Schema.Types.ObjectId,
-              ref: 'Course', 
-            }       
+            type: Schema.Types.ObjectId,
+            ref: 'Course',       
           }
         ],
       },
