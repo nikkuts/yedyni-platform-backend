@@ -22,7 +22,7 @@ const addCourse = async (req, res) => {
 
 const updateNextWaveCourse = async (req, res) => {
   const {status} = req.user;
-  const {courseId, nextWave, nextStart, nextCanal, nextChat} = req.body;
+  const {courseId, nextWave, nextStart, nextCanal, nextViber, nextChat} = req.body;
 
   if (status === "moderator" || status === "admin") {
     const updateData = {
@@ -32,6 +32,7 @@ const updateNextWaveCourse = async (req, res) => {
       addedNextWave: new Date(),
     };
 
+    if (nextViber !== undefined) updateData.nextViber = nextViber;
     if (nextChat !== undefined) updateData.nextChat = nextChat;
 
       const updatedCourse = await Course.findByIdAndUpdate(

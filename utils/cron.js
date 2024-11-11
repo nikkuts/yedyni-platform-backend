@@ -2,7 +2,7 @@ const cron = require('node-cron');
 const {Course} = require('../models/course'); 
 
 const updateCurrentWaveCourses = () => {
-    cron.schedule('10 15 * * *', async () => {
+    cron.schedule('12 17 * * *', async () => {
         try {
             const now = new Date();
             
@@ -14,16 +14,26 @@ const updateCurrentWaveCourses = () => {
                             start: "$nextStart",
                             wave: "$nextWave",
                             canal: "$nextCanal",
+                            viber: "$nextViber",
                             chat: "$nextChat",
                         }
                     },
-                    { $unset: ["nextStart", "nextWave", "nextCanal", "nextChat"] }
+                    {
+                        $unset: [
+                            "nextStart",
+                            "nextWave",
+                            "nextCanal",
+                            "nextViber",
+                            "nextChat",
+                            "addedNextWave"
+                        ]
+                    }
                 ]
             );
             
-            console.log('Courses updated successfully');
+            console.log('Cron task completed successfully');
         } catch (error) {
-            console.error('Error updating courses:', error);
+            console.error('Error executing crown task:', error);
         }
     });
 };

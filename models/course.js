@@ -18,6 +18,9 @@ const courseSchema = new Schema({
   canal: {
     type: String,
   },
+  viber: {
+    type: String,
+  },
   chat: {
     type: String,
   },
@@ -28,6 +31,9 @@ const courseSchema = new Schema({
     type: String,
   },
   nextCanal: {
+    type: String,
+  },
+  nextViber: {
     type: String,
   },
   nextChat: {
@@ -91,6 +97,7 @@ const updateNextWaveSchema = Joi.object({
   nextWave: Joi.string().required(),
   nextStart: Joi.string().required(),
   nextCanal: Joi.string().required(),
+  nextViber: Joi.string(),
   nextChat: Joi.string(),
 });
 
