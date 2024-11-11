@@ -23,7 +23,11 @@ const {
     createDealUspacy,
     editDealUspacy,
     moveStageDealUspacy
-  } = require("./uspacy");
+} = require("./uspacy");
+  
+ const {
+    updateCurrentWaveCourses,
+  } = require("./cron");
   
   
   module.exports = {
@@ -44,5 +48,6 @@ const {
     editContactUspacy,
     createDealUspacy,
     editDealUspacy,
-    moveStageDealUspacy
+    moveStageDealUspacy,
+    updateCurrentWaveCourses
   };

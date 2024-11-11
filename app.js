@@ -3,6 +3,7 @@ const logger = require('morgan')
 const cors = require('cors')
 require('dotenv').config()
 const bodyParser = require('body-parser')
+const { updateCurrentWaveCourses } = require('./utils');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
@@ -58,5 +59,7 @@ app.use((err, req, res, next) => {
   const {status = 500, message = 'Server error'} = err;
   res.status(status).json({ message })
 })
+
+updateCurrentWaveCourses()
 
 module.exports = app
