@@ -87,6 +87,30 @@ const courseSchema = new Schema({
         }
       }
     ]
+  },
+  registration: {
+    type: String,
+  },
+  funnelId: {
+    type: Number,
+  },
+  welcomeStageId: {
+    type: Number,
+  },
+  paymentStageId: {
+    type: Number,
+  },
+  welcome: {
+    type: String,
+  },
+  amount: {
+    type: Number,
+  },
+  discountPercentage: {
+    type: Number,
+  },
+  promoCode: {
+    type: String,
   }
 }, {versionKey: false, timestamps: true});
 

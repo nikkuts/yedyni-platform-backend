@@ -1,6 +1,7 @@
 const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
 const Utf8 = require('crypto-js/enc-utf8');
+const { Course } = require('../models/course');
 const { Deal } = require('../models/deal');
 const { Donat } = require('../models/donat');
 const {ctrlWrapper, HttpError, sendEmail} = require('../helpers');
@@ -8,7 +9,7 @@ const handleContactDB = require('../helpers/handleContactDB');
 const {createPaymentForm, createDonatForm} = require('../helpers/createPaymentForm');
 const handleContactUspacy = require('../helpers/handleContactUspacy');
 const {authUspacy, moveStageDealUspacy} = require('../utils');
-const courses = require('../utils/courses.json');
+// const courses = require('../utils/courses.json');
 require('dotenv').config();
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY;
@@ -17,7 +18,9 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const addServant = async (req, res) => {
   const {first_name, last_name, email, phone, promo_code} = req.body;
   const user = {first_name, last_name, email, phone};
-  const course = courses.find(elem => elem.title === 'Курс з підготовки до держіспиту');
+  // const course = courses.find(elem => elem.title === 'Курс з підготовки до держіспиту');
+
+  const course = await Course.findOne({ title: 'Курс з підготовки до держіспиту' });
 
   const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
 
@@ -66,7 +69,9 @@ const addServant = async (req, res) => {
 const addCreative = async (req, res) => {
   const {first_name, last_name, email, phone, promo_code} = req.body;
   const user = {first_name, last_name, email, phone};
-  const course = courses.find(elem => elem.title === 'Видноколо');
+  // const course = courses.find(elem => elem.title === 'Видноколо');
+
+  const course = await Course.findOne({ title: 'Видноколо' });
 
   const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
 
@@ -116,7 +121,9 @@ const addCreative = async (req, res) => {
 const addProukrainian = async (req, res) => {
   const {first_name, last_name, email, phone, promo_code} = req.body;
   const user = {first_name, last_name, email, phone};
-  const course = courses.find(elem => elem.title === 'Проукраїнська');
+  // const course = courses.find(elem => elem.title === 'Проукраїнська');
+
+  const course = await Course.findOne({ title: 'Проукраїнська' });
 
   const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
 
@@ -183,7 +190,9 @@ const processesDeal = async (req, res) => {
       const deal = await Deal.findByIdAndUpdate(customer, { payment: result }, { new: true })
         .populate("contact", "first_name email");
 
-      const course = courses.find(elem => elem.title === deal.title);
+      // const course = courses.find(elem => elem.title === deal.title);
+
+      const course = await Course.findOne({ title: deal.title });
 
       // Відправка привітального листа
       const welcomeEmail = {
@@ -246,7 +255,9 @@ const getByIdDeal = async (req, res) => {
 
 const addTransition = async (req, res) => {
   const user = req.body;
-  const course = courses.find(elem => elem.title === 'Курс переходу');
+  // const course = courses.find(elem => elem.title === 'Курс переходу');
+
+  const course = await Course.findOne({ title: 'Курс переходу' });
 
   const { 
     contactId, 
@@ -273,7 +284,9 @@ const addTransition = async (req, res) => {
 
 const addGrammatical = async (req, res) => {
   const user = req.body;
-  const course = courses.find(elem => elem.title === 'Граматичний курс');
+  // const course = courses.find(elem => elem.title === 'Граматичний курс');
+
+  const course = await Course.findOne({ title: 'Граматичний курс' });
 
   const { 
     contactId, 
