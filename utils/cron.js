@@ -2,7 +2,7 @@ const cron = require('node-cron');
 const {Course} = require('../models/course'); 
 
 const updateCurrentWaveCourses = () => {
-    cron.schedule('12 17 * * *', async () => {
+    cron.schedule('20 17 * * *', async () => {
         try {
             const now = new Date();
             
