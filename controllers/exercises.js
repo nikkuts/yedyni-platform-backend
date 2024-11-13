@@ -13,7 +13,7 @@ const getExercise = async (req, res) => {
     { owner, course: courseId, lessonId }, 
     "-createdAt -updatedAt"
   )
-  .populate("comments.author", "_id name");
+  .populate("comments.author", "_id first_name last_name");
   
   if (!result) {
     return res.status(204).send("Вправа вказаного уроку ще не створена");
@@ -100,7 +100,7 @@ const updateExercise = async (req, res) => {
       projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
     }
   )
-  .populate("comments.author", "_id name");
+  .populate("comments.author", "_id first_name last_name");
 
   if (!result) {
     throw HttpError(404, "Відсутня вправа");
@@ -120,7 +120,7 @@ const deleteHomeworkAndUpdateExercise = async (req, res) => {
       projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
     }
   )
-  .populate("comments.author", "_id name");
+  .populate("comments.author", "_id first_name last_name");
 
   res.status(201).json(result);
 };
@@ -138,7 +138,7 @@ const deleteFileAndUpdateExercise = async (req, res) => {
       projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
     }
   )
-  .populate("comments.author", "_id name");
+  .populate("comments.author", "_id first_name last_name");
 
   res.status(201).json(result);
 };
@@ -170,7 +170,7 @@ const addComment = async (req, res) => {
         },
         { new: true }
       )
-      .populate("comments.author", "_id name");
+      .populate("comments.author", "_id first_name last_name");
     } else {
       updatedExercise = await Exercise.findByIdAndUpdate(
         exerciseId,
@@ -186,7 +186,7 @@ const addComment = async (req, res) => {
         },
         { new: true }
       )
-      .populate("comments.author", "_id name");
+      .populate("comments.author", "_id first_name last_name");
     }
   } else {
     updatedExercise = await Exercise.findByIdAndUpdate(
@@ -202,7 +202,7 @@ const addComment = async (req, res) => {
       },
       { new: true }
     )
-    .populate("comments.author", "_id name");
+    .populate("comments.author", "_id first_name last_name");
   }
   
   res.status(201).json(updatedExercise.comments[updatedExercise.comments.length - 1]);
@@ -261,7 +261,7 @@ const updateComment = async (req, res) => {
     { _id: exerciseId, 'comments._id': commentId },
     { 'comments.$': 1 }
   )
-  .populate("comments.author", "_id name");
+  .populate("comments.author", "_id first_name last_name");
 
   if (!updatedExercise) {
     throw HttpError(404, "Відсутній коментар");
@@ -335,7 +335,7 @@ const getNotifications = async (req, res) => {
     .populate([
       {
         path: "owner", 
-        select: "-_id name"
+        select: "-_id first_name last_name"
       },
       {
         path: "course", 
@@ -367,7 +367,7 @@ const getNotifications = async (req, res) => {
     result = await Exercise.populate(aggResult, [
       { 
         path: "comments.author", 
-        select: "-_id name"
+        select: "-_id first_name last_name"
       },
       { 
         path: "course", 
@@ -399,7 +399,7 @@ const getExerciseById = async (req, res) => {
     .populate([
       {
         path: "owner", 
-        select: "-_id name"
+        select: "-_id first_name last_name"
       },
       {
         path: "course", 
@@ -407,7 +407,7 @@ const getExerciseById = async (req, res) => {
       },
       {
         path: "comments.author", 
-        select: "_id name"
+        select: "_id first_name last_name"
       },
     ]);
   } else {

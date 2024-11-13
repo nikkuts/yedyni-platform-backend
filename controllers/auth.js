@@ -16,7 +16,7 @@ const BASE_UKRAINIAN_MARK = Number(process.env.BASE_UKRAINIAN_MARK);
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
 const register = async (req, res) => {
-    const {name, email, password, inviterId = MAIN_ID} = req.body;
+    const {first_name, last_name, email, password, inviterId = MAIN_ID} = req.body;
     
     if (!isValidObjectId(inviterId)) {
         throw HttpError(404, "Помилка у запрошувальному покликанні");
@@ -51,7 +51,8 @@ const register = async (req, res) => {
     //     : ['66e2c70e5122f6140e1ad568', '66e2c7885122f6140e1ad56a'];
     
     const newUser = await User.create({
-        name,
+        first_name,
+        last_name,
         email, 
         password: hasPassword, 
         avatarURL, 
@@ -86,9 +87,9 @@ const register = async (req, res) => {
         { token },
         { new: true }  
     )
-    .select('_id name email status courses createdAt inviter')
+    .select('_id first_name last_name email status courses createdAt inviter')
     .populate('courses', '_id title')
-    .populate('inviter', '-_id name');
+    .populate('inviter', '-_id first_name last_name');
 
     const ukrainianMarkInviter = inviter.ukrainianMark += BASE_UKRAINIAN_MARK;
 
@@ -184,9 +185,9 @@ const login = async (req, res) => {
         { token },
         { new: true } 
     )
-    .select('_id name email status courses createdAt inviter')
+    .select('_id first_name last_name email status courses createdAt inviter')
     .populate('courses', '_id title')
-    .populate('inviter', '-_id name');
+    .populate('inviter', '-_id first_name last_name');
 
     res.status(200).json({
         token: token,
@@ -199,10 +200,10 @@ const getCurrent = async (req, res) => {
     
     const currentUser = await User.findById(
         _id, 
-        '_id name email status courses createdAt inviter'
+        '_id first_name last_name email status courses createdAt inviter'
     )
     .populate('courses', '_id title')
-    .populate('inviter', '-_id name');
+    .populate('inviter', '-_id first_name last_name');
 
     res.status(200).json(currentUser);
 };

@@ -5,9 +5,13 @@ const {handleMongooseError} = require('../helpers');
 const { emailRegexp, dateRegexp, nameRegexp, phoneRegexp, passwordRegex } = require("../utils");
 
 const userSchema = new Schema({
-      name: {
+      first_name: {
         type: String,
-        required: [true, 'Вкажіть імя користувача'],
+        required: [true, 'Вкажіть ваше імя'],
+      },
+      last_name: {
+        type: String,
+        required: [true, 'Вкажіть ваше прізвище'],
       },
       password: {
         type: String,
