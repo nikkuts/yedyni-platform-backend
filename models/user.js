@@ -98,10 +98,11 @@ const userSchema = new Schema({
 userSchema.post('save', handleMongooseError);
 
 const registerSchema = Joi.object({
-    name: Joi.string().min(2).max(30).required(),
-    password: Joi.string().min(8).max(24).pattern(passwordRegex).required(),
-    email: Joi.string().pattern(emailRegexp).required(),
-    inviterId: Joi.string(),
+  first_name: Joi.string().min(2).max(20).required(),
+  last_name: Joi.string().min(2).max(20).required(),
+  password: Joi.string().min(8).max(24).pattern(passwordRegex).required(),
+  email: Joi.string().pattern(emailRegexp).required(),
+  inviterId: Joi.string(),
 });
 
 const emailSchema = Joi.object({

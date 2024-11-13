@@ -25,7 +25,7 @@ const getMessages = async (req, res) => {
   .sort({ date: -1 })
   .skip(skip)
   .limit(limitNum)
-  .populate("sender", "_id name"); 
+  .populate("sender", "_id first_name last_name"); 
   
   messages = messages.filter(message => message.sender !== null);
   
@@ -90,7 +90,8 @@ const addMessage = async (req, res) => {
     date: newMessage.date,
     sender: {
       _id: user._id,
-      name: user.name
+      first_name: user.first_name,
+      last_name: user.last_name
     }
   });
 };
@@ -125,7 +126,7 @@ const updateMessage = async (req, res) => {
       projection: { createdAt: 0, updatedAt: 0 } 
     }
   )
-  .populate("sender", "_id name");
+  .populate("sender", "_id first_name last_name");
 
   if (!updatedMessage) {
     throw HttpError(404, "Відсутнє повідомлення");
@@ -147,7 +148,7 @@ const deleteFileAndUpdateMessage = async (req, res) => {
       projection: { createdAt: 0, updatedAt: 0 } 
     }
   )
-  .populate("sender", "_id name");
+  .populate("sender", "_id first_name last_name");
 
   res.status(201).json(result);
 };
