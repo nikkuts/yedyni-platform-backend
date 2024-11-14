@@ -7,7 +7,9 @@ const gravavatar = require('gravatar');
 const path = require('path');
 const fs = require('fs/promises');
 const {nanoid} = require('nanoid');
-const {HttpError, ctrlWrapper, sendEmail} = require('../helpers');
+const { HttpError, ctrlWrapper, sendEmail } = require('../helpers');
+const handleContactDB = require('../helpers/handleContactDB');
+const handleContactUspacy = require('../helpers/handleContactUspacy');
 require('dotenv').config();
 
 const {SECRET_KEY, BASE_SERVER_URL, MAIN_ID} = process.env;
@@ -16,7 +18,9 @@ const BASE_UKRAINIAN_MARK = Number(process.env.BASE_UKRAINIAN_MARK);
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
 const register = async (req, res) => {
-    const {first_name, last_name, email, password, inviterId = MAIN_ID} = req.body;
+    const { first_name, last_name, email, password, inviterId = MAIN_ID, titleCourse = 'Курс переходу' } = req.body;
+    const contact = { first_name, last_name, email };
+    let courseRegistration;
     
     if (!isValidObjectId(inviterId)) {
         throw HttpError(404, "Помилка у запрошувальному покликанні");
@@ -38,17 +42,31 @@ const register = async (req, res) => {
     const avatarURL = gravavatar.url(email);
     const verificationToken = nanoid();
 
-    const courseTransitionId = await Course.findOne({ title: 'Курс переходу' }, '_id');
-    const courseGrammaticalId = await Course.findOne({ title: 'Граматичний курс' }, '_id');
+    const courseTransition = await Course.findOne({ title: 'Курс переходу' });
+    const courseGrammatical = await Course.findOne({ title: 'Граматичний курс' });
     const courseNewId = await Course.findOne({ title: 'Новий курс' }, '_id');
 
-    const courses = inviterId === '666ad6fd5d3cb232f39728fb' ? 
+    const courses = {
+        'Курс переходу': courseTransition,
+        'Граматичний курс': courseGrammatical
+    };
+
+    if (courses[titleCourse]) {
+        const params = await handleContactDB({
+            user: contact,
+            course: courses[titleCourse]
+        });
+
+        await handleContactUspacy({
+            user: contact,
+            course: courses[titleCourse],
+            ...params
+        });
+    }
+
+    const arrayCoursesId = inviterId === '666ad6fd5d3cb232f39728fb' ? 
         [courseNewId] 
-        : [courseTransitionId, courseGrammaticalId];
-    
-    // const courses = inviterId === '666ad6fd5d3cb232f39728fb' ? 
-    //     ['66e057f98475aec7b81e613c'] 
-    //     : ['66e2c70e5122f6140e1ad568', '66e2c7885122f6140e1ad56a'];
+        : [courseTransition._id, courseGrammatical._id];
     
     const newUser = await User.create({
         first_name,
@@ -58,7 +76,7 @@ const register = async (req, res) => {
         avatarURL, 
         verificationToken, 
         inviter: inviterId,
-        courses,
+        courses: arrayCoursesId,
         ukrainianMark: BASE_UKRAINIAN_MARK,
         historyUkrainianMark: [{
             points: BASE_UKRAINIAN_MARK,

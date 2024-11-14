@@ -54,10 +54,12 @@ const { Deal } = require('../models/deal');
         }
 
         // Оновлення угоди в локальній базі
-        await Deal.findByIdAndUpdate(
-          deal._id,
-          { $set: { promoCode: promokod || "" } }
-        )
+        if (deal.promoCode || promokod) {
+          await Deal.findByIdAndUpdate(
+            deal._id,
+            { $set: { promoCode: promokod || '' } }
+          )
+        }
       }
     }
 
