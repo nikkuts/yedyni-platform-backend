@@ -20,7 +20,6 @@ const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 const register = async (req, res) => {
     const { first_name, last_name, email, password, inviterId = MAIN_ID, titleCourse = 'Курс переходу' } = req.body;
     const contact = { first_name, last_name, email };
-    let courseRegistration;
     
     if (!isValidObjectId(inviterId)) {
         throw HttpError(404, "Помилка у запрошувальному покликанні");
