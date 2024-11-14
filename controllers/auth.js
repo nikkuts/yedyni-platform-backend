@@ -45,7 +45,7 @@ const register = async (req, res) => {
     const courseGrammatical = await Course.findOne({ title: 'Граматичний курс' });
     const courseNewId = await Course.findOne({ title: 'Новий курс' }, '_id');
 
-    const courses = {
+    /* const courses = {
         'Курс переходу': courseTransition,
         'Граматичний курс': courseGrammatical
     };
@@ -61,7 +61,7 @@ const register = async (req, res) => {
             course: courses[titleCourse],
             ...params
         });
-    }
+    } */
 
     const arrayCoursesId = inviterId === '666ad6fd5d3cb232f39728fb' ? 
         [courseNewId] 
