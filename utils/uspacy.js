@@ -120,7 +120,7 @@ const createDealUspacy = async ({token, course, contactId, promokod, amountDeal}
         title: course.title,
         funnel_id: course.funnelId,
         contacts: [contactId],
-        hvilya: course.wave,
+        hvilya: course.nextWave || course.wave,
         ...(promokod && { promokod }),
         ...(amountDeal && { amount_of_the_deal: { currency: "UAH", value: amountDeal.toString() } })
       }

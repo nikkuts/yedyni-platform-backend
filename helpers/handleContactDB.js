@@ -42,7 +42,7 @@ const { Deal } = require('../models/deal');
       const deal = await Deal.findOne({
         contact: contact._id,
         title: course.title,
-        wave: course.wave,
+        wave: course.nextWave || course.wave,
       });
 
       if (deal) { 
@@ -68,7 +68,7 @@ const { Deal } = require('../models/deal');
       const newDeal = await Deal.create({
         contact: contactId,
         title: course.title,
-        wave: course.wave,
+        wave: course.nextWave || course.wave,
         ...(promokod && {promoCode: promokod})
       });
 
@@ -85,4 +85,4 @@ const { Deal } = require('../models/deal');
     };
   }
 
-  module.exports = handleContactDB;
+module.exports = handleContactDB;
