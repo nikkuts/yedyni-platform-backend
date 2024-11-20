@@ -9,8 +9,8 @@ const {Payment} = require('../models/payment');
 const {HttpError, ctrlWrapper} = require('../helpers');
 require('dotenv').config();
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
-const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
+const PUBLIC_KEY = process.env.PUBLIC_KEY;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const {BASE_CLIENT_URL, BASE_SERVER_URL, API_LIQPAY_ENDPOINT} = process.env;
 
 const createPayment = async (req, res) => {
