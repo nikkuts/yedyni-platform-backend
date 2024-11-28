@@ -3,7 +3,7 @@ const jimp = require("jimp");
 const resizesAvatar = async (req, res, next) => {
     const {path: tempUpload} = req.file;
     const image = await jimp.read(tempUpload);
-    await image.resize(250, 250);
+    image.resize(250, 250);
     await image.writeAsync(tempUpload);
     next();
 };

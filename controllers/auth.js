@@ -12,7 +12,7 @@ const handleContactDB = require('../helpers/handleContactDB');
 const handleContactUspacy = require('../helpers/handleContactUspacy');
 require('dotenv').config();
 
-const {SECRET_KEY, BASE_SERVER_URL, MAIN_ID} = process.env;
+const {SECRET_KEY, BASE_SERVER_URL, BASE_CLIENT_URL, MAIN_ID} = process.env;
 const BASE_UKRAINIAN_MARK = Number(process.env.BASE_UKRAINIAN_MARK);
 
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
@@ -128,35 +128,17 @@ const register = async (req, res) => {
     })
 };
 
-const verifyEmail = async (req, res) => {
-    const {verificationToken} = req.params;
-    const user = await User.findOne({verificationToken});
-
-    if (!user) {
-        throw HttpError(404, "User not found");
-    }
-    await User.findByIdAndUpdate(user._id, {verify: true, verificationToken: null});
-
-    res.status(200).json({
-        message: 'Verification successful',
-    })
-};
-
 const resendVerifyEmail = async (req, res) => {
     const {email} = req.body;
-
-    if (!email) {
-        throw HttpError(400, "missing required field email");
-    }
 
     const user = await User.findOne({email});
 
     if (!user) {
-        throw HttpError(401, "Email not found");
+        throw HttpError(404, "User not found");
     }
 
     if (user.verify) {
-        throw HttpError(400, "Verification has already been passed");
+        throw HttpError(409, "Verification has already been passed");
     }
 
     const verifyEmail = {
@@ -174,6 +156,79 @@ const resendVerifyEmail = async (req, res) => {
     res.json({
         message: 'Verify email send success'
     });
+};
+
+const verifyEmail = async (req, res) => {
+    const {verificationToken} = req.params;
+    const user = await User.findOne({verificationToken});
+
+    if (!user) {
+        throw HttpError(404, "User not found");
+    }
+    await User.findByIdAndUpdate(user._id, {verify: true, verificationToken: null});
+
+    res.status(200).json({
+        message: 'Verification successful',
+    })
+};
+
+const recoveryPassword = async (req, res) => {
+    const {email} = req.body;
+
+    const user = await User.findOne({email});
+
+    if (!user) {
+        throw HttpError(404, "User not found");
+    }
+
+    const token = jwt.sign({userId: user._id}, SECRET_KEY, {expiresIn: '1h'});
+
+    const recoveryPassword = {
+        to: [{email}],
+        subject: "Відновлення паролю на платформі «Єдині»",
+        html: `
+            <p>
+                <a target="_blank" href="${BASE_CLIENT_URL}/reset/${token}">Натисніть тут</a> для відновлення паролю
+            </p>
+            `
+    };
+
+    await sendEmail(recoveryPassword);
+
+    res.json({
+        message: 'Recovery email send success', token
+    });
+};
+
+const resetPassword = async (req, res) => {
+    const { token, password } = req.body;
+    
+    const { userId } = jwt.verify(token, SECRET_KEY);
+
+    const user = await User.findById(userId);
+   
+    if (!user) {
+       throw HttpError(404, "User not found");
+    }
+
+    const hasPassword = await bcrypt.hash(password, 10);
+
+    const payload = {id: user._id,};
+    const newToken = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
+
+    const updatedUser = await User.findByIdAndUpdate(
+        user._id, 
+        { password: hasPassword, token: newToken },
+        { new: true } 
+    )
+    .select('_id first_name last_name email status courses createdAt inviter')
+    .populate('courses', '_id title')
+    .populate('inviter', '-_id first_name last_name');
+
+    res.status(200).json({
+        token: newToken,
+        user: updatedUser,
+    })
 };
 
 const login = async (req, res) => {
@@ -260,6 +315,8 @@ module.exports = {
     logout: ctrlWrapper(logout),
     updateStatus: ctrlWrapper(updateStatus),
     updateAvatar: ctrlWrapper(updateAvatar),
-    verifyEmail: ctrlWrapper(verifyEmail),
     resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
+    verifyEmail: ctrlWrapper(verifyEmail),
+    recoveryPassword: ctrlWrapper(recoveryPassword),
+    resetPassword: ctrlWrapper(resetPassword),
 }
