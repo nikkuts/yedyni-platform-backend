@@ -203,7 +203,13 @@ const recoveryPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
     const { token, password } = req.body;
     
-    const { userId } = jwt.verify(token, SECRET_KEY);
+    let userId;
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        userId = decoded.userId;
+    } catch (error) {
+        throw HttpError(400, "Закінчився час. Будь ласка, повторіть спробу.");
+    }
 
     const user = await User.findById(userId);
    
