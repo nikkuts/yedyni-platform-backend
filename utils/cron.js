@@ -6,7 +6,7 @@ const updateCurrentWaveCourses = () => {
         try {
             const now = new Date();
             
-            await Course.updateMany(
+            const result = await Course.updateMany(
                 { nextStart: { $lte: now } },
                 [
                     {
@@ -24,14 +24,17 @@ const updateCurrentWaveCourses = () => {
                             "nextWave",
                             "nextCanal",
                             "nextViber",
-                            "nextChat",
-                            "addedNextWave"
+                            "nextChat"
                         ]
                     }
                 ]
             );
             
-            console.log('Cron task completed successfully');
+            if (result.matchedCount > 0) {
+                console.log(`Crown task: ${result.modifiedCount} documents updated successfully`);
+            } else {
+                console.log('Crown task: No documents matched the criteria');
+            }
         } catch (error) {
             console.error('Error executing crown task:', error);
         }
