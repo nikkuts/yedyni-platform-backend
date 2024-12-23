@@ -12,7 +12,7 @@ const courseSchema = new Schema({
     required: true,
   },
   start: {
-    type: String,
+    type: Date,
     required: true,
   },
   canal: {
@@ -28,7 +28,7 @@ const courseSchema = new Schema({
     type: String,
   },
   nextStart: {
-    type: String,
+    type: Date,
   },
   nextCanal: {
     type: String,
@@ -119,7 +119,7 @@ courseSchema.post('save', handleMongooseError);
 const updateNextWaveSchema = Joi.object({
   courseId: Joi.string().required(),
   nextWave: Joi.string().required(),
-  nextStart: Joi.string().required(),
+  nextStart: Joi.date().iso().required(),
   nextCanal: Joi.string().required(),
   nextViber: Joi.string(),
   nextChat: Joi.string(),
