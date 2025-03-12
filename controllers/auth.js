@@ -89,7 +89,7 @@ const register = async (req, res) => {
         subject: "Підтвердження адреси електронної пошти на платформі «Єдині»",
         html: `
             <p>
-                <a target="_blank" href="${BASE_SERVER_URL}/api/auth/verify/${verificationToken}">Натисніть тут</a> для підтвердження адреси вашої електронної пошти
+                <a target="_blank" href="${BASE_SERVER_URL}/api/auth/verifyverify?verificationToken=${verificationToken}">Натисніть тут</a> для підтвердження адреси вашої електронної пошти
             </p>
             `
     };
@@ -146,7 +146,7 @@ const resendVerifyEmail = async (req, res) => {
         subject: "Підтвердження адреси електронної пошти на платформі «Єдині»",
         html: `
             <p>
-                <a target="_blank" href="${BASE_SERVER_URL}/api/auth/verify/${user.verificationToken}">Натисніть тут</a> для підтвердження адреси вашої електронної пошти
+                <a target="_blank" href="${BASE_SERVER_URL}/api/auth/verify?verificationToken=${user.verificationToken}">Натисніть тут</a> для підтвердження адреси вашої електронної пошти
             </p>
             `
     };
@@ -159,7 +159,7 @@ const resendVerifyEmail = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-    const {verificationToken} = req.params;
+    const {verificationToken} = req.query;
     const user = await User.findOne({verificationToken});
 
     if (!user) {
