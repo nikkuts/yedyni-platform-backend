@@ -84,7 +84,7 @@ const register = async (req, res) => {
         }]
     });
     
-    const verifyEmail = {
+    /* const verifyEmail = {
         to: [{email}],
         subject: "Підтвердження адреси електронної пошти на платформі «Єдині»",
         html: `
@@ -94,7 +94,7 @@ const register = async (req, res) => {
             `
     };
 
-    await sendEmail(verifyEmail);
+    await sendEmail(verifyEmail); */
 
     const payload = {id: newUser._id,};
     const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30d'});
