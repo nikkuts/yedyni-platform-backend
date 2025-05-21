@@ -12,8 +12,8 @@ const {authUspacy, moveStageDealUspacy} = require('../utils');
 // const courses = require('../utils/courses.json');
 require('dotenv').config();
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY;
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
+const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
 
 const addServant = async (req, res) => {
   const {first_name, last_name, email, phone, promo_code} = req.body;
@@ -90,16 +90,16 @@ const addCreative = async (req, res) => {
   } = await handleContactDB({user, course, promokod});
 
   if (!redirectUrl) {
-    // const paymentForm = await createPaymentForm({
-    //   PUBLIC_KEY,
-    //   PRIVATE_KEY,
-    //   user, 
-    //   course, 
-    //   dealId,
-    //   amountDeal,
-    // });
+    const paymentForm = await createPaymentForm({
+      PUBLIC_KEY,
+      PRIVATE_KEY,
+      user, 
+      course, 
+      dealId,
+      amountDeal,
+    });
     
-    // res.send(paymentForm);
+    res.send(paymentForm);
 
     await handleContactUspacy({
       user,
@@ -113,7 +113,7 @@ const addCreative = async (req, res) => {
       amountDeal,
     })
 
-    res.redirect('https://yedyni.org/');
+    // res.redirect('https://yedyni.org/');
   } else {
     res.redirect(redirectUrl);
   }
