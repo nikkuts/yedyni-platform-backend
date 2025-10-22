@@ -9,7 +9,6 @@ const handleContactDB = require('../helpers/handleContactDB');
 const {createPaymentForm, createDonatForm} = require('../helpers/createPaymentForm');
 const handleContactUspacy = require('../helpers/handleContactUspacy');
 const {authUspacy, moveStageDealUspacy} = require('../utils');
-// const courses = require('../utils/courses.json');
 require('dotenv').config();
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY;
@@ -18,7 +17,6 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const addServant = async (req, res) => {
   const {first_name, last_name, email, phone, promo_code} = req.body;
   const user = {first_name, last_name, email, phone};
-  // const course = courses.find(elem => elem.title === 'Курс з підготовки до держіспиту');
 
   const course = await Course.findOne({ title: 'Курс з підготовки до держіспиту' });
 
@@ -70,7 +68,6 @@ const addServant = async (req, res) => {
 const addCreative = async (req, res) => {
   const {first_name, last_name, email, phone, promo_code} = req.body;
   const user = {first_name, last_name, email, phone};
-  // const course = courses.find(elem => elem.title === 'Видноколо');
 
   const course = await Course.findOne({ title: 'Видноколо' });
 
@@ -90,16 +87,16 @@ const addCreative = async (req, res) => {
   } = await handleContactDB({user, course, promokod});
 
   if (!redirectUrl) {
-    const paymentForm = await createPaymentForm({
-      PUBLIC_KEY,
-      PRIVATE_KEY,
-      user, 
-      course, 
-      dealId,
-      amountDeal,
-    });
+    // const paymentForm = await createPaymentForm({
+    //   PUBLIC_KEY,
+    //   PRIVATE_KEY,
+    //   user, 
+    //   course, 
+    //   dealId,
+    //   amountDeal,
+    // });
     
-    res.send(paymentForm);
+    // res.send(paymentForm);
 
     await handleContactUspacy({
       user,
@@ -113,7 +110,7 @@ const addCreative = async (req, res) => {
       amountDeal,
     })
 
-    // res.redirect('https://yedyni.org/');
+    res.redirect('https://yedyni.org/');
   } else {
     res.redirect(redirectUrl);
   }
@@ -122,7 +119,6 @@ const addCreative = async (req, res) => {
 const addProukrainian = async (req, res) => {
   const {first_name, last_name, email, phone, promo_code} = req.body;
   const user = {first_name, last_name, email, phone};
-  // const course = courses.find(elem => elem.title === 'Проукраїнська');
 
   const course = await Course.findOne({ title: 'Проукраїнська' });
 
@@ -191,8 +187,6 @@ const processesDeal = async (req, res) => {
       const deal = await Deal.findByIdAndUpdate(customer, { payment: result }, { new: true })
         .populate("contact", "first_name email");
 
-      // const course = courses.find(elem => elem.title === deal.title);
-
       const course = await Course.findOne({ title: deal.title });
 
       // Відправка привітального листа
@@ -256,7 +250,6 @@ const getByIdDeal = async (req, res) => {
 
 const addTransition = async (req, res) => {
   const user = req.body;
-  // const course = courses.find(elem => elem.title === 'Курс переходу');
 
   const course = await Course.findOne({ title: 'Курс переходу' });
 
@@ -285,7 +278,6 @@ const addTransition = async (req, res) => {
 
 const addGrammatical = async (req, res) => {
   const user = req.body;
-  // const course = courses.find(elem => elem.title === 'Граматичний курс');
 
   const course = await Course.findOne({ title: 'Граматичний курс' });
 
@@ -359,7 +351,7 @@ const sendEmailContact = async (req, res) => {
   const payload = JSON.parse(req.body);
   const message = JSON.parse(payload.Message);
   const data = message.data;
-  // console.log('data', data);
+
   const contacts = data.entity.contacts;
   console.log("Пов'язаний контакт", contacts[0]);
   res.status(200);
