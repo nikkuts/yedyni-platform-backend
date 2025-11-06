@@ -25,12 +25,6 @@ const {
   }) => {
     // Отримання JWT токена від Uspacy
     const jwt = await authUspacy();
-console.log(user,
-    course,
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId);
 
     if (contactUspacyId) {
       // Перевірка, чи є контакт в Uspacy
@@ -94,8 +88,6 @@ console.log(user,
         promokod,
         amountDeal,
       })
-      console.log(newDealUspacy);
-      
 
       if (newDealUspacy) {
         dealUspacyId = newDealUspacy.id;
