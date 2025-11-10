@@ -1,7 +1,7 @@
 const { Contact } = require('../models/contact');
 const { Deal } = require('../models/deal');
 
-  const handleContactDB = async ({contactData, course, promokod}) => {
+  const handleContactDB = async ({user, course, promokod}) => {
     let contactId = null;
     let contactUspacyId = null;
     let arrayRegistration = null;
@@ -10,12 +10,12 @@ const { Deal } = require('../models/deal');
     let redirectUrl = null;
 
     // Перевірка, чи є контакт у базі
-    const contact = await Contact.findOne({ email: { $regex: new RegExp(`^${contactData.email}$`, 'i') } });
+    const contact = await Contact.findOne({ email: { $regex: new RegExp(`^${user.email}$`, 'i') } });
 
     if (!contact) {
       // Створення нового контакту в локальній базі даних
       const newContact = await Contact.create({
-        ...contactData,
+        ...user,
         registration: [course.registration],
       });
 
@@ -35,13 +35,13 @@ const { Deal } = require('../models/deal');
       // Оновлення контакту в локальній базі
       await Contact.findByIdAndUpdate(
         contact._id,
-        {$set: {...contactData, registration: arrayRegistration}}
+        {$set: {...user, registration: arrayRegistration}}
       )
 
       // Перевірка, чи є угода в базі
       const deal = await Deal.findOne({
         contact: contact._id,
-        course: course._id,
+        title: course.title,
         wave: course.nextWave || course.wave,
       });
 
@@ -67,7 +67,7 @@ const { Deal } = require('../models/deal');
       // Створення нової угоди в локальній базі даних
       const newDeal = await Deal.create({
         contact: contactId,
-        course: course._id,
+        title: course.title,
         wave: course.nextWave || course.wave,
         ...(promokod && {promoCode: promokod})
       });

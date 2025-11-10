@@ -7,15 +7,9 @@ const dealSchema = new Schema({
         ref: 'Contact',
         required: true,
       },
-      title: {
-        type: String,
-        enum: [
-          "Курс переходу",
-          "Граматичний курс",
-          "Курс з підготовки до держіспиту", 
-          "Видноколо", 
-          "Проукраїнська"
-        ],
+      course: {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
         required: true,
       },
       wave: {

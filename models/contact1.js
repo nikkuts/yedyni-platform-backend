@@ -17,6 +17,33 @@ const contactSchema = new Schema({
       phone: {
         type: String,
       },
+      vik: {
+        type: Number,
+      },
+      city: {
+        type: String,
+      },
+      work: {
+        type: String,
+      },
+      mova: {
+        type: String,
+      },
+      volonter: {
+        type: String,
+      },
+      goal: {
+        type: String,
+      },
+      level: {
+        type: String,
+      },
+      kurs: {
+        type: String,
+      },
+      kurs_ended: {
+        type: String,
+      },
       registration: {
         type: [
           {
@@ -42,4 +69,4 @@ contactSchema.post('save', function(error, doc, next) {
 
 const Contact = model('Contact', contactSchema);
 
-module.exports = {Contact};
+module.exports = { Contact };

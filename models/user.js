@@ -5,94 +5,91 @@ const {handleMongooseError} = require('../helpers');
 const { emailRegexp, dateRegexp, nameRegexp, phoneRegexp, passwordRegex } = require("../utils");
 
 const userSchema = new Schema({
-      first_name: {
-        type: String,
-        required: [true, 'Вкажіть ваше імя'],
-      },
-      last_name: {
-        type: String,
-        required: [true, 'Вкажіть ваше прізвище'],
-      },
-      password: {
-        type: String,
-        minlength: 8,
-        required: [true, 'Встановіть пароль довжиною не менше 8 символів'],
-      },
-      email: {
-        type: String,
-        match: emailRegexp,
-        required: [true, 'Введіть ваш Email'],
-        unique: true,
-      },
-      status: {
-        type: String,
-        enum: ["user", "moderator", "admin"],
-        default: "user",
-      },
-      avatarURL: {
-        type: String,
-        required: true,
-      },
-      token: String,
-      verify: {
-        type: Boolean,
-        default: false,
-      },
-      verificationToken: {
-        type: String,
-        required: [true, 'Verify token is required'],
-      },
-      inviter: {
+  first_name: {
+    type: String,
+    required: [true, 'Вкажіть ваше імя'],
+  },
+  last_name: {
+    type: String,
+    required: [true, 'Вкажіть ваше прізвище'],
+  },
+  password: {
+    type: String,
+    minlength: 8,
+    required: [true, 'Встановіть пароль довжиною не менше 8 символів'],
+  },
+  email: {
+    type: String,
+    match: emailRegexp,
+    required: [true, 'Введіть ваш Email'],
+    unique: true,
+  },
+  status: {
+    type: String,
+    enum: ["user", "moderator", "admin"],
+    default: "user",
+  },
+  avatarURL: {
+    type: String,
+  },
+  token: String,
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+  },
+  inviter: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  team: {
+    type: [
+      {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-      },
-      team: {
-        type: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-          }
-        ],
-      },
-      courses: {
-        type: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: 'Course',       
-          }
-        ],
-      },
-      donats: {
-        type: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: 'Payment',
-          }
-        ],
-      },
-      ukrainianMark: {
-        type: Number,
-      },
-      historyUkrainianMark: {
-        type: [
-          {
-            date: {
-              type: Number,
-              default: Date.now
-            },
-            points: {
-              type: Number,
-            },
-            comment: {
-              type: String,
-            },
-            finalValue: {
-              type: Number,
-            },
-          }
-        ]
       }
+    ],
+  },
+  courses: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',       
+      }
+    ],
+  },
+  donats: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Payment',
+      }
+    ],
+  },
+  ukrainianMark: {
+    type: Number,
+  },
+  historyUkrainianMark: {
+    type: [
+      {
+        date: {
+          type: Number,
+          default: Date.now
+        },
+        points: {
+          type: Number,
+        },
+        comment: {
+          type: String,
+        },
+        finalValue: {
+          type: Number,
+        },
+      }
+    ]
+  }
 }, {versionKey: false, timestamps: true});
 
 userSchema.post('save', handleMongooseError);
@@ -103,7 +100,7 @@ const registerSchema = Joi.object({
   password: Joi.string().min(8).max(24).pattern(passwordRegex).required(),
   email: Joi.string().pattern(emailRegexp).required(),
   inviterId: Joi.string(),
-  titleCourse: Joi.string(),
+  courseId: Joi.string(),
 });
 
 const emailSchema = Joi.object({

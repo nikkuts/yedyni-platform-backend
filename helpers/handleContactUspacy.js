@@ -1,6 +1,6 @@
 const { Contact } = require('../models/contact');
 const { Deal } = require('../models/deal');
-const sendEmail = require('./sendEmail');
+const sendCourseEmail = require('../emails/index');
 const {
   authUspacy,
   getContactByIdUspacy,
@@ -12,194 +12,111 @@ const {
   moveStageDealUspacy,
 } = require('../utils');
 
-  const handleContactUspacy = async ({
-    user,
-    course,
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration,
-    promokod,
-    amountDeal,
-  }) => {
-    // Отримання JWT токена від Uspacy
-    const jwt = await authUspacy();
+const handleContactUspacy = async ({
+  contactData,
+  course,
+  contactId, 
+  contactUspacyId, 
+  dealId, 
+  dealUspacyId, 
+  arrayRegistration,
+  promokod,
+  amountDeal,
+}) => {
+  // Отримання JWT токена від Uspacy
+  const jwt = await authUspacy();
 
-    if (contactUspacyId) {
-      // Перевірка, чи є контакт в Uspacy
-      const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contactUspacyId});
-      
-      if (contactUspacy) {
-        // Оновлення контакту в Uspacy
-        await editContactUspacy({
-          token: jwt, 
-          contactId: contactUspacyId,
-          user,
-          registration: arrayRegistration
-        })
-      } else {
-        contactUspacyId = null;
-      }
-    } 
-
-    if (!contactUspacyId) {
-      // Створення контакту в Uspacy
-      const newContactUspacy = await createContactUspacy({
+  if (contactUspacyId) {
+    // Перевірка, чи є контакт в Uspacy
+    const contactUspacy = await getContactByIdUspacy({token: jwt, contactId: contactUspacyId});
+    
+    if (contactUspacy) {
+      // Оновлення контакту в Uspacy
+      await editContactUspacy({
         token: jwt, 
-        user,
-        registration: [course.registration]
-      });
-
-      if (newContactUspacy) {
-        contactUspacyId = newContactUspacy.id;
-      }
-
-      // Оновлення контакту в локальній базі даних
-      await Contact.findByIdAndUpdate(
-        contactId,
-        {$set: {contactUspacyId}}
-      )
-    }  
-
-    if (dealUspacyId) {
-      // Перевірка, чи є угода в Uspacy
-      const dealUspacy = await getDealByIdUspacy({token: jwt, dealId: dealUspacyId});
-        
-      if (dealUspacy) {
-        // Оновлення угоди в Uspacy
-        await editDealUspacy({
-          token: jwt, 
-          dealId: dealUspacyId,
-          promokod,
-          amountDeal,
-        })
-      } else {
-        dealUspacyId = null;
-      }
-    }
-
-    if (!dealUspacyId) {
-      // Створення угоди для контакту в Uspacy
-      const newDealUspacy = await createDealUspacy({
-        token: jwt,
-        course,
         contactId: contactUspacyId,
-        promokod,
-        amountDeal,
+        user: contactData,
+        registration: arrayRegistration
       })
-
-      if (newDealUspacy) {
-        dealUspacyId = newDealUspacy.id;
-
-        // Оновлення угоди в локальній базі даних
-        await Deal.findByIdAndUpdate(
-          dealId,
-          {$set: {dealUspacyId}}
-        )
-      }
-
-      // Відправка привітального листа
-      if (["Курс переходу", "Граматичний курс"].includes(course.title)) {
-        const html = `
-        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; font-size: 15px;">
-          <p>Ми впевнені: українську можна вивчати не лише широко та глибоко, але й цікаво та комфортно!</p>
-
-          <p>Щоб розпочати навчання, зареєструйтеся на платформі ГО «Рух Єдині», натиснувши 
-            <a href="https://bit.ly/3LEFKV1" target="_blank" style="color: #0057B7; text-decoration: none;">«Зареєструватися»</a>.
-          </p>
-
-          <p>Навчайтесь у зручному для вас темпі й ритмі.</p>
-
-          <p><strong>ХОЧЕТЕ СПІЛКУВАТИСЯ?</strong></p>
-
-          <p>ГО «Рух Єдині» пропонує розмовні клуби української мови, де можна поспілкуватися наживо.</p>
-
-          <p><strong>Адреси розмовних клубів у Києві:</strong><br>
-          📍 Центральна районна бібліотека імені Григорія Сковороди, вул. Освіти, 14а<br>
-          🗓 Вівторок 17:30 – 19:00</p>
-
-          <p>📍 Бібліотека імені Остапа Вишні, вул. Михайла Грушевського, 9, метро Арсенальна<br>
-          🗓 Неділя 12:00 – 13:30</p>
-
-          <p>Реєстрація на розмовні клуби в інших містах за посиланням: 
-            <a href="https://bit.ly/3Lk4xO8" target="_blank" style="color: #0057B7;">https://bit.ly/3Lk4xO8</a>
-          </p>
-
-          <p><strong>ШУКАЄТЕ РОЗМОВНИЙ КЛУБ ОНЛАЙН?</strong></p>
-
-          <p>🔅 Щочетверга о 18:00 — Аля Божик<br>
-          <a href="https://us06web.zoom.us/j/86450739060?pwd=MKodrhqiiYQCr1yZ6bZSvzwsvHC0mi.1" target="_blank" style="color:#0057B7;">
-            Приєднатися до Zoom
-          </a></p>
-
-          <p>🔅 Щоп’ятниці о 18:30 — Олександра Малаш<br>
-          <a href="https://us05web.zoom.us/j/89991515079?pwd=mc3Z3edJJWSasJOOlObaSDVecu1Ubp.1" target="_blank" style="color:#0057B7;">
-            Приєднатися до Zoom
-          </a></p>
-
-          <p>🔅 Щонеділі о 16:00 — Галина Щерба<br>
-          <a href="https://us06web.zoom.us/j/84474894845?pwd=udXznaFUTG4gY41a6mnJwtn8FfaWXF.1" target="_blank" style="color:#0057B7;">
-            Приєднатися до Zoom
-          </a></p>
-
-          <p><strong>ХОЧЕТЕ ПОКРАЩИТИ ГРАМАТИКУ ТА ПРАВОПИС?</strong><br>
-          🔅 Приходьте щопонеділка о 18:30 на навчальний клас, щоб навчатися граючись!<br>
-          <a href="https://us05web.zoom.us/j/89991515079?pwd=mc3Z3edJJWSasJOOlObaSDVecu1Ubp.1" target="_blank" style="color:#0057B7;">
-            Приєднатися до Zoom
-          </a></p>
-
-          <p><strong>ЛЮБИТЕ ЧИТАТИ?</strong><br>
-          ГО «Рух Єдині» запрошує до книжкового клубу, де щомісяця учасники обговорюють обрану книжку українського або іноземного автора (онлайн та офлайн).</p>
-
-          <p>Канал книжкового клубу: 
-            <a href="https://t.me/kk_yedyni" target="_blank" style="color:#0057B7;">https://t.me/kk_yedyni</a><br>
-            Чат: 
-            <a href="https://t.me/kkyedyni" target="_blank" style="color:#0057B7;">https://t.me/kkyedyni</a>
-          </p>
-
-          <p><strong>ХОЧЕТЕ ЗНАТИ БІЛЬШЕ?</strong><br>
-          Якщо виникатимуть запитання, звертайтеся до чатів підтримки:</p>
-
-          <p>Whatsapp: 
-            <a href="https://chat.whatsapp.com/CAknKOIXagy6bjEBhA4Q9z?mode=ems_share_t" target="_blank" style="color:#0057B7;">чат підтримки</a><br>
-            Telegram: 
-            <a href="https://t.me/+ejdjXWLIFxg3YWYy" target="_blank" style="color:#0057B7;">чат підтримки</a><br>
-            Viber: 
-            <a href="https://invite.viber.com/?g=1rTxmM_Uj1XZo1KydfpQn8WzVhboWplp" target="_blank" style="color:#0057B7;">чат підтримки</a>
-          </p>
-
-          <p style="margin-top: 30px;">З повагою,<br>
-          <strong>ГО «Рух Єдині»</strong></p>
-
-          <hr style="border: none; border-top: 1px solid #ddd; margin-top: 30px;">
-          <p style="font-size: 12px; color: #888;">
-            Ви отримали цей лист, оскільки зареєструвалися на платформі ГО «Рух Єдині».<br>
-            Якщо ви не реєструвалися, проігноруйте цей лист.
-          </p>
-        </div>
-        `;
-
-        const welcomeEmail = {
-          to: user.email,
-          subject: 'Вітаємо з реєстрацією на курс української мови від ГО «Рух Єдині»!',
-          html,
-          text: 'Ми впевнені: українську можна вивчати не лише широко та глибоко, але й цікаво та комфортно! Зареєструйтесь на https://bit.ly/3LEFKV1',
-        };
-
-        const isSendingEmail = await sendEmail(welcomeEmail);
-
-        // Встановлення етапу автоматичної відправки посилання в угоді Uspacy
-        if (isSendingEmail) {
-          await moveStageDealUspacy({
-            token: jwt,
-            dealId: dealUspacyId,
-            stageId: course.welcomeStageId,
-          });
-        }
-      }
+    } else {
+      contactUspacyId = null;
     }
-    console.log(`Створено угоду ${course.title}, ${user.last_name} ${user.first_name}`);
-  };
+  } 
+
+  if (!contactUspacyId) {
+    // Створення контакту в Uspacy
+    const newContactUspacy = await createContactUspacy({
+      token: jwt, 
+      user: contactData,
+      registration: [course.registration]
+    });
+
+    if (newContactUspacy) {
+      contactUspacyId = newContactUspacy.id;
+    }
+
+    // Оновлення контакту в локальній базі даних
+    await Contact.findByIdAndUpdate(
+      contactId,
+      {$set: {contactUspacyId}}
+    )
+  }  
+
+  if (dealUspacyId) {
+    // Перевірка, чи є угода в Uspacy
+    const dealUspacy = await getDealByIdUspacy({ token: jwt, dealId: dealUspacyId });
+      
+    if (dealUspacy) {
+      // Оновлення угоди в Uspacy
+      await editDealUspacy({
+        token: jwt, 
+        dealId: dealUspacyId,
+        promokod: promokod,
+        amountDeal: amountDeal,
+      })
+      console.log(`Оновлено угоду ${course.title}, ${contactData.last_name} ${contactData.first_name}`);
+    } else {
+      dealUspacyId = null;
+    }
+  }
+
+  if (!dealUspacyId) {
+    // Створення угоди для контакту в Uspacy
+    const newDealUspacy = await createDealUspacy({
+      token: jwt,
+      course,
+      contactId: contactUspacyId,
+      promokod: promokod,
+      amountDeal: amountDeal,
+    })
+
+    if (newDealUspacy) {
+      dealUspacyId = newDealUspacy.id;
+
+      // Оновлення угоди в локальній базі даних
+      await Deal.findByIdAndUpdate(
+        dealId,
+        {$set: {dealUspacyId}}
+      )
+    }
+
+    // Відправка привітального листа
+    const isSendingEmail = await sendCourseEmail(
+      course.registration,
+      "welcome",
+      contactData.email
+    );
+
+    // Встановлення етапу автоматичної відправки привітального листа в угоді Uspacy
+    if (isSendingEmail) {
+      await moveStageDealUspacy({
+        token: jwt,
+        dealId: dealUspacyId,
+        stageId: course.welcomeStageId,
+      });
+    }
+    console.log(`Створено угоду ${course.title}, ${contactData.last_name} ${contactData.first_name}`);
+  }
+};
 
 module.exports = handleContactUspacy;
