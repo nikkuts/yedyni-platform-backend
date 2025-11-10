@@ -23,7 +23,7 @@ const register = async (req, res) => {
         email,
         password,
         inviterId = MAIN_ID,
-        courseId = courseTransitionId,
+        // courseId = courseTransitionId,
     } = req.body;
     const contact = { first_name, last_name, email };
     
