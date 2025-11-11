@@ -104,7 +104,8 @@ const handleContactUspacy = async ({
     const isSendingEmail = await sendCourseEmail(
       course.registration,
       "welcome",
-      contactData.email
+      contactData.email,
+      { dealUspacyId }
     );
 
     // Встановлення етапу автоматичної відправки привітального листа в угоді Uspacy

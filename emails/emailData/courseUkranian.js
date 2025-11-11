@@ -5,7 +5,7 @@ module.exports = {
 Ми впевнені: українську можна вивчати не лише широко та глибоко, але й цікаво та комфортно!
 
 Щоб розпочати навчання, зареєструйтеся на платформі ГО "Рух Єдині", натиснувши "Зареєструватися":
-https://bit.ly/3LEFKV1
+https://platform.yedyni.org/register
 
 Навчайтесь у зручному для вас темпі й ритмі.
 
@@ -54,7 +54,7 @@ Viber: https://invite.viber.com/?g=1rTxmM_Uj1XZo1KydfpQn8WzVhboWplp
         <p>Ми впевнені: українську можна вивчати не лише широко та глибоко, але й цікаво та комфортно!</p>
 
         <p>Щоб розпочати навчання, зареєструйтеся на платформі ГО «Рух Єдині», натиснувши 
-          <a href="https://bit.ly/3LEFKV1" target="_blank" style="color: #0057B7; text-decoration: none;">«Зареєструватися»</a>.
+          <a href="https://platform.yedyni.org/register" target="_blank" style="color: #0057B7; text-decoration: none;">«Зареєструватися»</a>.
         </p>
 
         <p>Навчайтесь у зручному для вас темпі й ритмі.</p>
