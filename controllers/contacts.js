@@ -61,7 +61,7 @@ const addServant = async (req, res) => {
 
   // res.send(paymentForm);
 
-  res.redirect('https://yedyni.org/');
+  res.redirect(`https://yedyni.org/curs-payment?deal_id=${dealUspacyId}&amount=${amountDeal}`);
 };
 
 const addCreative = async (req, res) => {
