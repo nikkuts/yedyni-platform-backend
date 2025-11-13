@@ -12,6 +12,8 @@ router.post('/proukrainian', ctrl.addProukrainian);
 
 router.post('/process', ctrl.processesDeal);
 
+router.post('/manual-process', ctrl.manualProcessesDeal);
+
 router.get("/:dealId", ctrl.getByIdDeal);
 
 router.post('/transition', ctrl.addTransition);

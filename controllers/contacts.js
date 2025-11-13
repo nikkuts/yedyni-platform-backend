@@ -179,15 +179,22 @@ const processesDeal = async (req, res) => {
   const result = JSON.parse(dataString);
 
   const { status, order_id, amount, description } = result;
-  const dealId = order_id;
+  const dealUspacyId = order_id;
 
   if (status === 'success') {
-    await manualRegister(dealId, result);
+    await manualRegister(dealUspacyId, result);
     console.log(`✅ Успішна оплата ${amount} грн. ${description}`);
   } else {
     console.log('⚠️ Неуспішний платіж:', result);
   }
 
+  res.status(200).json({message: 'success'})
+};
+
+const manualProcessesDeal = async (req, res) => {
+  const { dealUspacyId } = req.body;
+  const result = { status: "success" };
+  await manualRegister(dealUspacyId, result);
   res.status(200).json({message: 'success'})
 };
 
@@ -336,6 +343,7 @@ module.exports = {
     addCreative: ctrlWrapper(addCreative),
     addProukrainian: ctrlWrapper(addProukrainian),
     processesDeal: ctrlWrapper(processesDeal),
+    manualProcessesDeal: ctrlWrapper(manualProcessesDeal),
     getByIdDeal: ctrlWrapper(getByIdDeal),
     addTransition: ctrlWrapper(addTransition),
     addGrammatical: ctrlWrapper(addGrammatical),

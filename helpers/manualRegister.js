@@ -12,10 +12,10 @@ const {
 
 const BASE_UKRAINIAN_MARK = Number(process.env.BASE_UKRAINIAN_MARK);
 
-const manualRegister = async (dealId, result = { status: "success" }) => {
+const manualRegister = async (dealUspacyId, result = { status: "success" }) => {
   try {
-    const deal = await Deal.findByIdAndUpdate(
-      dealId,
+    const deal = await Deal.findOneAndUpdate(
+      { dealUspacyId },
       { payment: result },
       { new: true }
     )
