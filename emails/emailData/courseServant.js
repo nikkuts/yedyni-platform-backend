@@ -64,7 +64,7 @@ module.exports = {
         
         <p>
           Щоб розпочати навчання, увійдіть за посиланням на платформу ГО «Рух Єдині»:
-          <a href="https://bit.ly/3LEFKV1" target="_blank" style="color: #0057B7; text-decoration: none;">https://bit.ly/3LEFKV1</a>
+          <a href="https://platform.yedyni.org/uk/learn/673266201c9fedb128321efe" target="_blank" style="color: #0057B7; text-decoration: none;">https://bit.ly/3LEFKV1</a>
         </p>
 
         <ul>
@@ -88,9 +88,9 @@ module.exports = {
 
 Цей курс допоможе вам опанувати офіційно-ділову українську, якісно підготуватися до держіспиту та здобути професійну впевненість.
 
-Щоб розпочати навчання, увійдіть на платформу ГО «Рух Єдині»: https://bit.ly/3LEFKV1
+Щоб розпочати навчання, увійдіть на платформу ГО «Рух Єдині»: https://platform.yedyni.org/uk/learn/673266201c9fedb128321efe
 
-- розклад курсу (зокрема й онлайн-зустрічей з викладачем),
+- розклад курсу,
 - уроки та тестування до них,
 - симуляція іспиту для виконання службових обов'язків.
 
@@ -127,12 +127,12 @@ module.exports = {
 
         <p>
           Увійдіть за посиланням:
-          <a href="https://bit.ly/3LEFKV1" target="_blank" style="color: #0057B7; text-decoration: none;">https://bit.ly/3LEFKV1</a>
+          <a href="https://platform.yedyni.org/uk/learn/673266201c9fedb128321efe" target="_blank" style="color: #0057B7; text-decoration: none;">https://bit.ly/3LEFKV1</a>
         </p>
 
         <ul>
           <li>розклад курсу,</li>
-          <li>уроки та тестування,</li>
+          <li>уроки та тестування до них,</li>
           <li>симуляція іспиту для виконання службових обов'язків.</li>
         </ul>
 
@@ -157,7 +157,11 @@ module.exports = {
 Email: {{email}}
 Пароль: {{password}}
 
-Увійдіть на платформу: https://bit.ly/3LEFKV1
+Увійдіть за посиланням: https://platform.yedyni.org/uk/learn/673266201c9fedb128321efe
+
+- розклад курсу,
+- уроки та тестування до них,
+- симуляція іспиту для виконання службових обов'язків.
 
 Старт курсу: 24 листопада
 
