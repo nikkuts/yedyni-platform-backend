@@ -1,19 +1,23 @@
 const express = require('express');
-
 const ctrl = require('../../controllers/courses');
-
-const {authenticate, validateBody} = require('../../middlewares');
-
+const {
+    authenticate,
+    authorizeAdmin,
+    authorizeModerator,
+    validateBody
+} = require('../../middlewares');
 const {schemas} = require('../../models/course');
 
 const router = express.Router();
 
 router.get('/:courseId', authenticate, ctrl.getCourseById);
 
-// router.post('/', authenticate, validateBody(schemas.addDiarySchema), ctrl.addCourse);
+// router.post('/', authenticate, authorizeAdmin, ctrl.addCourse);
 
-router.patch('/next', authenticate, validateBody(schemas.updateNextWaveSchema), ctrl.updateNextWaveCourse);
+router.patch('/:courseId', authenticate, authorizeAdmin, ctrl.updateCourse);
 
-router.patch('/lesson/date', authenticate, ctrl.updateScheduledDateLesson);
+router.patch('/next', authenticate, authorizeAdmin, validateBody(schemas.updateNextWaveSchema), ctrl.updateNextWaveCourse);
+
+router.patch('/lesson/date', authenticate, authorizeModerator, ctrl.updateScheduledDateLesson);
 
 module.exports = router;

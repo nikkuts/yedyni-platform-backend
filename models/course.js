@@ -65,7 +65,6 @@ const courseSchema = new Schema({
         },
         audio: {
             type: [String],
-            default: [],
         },
         video: {
           type: [
@@ -74,7 +73,6 @@ const courseSchema = new Schema({
               url: String,
             }
           ],
-          default: [],
         },
         test: {
             type: String,

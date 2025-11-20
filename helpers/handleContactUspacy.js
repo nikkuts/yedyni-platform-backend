@@ -118,6 +118,10 @@ const handleContactUspacy = async ({
     }
     console.log(`Створено угоду ${course.title}, ${contactData.last_name} ${contactData.first_name}`);
   }
+
+  return {
+      dealUspacyId, 
+    };
 };
 
 module.exports = handleContactUspacy;
