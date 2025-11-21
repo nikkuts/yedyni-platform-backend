@@ -17,7 +17,8 @@ const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const addServant = async (req, res) => {
-  const {first_name, last_name, email, phone, promo_code} = req.body;
+  const { first_name, last_name, phone, promo_code } = req.body;
+  const email = req.body.email.trim().toLowerCase();
   const contactData = {first_name, last_name, email, phone};
 
   const course = await Course.findOne({ title: 'Курс з підготовки до держіспиту' });
@@ -65,7 +66,8 @@ const addServant = async (req, res) => {
 };
 
 const addCreative = async (req, res) => {
-  const {first_name, last_name, email, phone, promo_code} = req.body;
+  const { first_name, last_name, phone, promo_code } = req.body;
+  const email = req.body.email.trim().toLowerCase();
   const contactData = {first_name, last_name, email, phone};
 
   const course = await Course.findOne({ title: 'Видноколо' });
@@ -116,7 +118,8 @@ const addCreative = async (req, res) => {
 };
 
 const addProukrainian = async (req, res) => {
-  const {first_name, last_name, email, phone, promo_code} = req.body;
+  const { first_name, last_name, phone, promo_code } = req.body;
+  const email = req.body.email.trim().toLowerCase();
   const contactData = {first_name, last_name, email, phone};
 
   const course = await Course.findOne({ title: 'Проукраїнська' });
@@ -222,6 +225,7 @@ const getByIdDeal = async (req, res) => {
 
 const addTransition = async (req, res) => {
   const contactData = req.body;
+  contactData.email = contactData.email.trim().toLowerCase();
 
   const course = await Course.findOne({ title: 'Курс переходу' });
 
@@ -250,6 +254,7 @@ const addTransition = async (req, res) => {
 
 const addGrammatical = async (req, res) => {
   const contactData = req.body;
+  contactData.email = contactData.email.trim().toLowerCase();
 
   const course = await Course.findOne({ title: 'Граматичний курс' });
 

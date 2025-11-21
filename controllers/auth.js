@@ -20,11 +20,10 @@ const register = async (req, res) => {
     const {
         first_name,
         last_name,
+        email,
         password,
         inviterId = MAIN_ID,
-        // courseId = courseTransitionId,
     } = req.body;
-    const email = req.body.email.trim().toLowerCase();
     
     if (!isValidObjectId(inviterId)) {
         throw HttpError(404, "Помилка у запрошувальному покликанні");

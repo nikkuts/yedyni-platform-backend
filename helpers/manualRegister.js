@@ -25,8 +25,7 @@ const manualRegister = async (dealUspacyId, result = { status: "success" }) => {
 
     if (!deal) throw HttpError(404, "Угоду не знайдено");
 
-    const { first_name, last_name } = deal.contact;
-    const email = deal.contact.email.trim().toLowerCase();
+    const { first_name, last_name, email } = deal.contact;
 
     // 1️⃣ Отримання JWT токена від Uspacy
     const jwt = await authUspacy();

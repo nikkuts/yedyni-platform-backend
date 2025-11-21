@@ -100,8 +100,6 @@ const registerSchema = Joi.object({
   password: Joi.string().min(8).max(24).pattern(passwordRegex).required(),
   email: Joi.string().pattern(emailRegexp).required(),
   inviterId: Joi.string(),
-  titleCourse: Joi.string(),
-  // courseId: Joi.string(),
 });
 
 const emailSchema = Joi.object({
