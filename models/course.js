@@ -101,6 +101,9 @@ const courseSchema = new Schema({
   welcome: {
     type: String,
   },
+  announcement: {
+    type: String,
+  },
   amount: {
     type: Number,
   },

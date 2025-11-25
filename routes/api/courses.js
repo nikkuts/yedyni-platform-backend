@@ -14,7 +14,7 @@ router.get('/:courseId', authenticate, ctrl.getCourseById);
 
 // router.post('/', authenticate, authorizeAdmin, ctrl.addCourse);
 
-router.patch('/:courseId', authenticate, authorizeAdmin, ctrl.updateCourse);
+router.patch('/:courseId', authenticate, authorizeModerator, ctrl.updateCourse);
 
 router.patch('/next', authenticate, authorizeAdmin, validateBody(schemas.updateNextWaveSchema), ctrl.updateNextWaveCourse);
 

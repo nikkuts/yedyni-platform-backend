@@ -22,17 +22,14 @@ const addCourse = async (req, res) => {
 
 const updateCourse = async (req, res) => {
   const { courseId } = req.params;
-  const { lessons } = req.body;
-
-  const updateData = {
-    lessons
-  };
+  const updateData = req.body;
 
   const updatedCourse = await Course.findByIdAndUpdate(
     courseId, 
     updateData,
     { new: true}
   )
+  .select('_id announcement');
 
   if (!updatedCourse) {
     throw HttpError(404, 'Курс не знайдено');
