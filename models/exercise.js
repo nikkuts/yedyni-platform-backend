@@ -85,13 +85,13 @@ const deleteFileSchema = Joi.object({
 
 const addCommentSchema = Joi.object({
   exerciseId: Joi.string().required(),
-  comment: Joi.string().max(300).required(),
+  comment: Joi.string().max(3000).required(),
 });
 
 const updateCommentSchema = Joi.object({
   exerciseId: Joi.string().required(),
   commentId: Joi.string().required(),
-  comment: Joi.string().max(300).required(),
+  comment: Joi.string().max(3000).required(),
 });
 
 const schemas = {
