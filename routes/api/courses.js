@@ -16,7 +16,7 @@ router.get('/:courseId', authenticate, ctrl.getCourseById);
 
 router.patch('/:courseId', authenticate, authorizeModerator, ctrl.updateCourse);
 
-router.patch('/next', authenticate, authorizeAdmin, validateBody(schemas.updateNextWaveSchema), ctrl.updateNextWaveCourse);
+router.patch('/wave/next', authenticate, authorizeAdmin, validateBody(schemas.updateNextWaveSchema), ctrl.updateNextWaveCourse);
 
 router.patch('/lesson/date', authenticate, authorizeModerator, ctrl.updateScheduledDateLesson);
 
