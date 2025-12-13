@@ -13,8 +13,8 @@ const { authUspacy, moveStageDealUspacy } = require('../utils');
 const sendCourseEmail = require('../emails');
 require('dotenv').config();
 
-const PUBLIC_KEY = process.env.PUBLIC_KEY_TEST;
-const PRIVATE_KEY = process.env.PRIVATE_KEY_TEST;
+const PUBLIC_KEY = process.env.PUBLIC_KEY;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const addServant = async (req, res) => {
   const { first_name, last_name, phone, promo_code } = req.body;

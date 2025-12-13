@@ -79,7 +79,7 @@ const createDonatForm = async ({
     currency: 'UAH',
     description: 'Безповоротна благодійна допомога на статутну діяльність',
     order_id: orderId,
-    result_url: 'https://yedyni.org/thank-you/',
+    result_url: 'https://yedyni.org/',
     server_url: `${BASE_SERVER_URL}/api/contacts/process-donat`,
   };
 
