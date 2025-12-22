@@ -23,6 +23,7 @@ const handleContactUspacy = async ({
   promokod,
   amountDeal,
 }) => {
+  let currentDealUspacyId = dealUspacyId;
   // Отримання JWT токена від Uspacy
   const jwt = await authUspacy();
 
@@ -38,9 +39,7 @@ const handleContactUspacy = async ({
         user: contactData,
         registration: arrayRegistration
       })
-    } else {
-      contactUspacyId = null;
-    }
+    } 
   } 
 
   if (!contactUspacyId) {
@@ -51,15 +50,13 @@ const handleContactUspacy = async ({
       registration: [course.registration]
     });
 
-    if (newContactUspacy) {
-      contactUspacyId = newContactUspacy.id;
+    if (newContactUspacy) {    
+      // Оновлення контакту в локальній базі даних
+      await Contact.findByIdAndUpdate(
+        contactId,
+        { $set: { contactUspacyId: newContactUspacy.id } }
+      )
     }
-
-    // Оновлення контакту в локальній базі даних
-    await Contact.findByIdAndUpdate(
-      contactId,
-      {$set: {contactUspacyId}}
-    )
   }  
 
   if (dealUspacyId) {
@@ -76,11 +73,11 @@ const handleContactUspacy = async ({
       })
       console.log(`Оновлено угоду ${course.title}, ${contactData.last_name} ${contactData.first_name}`);
     } else {
-      dealUspacyId = null;
+      currentDealUspacyId = null;
     }
   }
 
-  if (!dealUspacyId) {
+  if (!currentDealUspacyId) {
     // Створення угоди для контакту в Uspacy
     const newDealUspacy = await createDealUspacy({
       token: jwt,
@@ -91,36 +88,36 @@ const handleContactUspacy = async ({
     })
 
     if (newDealUspacy) {
-      dealUspacyId = newDealUspacy.id;
+      currentDealUspacyId = newDealUspacy.id;
 
       // Оновлення угоди в локальній базі даних
       await Deal.findByIdAndUpdate(
         dealId,
-        {$set: {dealUspacyId}}
+        { $set: { dealUspacyId: currentDealUspacyId } }
       )
-    }
 
-    // Відправка привітального листа
-    const isSendingEmail = await sendCourseEmail(
-      course.registration,
-      "welcome",
-      contactData.email,
-      { dealUspacyId }
-    );
+      // Відправка привітального листа
+      const isSendingEmail = await sendCourseEmail(
+        course.registration,
+        "welcome",
+        contactData.email,
+        { dealUspacyId: currentDealUspacyId }
+      );
 
-    // Встановлення етапу автоматичної відправки привітального листа в угоді Uspacy
-    if (isSendingEmail) {
-      await moveStageDealUspacy({
-        token: jwt,
-        dealId: dealUspacyId,
-        stageId: course.welcomeStageId,
-      });
+      // Встановлення етапу автоматичної відправки привітального листа в угоді Uspacy
+      if (isSendingEmail) {
+        await moveStageDealUspacy({
+          token: jwt,
+          dealId: currentDealUspacyId,
+          stageId: course.welcomeStageId,
+        });
+      }
+      console.log(`Створено угоду ${course.title}, ${contactData.last_name} ${contactData.first_name}`);
     }
-    console.log(`Створено угоду ${course.title}, ${contactData.last_name} ${contactData.first_name}`);
   }
 
   return {
-      dealUspacyId, 
+      currentDealUspacyId, 
     };
 };
 

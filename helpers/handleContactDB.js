@@ -50,7 +50,7 @@ const { Deal } = require('../models/deal');
         dealUspacyId = deal.dealUspacyId;
 
         if (deal.payment && deal.payment.status === 'success') {
-          redirectUrl = `${course.welcome}?amount=${deal.payment.amount}`;
+          redirectUrl = `${course.welcome}?canal=${course.canal}&amount=${deal.payment.amount}`;
         }
 
         // Оновлення угоди в локальній базі

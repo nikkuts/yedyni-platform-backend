@@ -8,7 +8,7 @@ const { ctrlWrapper, HttpError } = require('../helpers');
 const handleContactDB = require('../helpers/handleContactDB');
 const handleContactUspacy = require('../helpers/handleContactUspacy');
 const {createPaymentForm, createDonatForm} = require('../helpers/createPaymentForm');
-const manualRegister = require('../helpers/manualRegister');
+const provideAccessToCourse = require('../helpers/provideAccessToCourse');
 const { authUspacy, moveStageDealUspacy } = require('../utils');
 const sendCourseEmail = require('../emails');
 require('dotenv').config();
@@ -16,12 +16,18 @@ require('dotenv').config();
 const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
-const addServant = async (req, res) => {
-  const { first_name, last_name, phone, promo_code } = req.body;
+const registerContact = async (req, res) => {
+  const { courseId } = req.params;
+  const { first_name, last_name, phone, promo_code, mode } = req.body;
+
+  if (!['pay', 'save'].includes(mode)) {
+    throw HttpError(400, 'Invalid mode');
+  }
+
   const email = req.body.email.trim().toLowerCase();
   const contactData = {first_name, last_name, email, phone};
 
-  const course = await Course.findOne({ title: 'Курс з підготовки до держіспиту' });
+  const course = await Course.findById(courseId);
 
   const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
   const amountDeal = promokod ? 2000 : course.amount;
@@ -39,7 +45,7 @@ const addServant = async (req, res) => {
     return res.redirect(redirectUrl);
   }
 
-  await handleContactUspacy({
+  const { currentDealUspacyId } = await handleContactUspacy({
     contactData,
     course,
     contactId, 
@@ -51,18 +57,19 @@ const addServant = async (req, res) => {
     amountDeal,
   })
 
-  // const paymentForm = await createPaymentForm({
-  //   PUBLIC_KEY,
-  //   PRIVATE_KEY,
-  //   contact: contactData, 
-  //   course, 
-  //   dealId,
-  //   amountDeal,
-  // });
+  if (mode === "pay") {
+    const paymentForm = await createPaymentForm({
+      PUBLIC_KEY,
+      PRIVATE_KEY,
+      currentDealUspacyId,
+      amountDeal,
+    });
 
-  // res.send(paymentForm);
+    return res.send(paymentForm);
+  }
 
-  res.redirect(`https://yedyni.org/curs-payment?deal_id=${dealUspacyId}&amount=${amountDeal}`);
+  return res.redirect('https://yedyni.org/');
+  // res.redirect(`https://yedyni.org/curs-payment?deal_id=${dealUspacyId}&amount=${amountDeal}`);
 };
 
 const addCreative = async (req, res) => {
@@ -185,7 +192,7 @@ const processesDeal = async (req, res) => {
   const dealUspacyId = order_id;
 
   if (status === 'success') {
-    await manualRegister(dealUspacyId, result);
+    await provideAccessToCourse(dealUspacyId, result);
     console.log(`✅ Успішна оплата ${amount} грн. ${description}`);
   } else {
     console.log('⚠️ Неуспішний платіж:', result);
@@ -197,7 +204,7 @@ const processesDeal = async (req, res) => {
 const manualProcessesDeal = async (req, res) => {
   const { dealUspacyId } = req.body;
   const result = { status: "success" };
-  await manualRegister(dealUspacyId, result);
+  await provideAccessToCourse(dealUspacyId, result);
   res.status(200).json({message: 'success'})
 };
 
@@ -344,7 +351,7 @@ const editLead = async (req, res) => {
 };
 
 module.exports = {
-    addServant: ctrlWrapper(addServant),
+    registerContact: ctrlWrapper(registerContact),
     addCreative: ctrlWrapper(addCreative),
     addProukrainian: ctrlWrapper(addProukrainian),
     processesDeal: ctrlWrapper(processesDeal),

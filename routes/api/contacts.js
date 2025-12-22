@@ -4,7 +4,7 @@ const ctrl = require('../../controllers/contacts');
 
 const router = express.Router();
 
-router.post('/servant', ctrl.addServant);
+router.post('/register/:courseId', ctrl.registerContact);
 
 router.post('/creative', ctrl.addCreative);
 

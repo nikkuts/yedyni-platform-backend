@@ -3,7 +3,7 @@ const {nanoid} = require('nanoid');
 const bcrypt = require('bcrypt');
 const { User } = require('../models/user');
 const { Deal } = require('../models/deal');
-const { HttpError } = require('../helpers');
+const { HttpError } = require('.');
 const sendCourseEmail = require('../emails');
 const {
   authUspacy,
@@ -12,7 +12,7 @@ const {
 
 const BASE_UKRAINIAN_MARK = Number(process.env.BASE_UKRAINIAN_MARK);
 
-const manualRegister = async (dealUspacyId, result = { status: "success" }) => {
+const provideAccessToCourse = async (dealUspacyId, result = { status: "success" }) => {
   try {
     const deal = await Deal.findOneAndUpdate(
       { dealUspacyId },
@@ -93,4 +93,4 @@ const manualRegister = async (dealUspacyId, result = { status: "success" }) => {
   }
 };
 
-module.exports = manualRegister;
+module.exports = provideAccessToCourse;

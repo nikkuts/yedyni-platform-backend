@@ -9,9 +9,7 @@ const BASE_SERVER_URL = process.env.BASE_SERVER_URL;
 const createPaymentForm = async ({
   PUBLIC_KEY,
   PRIVATE_KEY,
-  contact, 
-  course, 
-  dealId,
+  currentDealUspacyId,
   amountDeal
 }) => {
     // Створення та відправка форми до Liqpay
@@ -22,8 +20,7 @@ const createPaymentForm = async ({
         amount: amountDeal,
         currency: 'UAH',
         description: 'Безповоротна благодійна допомога на статутну діяльність',
-        order_id: dealId,
-        // result_url: `https://yedyni.org/testpayment?deal_id=${dealId}&amount=${amountDeal}`,
+        order_id: currentDealUspacyId,
         result_url: 'https://yedyni.org/',
         server_url: `${BASE_SERVER_URL}/api/contacts/process`,
       };
