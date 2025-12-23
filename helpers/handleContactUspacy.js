@@ -50,11 +50,13 @@ const handleContactUspacy = async ({
       registration: [course.registration]
     });
 
-    if (newContactUspacy) {    
+    if (newContactUspacy) {  
+      contactUspacyId = newContactUspacy.id;
+
       // Оновлення контакту в локальній базі даних
       await Contact.findByIdAndUpdate(
         contactId,
-        { $set: { contactUspacyId: newContactUspacy.id } }
+        { $set: { contactUspacyId } }
       )
     }
   }  
@@ -83,8 +85,8 @@ const handleContactUspacy = async ({
       token: jwt,
       course,
       contactId: contactUspacyId,
-      promokod: promokod,
-      amountDeal: amountDeal,
+      promokod,
+      amountDeal,
     })
 
     if (newDealUspacy) {
@@ -101,7 +103,10 @@ const handleContactUspacy = async ({
         course.registration,
         "welcome",
         contactData.email,
-        { dealUspacyId: currentDealUspacyId }
+        {
+          dealUspacyId: currentDealUspacyId,
+          amountDeal
+        }
       );
 
       // Встановлення етапу автоматичної відправки привітального листа в угоді Uspacy

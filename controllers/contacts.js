@@ -61,7 +61,7 @@ const registerContact = async (req, res) => {
     const paymentForm = await createPaymentForm({
       PUBLIC_KEY,
       PRIVATE_KEY,
-      currentDealUspacyId,
+      dealUspacyId: currentDealUspacyId,
       amountDeal,
     });
 
@@ -69,7 +69,19 @@ const registerContact = async (req, res) => {
   }
 
   return res.redirect('https://yedyni.org/');
-  // res.redirect(`https://yedyni.org/curs-payment?deal_id=${dealUspacyId}&amount=${amountDeal}`);
+};
+
+const resendPaymentForm = async (req, res) => {
+  const { dealUspacyId, amountDeal } = req.query;
+
+  const paymentForm = await createPaymentForm({
+    PUBLIC_KEY,
+    PRIVATE_KEY,
+    dealUspacyId,
+    amountDeal,
+  });
+
+  return res.send(paymentForm);
 };
 
 const addCreative = async (req, res) => {
@@ -351,16 +363,17 @@ const editLead = async (req, res) => {
 };
 
 module.exports = {
-    registerContact: ctrlWrapper(registerContact),
-    addCreative: ctrlWrapper(addCreative),
-    addProukrainian: ctrlWrapper(addProukrainian),
-    processesDeal: ctrlWrapper(processesDeal),
-    manualProcessesDeal: ctrlWrapper(manualProcessesDeal),
-    getByIdDeal: ctrlWrapper(getByIdDeal),
-    addTransition: ctrlWrapper(addTransition),
-    addGrammatical: ctrlWrapper(addGrammatical),
-    addDonat: ctrlWrapper(addDonat),
-    processesDonat: ctrlWrapper(processesDonat),
-    sendEmailContact: ctrlWrapper(sendEmailContact),
-    editLead: ctrlWrapper(editLead),
+  registerContact: ctrlWrapper(registerContact),
+  resendPaymentForm: ctrlWrapper(resendPaymentForm),
+  addCreative: ctrlWrapper(addCreative),
+  addProukrainian: ctrlWrapper(addProukrainian),
+  processesDeal: ctrlWrapper(processesDeal),
+  manualProcessesDeal: ctrlWrapper(manualProcessesDeal),
+  getByIdDeal: ctrlWrapper(getByIdDeal),
+  addTransition: ctrlWrapper(addTransition),
+  addGrammatical: ctrlWrapper(addGrammatical),
+  addDonat: ctrlWrapper(addDonat),
+  processesDonat: ctrlWrapper(processesDonat),
+  sendEmailContact: ctrlWrapper(sendEmailContact),
+  editLead: ctrlWrapper(editLead),
 };

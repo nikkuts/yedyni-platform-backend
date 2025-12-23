@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.post('/register/:courseId', ctrl.registerContact);
 
+router.get('/resend-payment', ctrl.resendPaymentForm);
+
 router.post('/creative', ctrl.addCreative);
 
 router.post('/proukrainian', ctrl.addProukrainian);

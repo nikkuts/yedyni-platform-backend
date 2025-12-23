@@ -1,11 +1,13 @@
 const sendEmail = require('../helpers/sendEmail');
 const courseUkrainian = require('./emailData/courseUkranian');
 const courseServant = require('./emailData/courseServant');
+const sevenExpressLessons = require('./emailData/7_express_lessons');
 
 const templates = {
   'kurs_perehodu': courseUkrainian,
   'gramatichniy_kurs': courseUkrainian,
   'kurs_z_pidgotovki_do_derzhispitu': courseServant,
+  '7_ekspres_urokiv_dilovoyi_ukrayinskoyi_movi': sevenExpressLessons,
 };
 
 /**
