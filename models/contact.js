@@ -26,7 +26,8 @@ const contactSchema = new Schema({
               "gramatichniy_kurs",
               "kurs_z_pidgotovki_do_derzhispitu",
               "kurs_vidnokolo",
-              "kurs_proukrayinska_new"
+              "kurs_proukrayinska_new",
+              "7_ekspres_urokiv_dilovoyi_ukrayinskoyi_movi"
             ], 
           }
         ]
