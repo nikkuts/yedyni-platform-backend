@@ -30,7 +30,9 @@ const registerContact = async (req, res) => {
   const course = await Course.findById(courseId);
 
   const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
-  const amountDeal = promokod ? 2000 : course.amount;
+  const amountDeal = promokod ? 
+    (1 - course.discountPercentage / 100) * course.amount 
+    : course.amount;
 
   const { 
     contactId, 
@@ -82,58 +84,6 @@ const resendPaymentForm = async (req, res) => {
   });
 
   return res.send(paymentForm);
-};
-
-const addCreative = async (req, res) => {
-  const { first_name, last_name, phone, promo_code } = req.body;
-  const email = req.body.email.trim().toLowerCase();
-  const contactData = {first_name, last_name, email, phone};
-
-  const course = await Course.findOne({ title: 'Видноколо' });
-
-  const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
-
-  const amountDeal = promokod ? 
-    (1 - course.discountPercentage / 100) * course.amount 
-    : course.amount;
-
-  const { 
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration,
-    redirectUrl,
-  } = await handleContactDB({contactData, course, promokod});
-
-  if (redirectUrl) {
-    return res.redirect(redirectUrl);
-  }
-
-  await handleContactUspacy({
-    contactData,
-    course,
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration,
-    promokod,
-    amountDeal,
-  })
-
-  // const paymentForm = await createPaymentForm({
-  //   PUBLIC_KEY,
-  //   PRIVATE_KEY,
-  //   contact: contactData, 
-  //   course, 
-  //   dealId,
-  //   amountDeal,
-  // });
-
-  // res.send(paymentForm);
-
-  res.redirect('https://yedyni.org/');
 };
 
 const addProukrainian = async (req, res) => {
@@ -365,7 +315,6 @@ const editLead = async (req, res) => {
 module.exports = {
   registerContact: ctrlWrapper(registerContact),
   resendPaymentForm: ctrlWrapper(resendPaymentForm),
-  addCreative: ctrlWrapper(addCreative),
   addProukrainian: ctrlWrapper(addProukrainian),
   processesDeal: ctrlWrapper(processesDeal),
   manualProcessesDeal: ctrlWrapper(manualProcessesDeal),

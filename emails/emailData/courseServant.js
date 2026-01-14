@@ -51,7 +51,7 @@ https://server.yedyni.org/api/contacts/resend-payment?dealUspacyId={{dealUspacyI
         
         <p>
           Щоб розпочати навчання, увійдіть за посиланням на платформу ГО «Рух Єдині»:
-          <a href="https://platform.yedyni.org/uk/learn/673266201c9fedb128321efe" target="_blank" style="color: #0057B7; text-decoration: none;">https://bit.ly/3LEFKV1</a>
+          <a href="https://platform.yedyni.org/uk/learn/673266201c9fedb128321efe" target="_blank" style="color: #0057B7; text-decoration: none;">https://platform.yedyni.org/uk/learn/673266201c9fedb128321efe</a>
         </p>
 
         <ul>
@@ -114,7 +114,7 @@ https://server.yedyni.org/api/contacts/resend-payment?dealUspacyId={{dealUspacyI
 
         <p>
           Увійдіть за посиланням:
-          <a href="https://platform.yedyni.org/uk/learn/673266201c9fedb128321efe" target="_blank" style="color: #0057B7; text-decoration: none;">https://bit.ly/3LEFKV1</a>
+          <a href="https://platform.yedyni.org/uk/learn/673266201c9fedb128321efe" target="_blank" style="color: #0057B7; text-decoration: none;">https://platform.yedyni.org/uk/learn/673266201c9fedb128321efe</a>
         </p>
 
         <ul>

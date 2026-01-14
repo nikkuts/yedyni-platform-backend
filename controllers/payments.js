@@ -24,7 +24,7 @@ const createPayment = async (req, res) => {
       action: 'pay',
       amount: amount,
       currency: 'UAH',
-      description: 'Підтримка проєкту "Єдині": безповоротний благодійний внесок',
+      description: 'Безповоротна благодійна допомога на статутну діяльність',
       order_id: orderId,
       result_url: `${BASE_CLIENT_URL}/uk`,
       server_url: `${BASE_SERVER_URL}/api/payments/process`,
