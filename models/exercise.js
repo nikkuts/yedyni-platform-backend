@@ -68,13 +68,13 @@ exerciseSchema.post('save', handleMongooseError);
 const addExerciseSchema = Joi.object({
   courseId: Joi.string().required(),
   lessonId: Joi.string().required(),
-  homework: Joi.string().max(3000).required(),
+  homework: Joi.string().max(30000).required(),
   originalname: Joi.string(),
 });
 
 const updateExerciseSchema = Joi.object({
   exerciseId: Joi.string().required(),
-  homework: Joi.string().max(3000).required(),
+  homework: Joi.string().max(30000).required(),
   originalname: Joi.string(),
 });
 
