@@ -66,7 +66,7 @@ const register = async (req, res) => {
     });
     
     /* const verifyEmail = {
-        to: [{email}],
+        to: email,
         subject: "Підтвердження адреси електронної пошти на платформі «Єдині»",
         html: `
             <p>
@@ -123,7 +123,7 @@ const resendVerifyEmail = async (req, res) => {
     }
 
     const verifyEmail = {
-        to: [{email}],
+        to: email,
         subject: "Підтвердження адреси електронної пошти на платформі «Єдині»",
         html: `
             <p>
@@ -165,7 +165,7 @@ const recoveryPassword = async (req, res) => {
     const token = jwt.sign({userId: user._id}, SECRET_KEY, {expiresIn: '1h'});
 
     const recoveryPassword = {
-        to: [{email}],
+        to: email,
         subject: "Відновлення паролю на платформі «Єдині»",
         html: `
             <p>
