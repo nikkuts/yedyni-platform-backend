@@ -86,57 +86,57 @@ const resendPaymentForm = async (req, res) => {
   return res.send(paymentForm);
 };
 
-const addProukrainian = async (req, res) => {
-  const { first_name, last_name, phone, promo_code } = req.body;
-  const email = req.body.email.trim().toLowerCase();
-  const contactData = {first_name, last_name, email, phone};
+// const addProukrainian = async (req, res) => {
+//   const { first_name, last_name, phone, promo_code } = req.body;
+//   const email = req.body.email.trim().toLowerCase();
+//   const contactData = {first_name, last_name, email, phone};
 
-  const course = await Course.findOne({ title: 'Проукраїнська' });
+//   const course = await Course.findOne({ title: 'Проукраїнська' });
 
-  const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
+//   const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
 
-  const amountDeal = promokod ? 
-    (1 - course.discountPercentage / 100) * course.amount 
-    : course.amount;
+//   const amountDeal = promokod ? 
+//     (1 - course.discountPercentage / 100) * course.amount 
+//     : course.amount;
 
-  const { 
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration,
-    redirectUrl,
-  } = await handleContactDB({contactData, course, promokod});
+//   const { 
+//     contactId, 
+//     contactUspacyId, 
+//     dealId, 
+//     dealUspacyId, 
+//     arrayRegistration,
+//     redirectUrl,
+//   } = await handleContactDB({contactData, course, promokod});
 
-  if (redirectUrl) {
-    return res.redirect(redirectUrl);
-  }
+//   if (redirectUrl) {
+//     return res.redirect(redirectUrl);
+//   }
 
-  await handleContactUspacy({
-    contactData,
-    course,
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration,
-    promokod,
-    amountDeal,
-  })
+//   await handleContactUspacy({
+//     contactData,
+//     course,
+//     contactId, 
+//     contactUspacyId, 
+//     dealId, 
+//     dealUspacyId, 
+//     arrayRegistration,
+//     promokod,
+//     amountDeal,
+//   })
 
-  // const paymentForm = await createPaymentForm({
-  //   PUBLIC_KEY,
-  //   PRIVATE_KEY,
-  //   contact: contactData, 
-  //   course, 
-  //   dealId,
-  //   amountDeal,
-  // });
+//   const paymentForm = await createPaymentForm({
+//     PUBLIC_KEY,
+//     PRIVATE_KEY,
+//     contact: contactData, 
+//     course, 
+//     dealId,
+//     amountDeal,
+//   });
 
-  // res.send(paymentForm);
+//   res.send(paymentForm);
 
-  res.redirect('https://yedyni.org/');
-};
+//   res.redirect('https://yedyni.org/');
+// };
 
 const processesDeal = async (req, res) => {
   const {data, signature} = req.body;
@@ -315,7 +315,7 @@ const editLead = async (req, res) => {
 module.exports = {
   registerContact: ctrlWrapper(registerContact),
   resendPaymentForm: ctrlWrapper(resendPaymentForm),
-  addProukrainian: ctrlWrapper(addProukrainian),
+  // addProukrainian: ctrlWrapper(addProukrainian),
   processesDeal: ctrlWrapper(processesDeal),
   manualProcessesDeal: ctrlWrapper(manualProcessesDeal),
   getByIdDeal: ctrlWrapper(getByIdDeal),
