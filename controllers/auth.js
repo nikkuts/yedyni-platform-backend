@@ -168,9 +168,25 @@ const recoveryPassword = async (req, res) => {
         to: email,
         subject: "Відновлення паролю на платформі «Єдині»",
         html: `
+            <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+            <h2 style="color: #2b6cb0;">Вітаємо!</h2>
+
             <p>
                 <a target="_blank" href="${BASE_CLIENT_URL}/reset/${token}">Натисніть тут</a> для відновлення паролю
             </p>
+
+            <p style="margin-top: 30px;">
+                Якщо у вас виникли запитання, зверніться, будь ласка, до нашого <a href="https://t.me/+ejdjXWLIFxg3YWYy" target="_blank" style="color:#0057B7;">чату підтримки</a><br>
+                <strong>Команда ГО «Рух Єдині»</strong>
+            </p>
+            `,
+        text: `
+            Вітаємо!
+
+            Для відновлення паролю перейдіть, будь ласка, за посиланням: ${BASE_CLIENT_URL}/reset/${token}
+
+            Якщо у вас виникли запитання, зверніться до нашого чату підтримки: https://t.me/+ejdjXWLIFxg3YWYy
+            Команда ГО «Рух Єдині»
             `
     };
 
