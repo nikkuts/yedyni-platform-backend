@@ -23,18 +23,27 @@ const app = express()
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(logger(formatsLogger))
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://platform.yedyni.org',
+  'https://yedyni.org',
+  'https://www.liqpay.ua',
+  'https://yedyni.uspacy.ua',
+];
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://platform.yedyni.org',
-    'https://yedyni.org',
-    'https://www.liqpay.ua',
-    'https://yedyni.uspacy.ua',
-  ],
-  methods: ["GET", "POST", "PATCH", "DELETE"],
+  origin: function(origin, callback){
+    // allow requests with no origin (like mobile apps or curl)
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.includes(origin)){
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
   credentials: true
-}))
+}));
 app.use(express.json())
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }));
