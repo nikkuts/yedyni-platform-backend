@@ -24,7 +24,6 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(logger(formatsLogger))
 const allowedOrigins = [
-  'http://localhost:3000',
   'https://platform.yedyni.org',
   'https://yedyni.org',
   'https://www.liqpay.ua',
