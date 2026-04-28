@@ -26,6 +26,12 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(logger(formatsLogger))
 
+app.use((req, res, next) => {
+  console.log('protocol:', req.protocol);
+  console.log('secure:', req.secure);
+  next();
+});
+
 const allowedOrigins = [
   'https://platform.yedyni.org',
   'https://yedyni.org',
