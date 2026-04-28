@@ -36,10 +36,16 @@ app.use(
     origin(origin, callback) {
       if (!origin) return callback(null, true);
 
-      const isAllowed = allowedOrigins.some((host) => origin.includes(host));
+      const isAllowed = allowedOrigins.some((host) => {
+        try {
+          return new URL(origin).hostname === host;
+        } catch {
+          return false;
+        }
+      });
 
       if (isAllowed) {
-        return callback(null, true);
+        return callback(null, origin);
       }
 
       return callback(new Error("Not allowed by CORS"));
@@ -48,6 +54,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.options("*", cors());
 
 app.use(express.json())
