@@ -26,6 +26,11 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(logger(formatsLogger))
 
+app.use((req, res, next) => {
+  req.headers['x-forwarded-proto'] = 'https';
+  next();
+});
+
 const allowedOrigins = [
   'platform.yedyni.org',
   'yedyni.org',
