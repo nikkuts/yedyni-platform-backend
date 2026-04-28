@@ -31,25 +31,24 @@ const allowedOrigins = [
   'yedyni.uspacy.ua',
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
 
-    try {
-      const hostname = new URL(origin).hostname;
+      const isAllowed = allowedOrigins.some((host) => origin.includes(host));
 
-      if (allowedOrigins.includes(hostname)) {
-        return callback(null, origin); 
+      if (isAllowed) {
+        return callback(null, true);
       }
-    } catch (e) {}
 
-    return callback(new Error('Not allowed by CORS'));
-  },
-  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-  credentials: true
-}));
-
-app.options('*', cors());
+      return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
+app.options("*", cors());
 
 app.use(express.json())
 app.use(express.static('public'))
