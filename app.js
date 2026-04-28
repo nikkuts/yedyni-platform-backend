@@ -36,9 +36,10 @@ app.use(cors({
     if (!origin) return callback(null, true);
 
     try {
-      const url = new URL(origin);
-      if (allowedOrigins.includes(url.hostname)) {
-        return callback(null, true);
+      const hostname = new URL(origin).hostname;
+
+      if (allowedOrigins.includes(hostname)) {
+        return callback(null, origin); 
       }
     } catch (e) {}
 
@@ -47,6 +48,9 @@ app.use(cors({
   methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
   credentials: true
 }));
+
+app.options('*', cors());
+
 app.use(express.json())
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }));
