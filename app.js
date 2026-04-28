@@ -62,7 +62,8 @@ app.use(
   })
 ); */
 
-app.options("*", cors());
+// app.options("*", cors());
+app.use(cors({ origin: '*' }));
 
 app.use(express.json())
 app.use(express.static('public'))
