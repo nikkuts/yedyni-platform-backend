@@ -26,44 +26,28 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(logger(formatsLogger))
 
-/* app.use((req, res, next) => {
-  req.headers['x-forwarded-proto'] = 'https';
-  next();
-});
-
 const allowedOrigins = [
-  'platform.yedyni.org',
-  'yedyni.org',
-  'www.liqpay.ua',
-  'yedyni.uspacy.ua',
+  'https://platform.yedyni.org',
+  'https://yedyni.org',
+  'https://www.liqpay.ua',
+  'https://yedyni.uspacy.ua'
 ];
 
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin) return callback(null, true);
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
 
-      const isAllowed = allowedOrigins.some((host) => {
-        try {
-          return new URL(origin).hostname === host;
-        } catch {
-          return false;
-        }
-      });
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-      if (isAllowed) {
-        return callback(null, origin);
-      }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET','POST','PATCH','DELETE','OPTIONS']
+}));
 
-      return callback(new Error("Not allowed by CORS"));
-    },
-    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    credentials: true,
-  })
-); */
-
-// app.options("*", cors());
-app.use(cors({ origin: '*' }));
+app.options("*", cors());
 
 app.use(express.json())
 app.use(express.static('public'))
