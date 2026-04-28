@@ -26,7 +26,7 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(logger(formatsLogger))
 
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
   req.headers['x-forwarded-proto'] = 'https';
   next();
 });
@@ -60,7 +60,7 @@ app.use(
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   })
-);
+); */
 
 app.options("*", cors());
 
