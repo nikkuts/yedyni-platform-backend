@@ -70,7 +70,7 @@ const registerContact = async (req, res) => {
     return res.send(paymentForm);
   }
 
-  return res.redirect('https://yedyni.org/');
+  return res.redirect(`${course.welcome}?canal=${course.canal}&courseId=${courseId}`);
 };
 
 const resendPaymentForm = async (req, res) => {
