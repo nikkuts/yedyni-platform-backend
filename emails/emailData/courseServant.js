@@ -1,6 +1,6 @@
 module.exports = {
   welcome: {
-    subject: "Дякуємо за реєстрацію на курс української мови!",
+     subject: "Дякуємо за реєстрацію на курс української мови!",
     html: `
       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
         <h2 style="color: #2b6cb0;">Дякуємо за реєстрацію!</h2>
@@ -9,9 +9,13 @@ module.exports = {
           Ви успішно зареєструвалися на <strong>курс української мови для підготовки до складання державного іспиту</strong>.
         </p>
         
-        <p>Невдовзі ми повідомимо Вас про дату старту і відкриємо можливість для оплати курсу.</p>
-       
-        <p>А зараз запрошуємо Вас зареєструватися на нашій <a href="https://platform.yedyni.org/register" target="_blank" style="color: #0057B7; text-decoration: none;">навчальній платформі</a></p>
+        <p>
+          Щоб отримати доступ до курсу, будь ласка, <a href="https://server.yedyni.org/api/contacts/resend-payment?dealUspacyId={{dealUspacyId}}&amountDeal={{amountDeal}}" target="_blank" style="color: #0057B7; text-decoration: none;">натисніть тут</a> та проведіть оплату.
+        </p>
+        
+        <p style="margin-top: 20px;">
+          Після підтвердження оплати ви отримаєте лист із деталями доступу.
+        </p>
         
         <p style="margin-top: 30px;">З повагою,<br><strong>Команда ГО «Рух Єдині»</strong></p>
       </div>
@@ -21,9 +25,10 @@ module.exports = {
 
       Ви успішно зареєструвалися на курс української мови для підготовки до складання державного іспиту.
 
-      Невдовзі ми повідомимо Вас про дату старту і відкриємо можливість для оплати курсу.
+      Щоб отримати доступ до курсу, будь ласка, перейдіть за посиланням та проведіть оплату:
+      https://server.yedyni.org/api/contacts/resend-payment?dealUspacyId={{dealUspacyId}}&amountDeal={{amountDeal}}
 
-      А зараз запрошуємо Вас зареєструватися на нашій навчальній платформі https://platform.yedyni.org/register
+      Після підтвердження оплати ви отримаєте лист із деталями доступу.
 
       З повагою,
       Команда ГО «Рух Єдині»
