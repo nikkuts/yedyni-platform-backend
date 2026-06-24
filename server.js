@@ -15,6 +15,14 @@ mongoose.connect(DB_HOST)
     // Створення HTTP сервера з використанням Express додатку
     const server = http.createServer(app);
 
+    // 🔥 Обробка критичних помилок порту
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} already in use`);
+        process.exit(1);
+      }
+    });
+
     // Ініціалізація Socket.io через зовнішню функцію
     initializeSocket(server);
 

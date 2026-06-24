@@ -36,7 +36,8 @@ const allowedOrigins = [
   'https://platform.yedyni.org',
   'https://yedyni.org',
   'https://www.liqpay.ua',
-  'https://yedyni.uspacy.ua'
+  'https://yedyni.uspacy.ua',
+  'http://localhost:3001'
 ];
 
 app.use(cors({
