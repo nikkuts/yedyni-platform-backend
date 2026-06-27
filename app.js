@@ -38,6 +38,7 @@ const allowedOrigins = [
   'https://yedyni.org',
   'https://www.liqpay.ua',
   'https://yedyni.uspacy.ua',
+  'http://localhost:3000',
   'http://localhost:3001'
 ];
 
