@@ -17,6 +17,7 @@ const diaryRouter = require('./routes/api/diary')
 const contactsRouter = require('./routes/api/contacts')
 const chatsRouter = require('./routes/api/chats')
 const canalsRouter = require('./routes/api/canals')
+const tipsRouter = require('./routes/api/tips')
 
 const app = express()
 
@@ -70,6 +71,7 @@ app.use('/api/diary', diaryRouter)
 app.use('/api/contacts', contactsRouter)
 app.use('/api/chats', chatsRouter)
 app.use('/api/canals', canalsRouter)
+app.use('/api/tips', tipsRouter)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res) => {
