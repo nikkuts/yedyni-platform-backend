@@ -23,7 +23,9 @@ const handleContactUspacy = async ({
   promokod,
   amountDeal,
 }) => {
+  let currentContactUspacyId = contactUspacyId;
   let currentDealUspacyId = dealUspacyId;
+
   // Отримання JWT токена від Uspacy
   const jwt = await authUspacy();
 
@@ -39,10 +41,14 @@ const handleContactUspacy = async ({
         user: contactData,
         registration: arrayRegistration
       })
-    } 
+
+      console.log(`Оновлено контакт в Uspacy ${contactData.last_name} ${contactData.first_name}`);
+    } else {
+      currentContactUspacyId = null;
+    }
   } 
 
-  if (!contactUspacyId) {
+  if (!currentContactUspacyId) {
     // Створення контакту в Uspacy
     const newContactUspacy = await createContactUspacy({
       token: jwt, 
@@ -51,13 +57,15 @@ const handleContactUspacy = async ({
     });
 
     if (newContactUspacy) {  
-      contactUspacyId = newContactUspacy.id;
+      currentContactUspacyId = newContactUspacy.id;
 
       // Оновлення контакту в локальній базі даних
       await Contact.findByIdAndUpdate(
         contactId,
-        { $set: { contactUspacyId } }
+        { $set: { contactUspacyId: currentContactUspacyId } }
       )
+
+      console.log(`Створено контакт в Uspacy ${contactData.last_name} ${contactData.first_name}`)
     }
   }  
 
@@ -73,7 +81,8 @@ const handleContactUspacy = async ({
         promokod: promokod,
         amountDeal: amountDeal,
       })
-      console.log(`Оновлено угоду ${course.title}, ${contactData.last_name} ${contactData.first_name}`);
+
+      console.log(`Оновлено угоду в Uspacy ${course.title}, ${contactData.last_name} ${contactData.first_name}`);
     } else {
       currentDealUspacyId = null;
     }
@@ -84,7 +93,7 @@ const handleContactUspacy = async ({
     const newDealUspacy = await createDealUspacy({
       token: jwt,
       course,
-      contactId: contactUspacyId,
+      contactId: currentContactUspacyId,
       promokod,
       amountDeal,
     })
@@ -117,7 +126,8 @@ const handleContactUspacy = async ({
           stageId: course.welcomeStageId,
         });
       }
-      console.log(`Створено угоду ${course.title}, ${contactData.last_name} ${contactData.first_name}`);
+
+      console.log(`Створено угоду в Uspacy ${course.title}, ${contactData.last_name} ${contactData.first_name}`);
     }
   }
 

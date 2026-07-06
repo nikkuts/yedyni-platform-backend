@@ -20,7 +20,6 @@ const registerContact = async (req, res) => {
   const { courseId } = req.params;
   const { first_name, last_name, phone, promo_code, mode } = req.body;
   const token = req.body["cf-turnstile-response"];
-console.log('token', token);
 
   if (!token) {
       return res.status(400).json({
@@ -43,7 +42,6 @@ console.log('token', token);
   );
 
   const verifyData = await verifyResponse.json();
-console.log('verifyData', verifyData);
 
   if (!verifyData.success) {
     return res.status(403).json({
@@ -64,7 +62,7 @@ console.log('verifyData', verifyData);
   const amountDeal = promokod ? 
     (1 - course.discountPercentage / 100) * course.amount 
     : course.amount;
-console.log("START handleContactDB");
+
   const { 
     contactId, 
     contactUspacyId, 
@@ -74,18 +72,10 @@ console.log("START handleContactDB");
     redirectUrl,
   } = await handleContactDB({ contactData, course, promokod });
   
-  console.log({
-    contactId,
-    contactUspacyId,
-    dealId,
-    dealUspacyId,
-    redirectUrl
-});
-
   if (redirectUrl) {
     return res.redirect(redirectUrl);
   }
-console.log("START handleContactUspacy");
+
   const { currentDealUspacyId } = await handleContactUspacy({
     contactData,
     course,
@@ -98,8 +88,6 @@ console.log("START handleContactUspacy");
     amountDeal,
   })
 
-  console.log(currentDealUspacyId);
-  
   if (mode === "pay") {
     const paymentForm = await createPaymentForm({
       PUBLIC_KEY,
