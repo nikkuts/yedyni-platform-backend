@@ -79,6 +79,8 @@ const updateDiary = async (req, res) => {
   }
 
   const testNum = Number(test);
+  const diff = testNum - (diary.test ?? 0);
+
   const update = {
     date,
     test: testNum,
@@ -95,14 +97,14 @@ const updateDiary = async (req, res) => {
     }
   );
 
-  if (testNum !== diary.test) {
-    const ukrainianMark = req.user.ukrainianMark + testNum - diary.test;
+  if (diff !== 0) {
+    const ukrainianMark = req.user.ukrainianMark + diff;
 
     await User.findByIdAndUpdate(_id, {
       $set: { ukrainianMark },  
         $push: {
           historyUkrainianMark: {
-            points: testNum - diary.test,
+            points: testNum,
             comment: `повторне тестування: Граматичний курс. Урок ${lessonId}`,
             finalValue: ukrainianMark,
           }

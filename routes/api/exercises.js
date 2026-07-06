@@ -2,7 +2,13 @@ const express = require('express');
 
 const ctrl = require('../../controllers/exercises');
 
-const {authenticate, validateBody, upload, checkFileSize} = require('../../middlewares');
+const {
+    authenticate,
+    authorizeModerator,
+    validateBody,
+    upload,
+    checkFileSize
+} = require('../../middlewares');
 
 const {schemas} = require('../../models/exercise');
 
@@ -15,6 +21,8 @@ router.get('/notifications', authenticate, ctrl.getNotifications);
 router.get('/:exerciseId', authenticate, ctrl.getExerciseById);
 
 router.post('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.addExercise);
+
+router.patch('/rating', authenticate, authorizeModerator, validateBody(schemas.updateRatingSchema), ctrl.updateRating);
 
 router.post('/comment', authenticate, validateBody(schemas.addCommentSchema), ctrl.addComment);
 

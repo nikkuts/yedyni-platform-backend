@@ -1,4 +1,6 @@
+const mongoose = require("mongoose");
 const { Exercise } = require('../models/exercise');
+const { User } = require('../models/user');
 const {
   uploadFileToCloudinary,
   deleteFileFromCloudinary,
@@ -70,6 +72,65 @@ const addExercise = async (req, res) => {
   });
 };
 
+const updateRating = async (req, res) => {
+  const { exerciseId, rating } = req.body;
+  const ratingNum = Number(rating);
+
+  const session = await mongoose.startSession();
+
+  try {
+    await session.withTransaction(async () => {
+      const exercise = await Exercise.findById(exerciseId)
+        .select("course lessonId rating owner")
+        .populate([
+          {
+            path: "course", 
+            select: "-_id title"
+          },
+        ])
+        .session(session);
+
+      if (!exercise) {
+        throw HttpError(404, "Вправу не знайдено");
+      }
+
+      const user = await User.findById(exercise.owner)
+          .select("ukrainianMark historyUkrainianMark")
+          .session(session);
+
+      if (!user) {
+        throw HttpError(404, "Користувача не знайдено");
+      }
+
+      const diff = ratingNum - (exercise.rating ?? 0);
+      
+      exercise.rating = ratingNum;
+      exercise.status = "active";
+      await exercise.save({ session });
+
+      if (diff !== 0) {
+        const ukrainianMark = user.ukrainianMark + diff;
+
+        user.ukrainianMark = ukrainianMark;
+
+        user.historyUkrainianMark.push({
+          points: ratingNum,
+          comment: `оцінка домашньої роботи: ${exercise.course.title}. Урок ${exercise.lessonId}`,
+          finalValue: ukrainianMark,
+        });
+
+        await user.save({ session });
+      }
+    });
+
+    res.status(200).json({
+      rating: ratingNum,
+    });
+  } finally {
+    await session.endSession();
+  }
+};
+
 const updateExercise = async (req, res) => {
   const { file } = req;
   const { originalname } = req.body;
@@ -106,7 +167,7 @@ const updateExercise = async (req, res) => {
     throw HttpError(404, "Відсутня вправа");
   }
 
-  res.status(201).json(result);
+  res.status(200).json(result);
 };
 
 const deleteHomeworkAndUpdateExercise = async (req, res) => {
@@ -122,7 +183,7 @@ const deleteHomeworkAndUpdateExercise = async (req, res) => {
   )
   .populate("comments.author", "_id first_name last_name");
 
-  res.status(201).json(result);
+  res.status(200).json(result);
 };
 
 const deleteFileAndUpdateExercise = async (req, res) => {
@@ -140,7 +201,7 @@ const deleteFileAndUpdateExercise = async (req, res) => {
   )
   .populate("comments.author", "_id first_name last_name");
 
-  res.status(201).json(result);
+  res.status(200).json(result);
 };
 
 const addComment = async (req, res) => {
@@ -267,7 +328,7 @@ const updateComment = async (req, res) => {
     throw HttpError(404, "Відсутній коментар");
   }
 
-  res.status(201).json(updatedExercise.comments[0]);
+  res.status(200).json(updatedExercise.comments[0]);
 };
 
 const updateCommentStatus = async (req, res) => {
@@ -424,6 +485,7 @@ const getExerciseById = async (req, res) => {
 module.exports = {
     getExercise: ctrlWrapper(getExercise),
     addExercise: ctrlWrapper(addExercise),
+    updateRating: ctrlWrapper(updateRating),
     updateExercise: ctrlWrapper(updateExercise),
     deleteHomeworkAndUpdateExercise: ctrlWrapper(deleteHomeworkAndUpdateExercise),
     deleteFileAndUpdateExercise: ctrlWrapper(deleteFileAndUpdateExercise),

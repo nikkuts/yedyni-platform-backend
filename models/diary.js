@@ -17,10 +17,8 @@ const diarySchema = new Schema({
   },
   test: {
     type: Number,
-    integer: true,
     min: 0,
     max: 10,
-    required: true,
   },
   entry: {
     type: String,
@@ -44,7 +42,7 @@ const addDiarySchema = Joi.object({
   courseId: Joi.string().required(),
   lessonId: Joi.string().required(),
   date: Joi.string().required(),
-  test: Joi.number().integer().min(0).max(10).required(),
+  test: Joi.number().integer().min(0).max(10),
   entry: Joi.string().max(500).allow(''),
   plan: Joi.string().max(500).allow(''),
 });

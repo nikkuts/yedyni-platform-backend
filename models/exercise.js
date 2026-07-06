@@ -38,6 +38,11 @@ const exerciseSchema = new Schema({
     ref: 'User',
     required: true,
   },
+  rating: {
+    type: Number,
+    min: 1,
+    max: 10,
+  },
   comments: {
     type: [
       {
@@ -72,6 +77,11 @@ const addExerciseSchema = Joi.object({
   originalname: Joi.string(),
 });
 
+const updateRatingSchema = Joi.object({
+  exerciseId: Joi.string().required(),
+  rating: Joi.number().integer().min(1).max(10).required(),
+});
+
 const updateExerciseSchema = Joi.object({
   exerciseId: Joi.string().required(),
   homework: Joi.string().max(30000).required(),
@@ -95,11 +105,12 @@ const updateCommentSchema = Joi.object({
 });
 
 const schemas = {
-    addExerciseSchema,
-    updateExerciseSchema,
-    deleteFileSchema,
-    addCommentSchema,
-    updateCommentSchema,
+  addExerciseSchema,
+  updateRatingSchema,
+  updateExerciseSchema,
+  deleteFileSchema,
+  addCommentSchema,
+  updateCommentSchema,
 };
 
 const Exercise = model('Exercise', exerciseSchema);

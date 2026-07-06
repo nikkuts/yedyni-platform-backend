@@ -19,6 +19,37 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const registerContact = async (req, res) => {
   const { courseId } = req.params;
   const { first_name, last_name, phone, promo_code, mode } = req.body;
+  const token = req.body["cf-turnstile-response"];
+console.log('token', token);
+
+  if (!token) {
+      return res.status(400).json({
+          message: "Captcha token is missing"
+      });
+  }
+
+  const verifyResponse = await fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+          secret: process.env.TURNSTILE_SECRET_KEY,
+          response: token,
+      }),
+    }
+  );
+
+  const verifyData = await verifyResponse.json();
+console.log('verifyData', verifyData);
+
+  if (!verifyData.success) {
+    return res.status(403).json({
+        message: "Captcha verification failed",
+    });
+  }
 
   if (!['pay', 'save'].includes(mode)) {
     throw HttpError(400, 'Invalid mode');
