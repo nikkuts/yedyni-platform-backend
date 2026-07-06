@@ -64,7 +64,7 @@ console.log('verifyData', verifyData);
   const amountDeal = promokod ? 
     (1 - course.discountPercentage / 100) * course.amount 
     : course.amount;
-
+console.log("START handleContactDB");
   const { 
     contactId, 
     contactUspacyId, 
@@ -72,12 +72,20 @@ console.log('verifyData', verifyData);
     dealUspacyId, 
     arrayRegistration,
     redirectUrl,
-  } = await handleContactDB({contactData, course, promokod});
+  } = await handleContactDB({ contactData, course, promokod });
+  
+  console.log({
+    contactId,
+    contactUspacyId,
+    dealId,
+    dealUspacyId,
+    redirectUrl
+});
 
   if (redirectUrl) {
     return res.redirect(redirectUrl);
   }
-
+console.log("START handleContactUspacy");
   const { currentDealUspacyId } = await handleContactUspacy({
     contactData,
     course,
@@ -90,6 +98,8 @@ console.log('verifyData', verifyData);
     amountDeal,
   })
 
+  console.log(currentDealUspacyId);
+  
   if (mode === "pay") {
     const paymentForm = await createPaymentForm({
       PUBLIC_KEY,
