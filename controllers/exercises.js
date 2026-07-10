@@ -73,7 +73,9 @@ const addExercise = async (req, res) => {
 };
 
 const updateRating = async (req, res) => {
+  const { _id: author } = req.user;
   const { exerciseId, rating } = req.body;
+
   const ratingNum = Number(rating);
 
   const session = await mongoose.startSession();
@@ -81,7 +83,7 @@ const updateRating = async (req, res) => {
   try {
     await session.withTransaction(async () => {
       const exercise = await Exercise.findById(exerciseId)
-        .select("course lessonId rating owner")
+        .select("course lessonId rating owner comments")
         .populate([
           {
             path: "course", 
@@ -105,17 +107,21 @@ const updateRating = async (req, res) => {
       const diff = ratingNum - (exercise.rating ?? 0);
       
       exercise.rating = ratingNum;
-      exercise.status = "active";
+      exercise.comments.push({
+        author,
+        comment: `Оцінка домашньої роботи: ${ratingNum}`,
+        status: 'active',
+      });
+
       await exercise.save({ session });
 
       if (diff !== 0) {
         const ukrainianMark = user.ukrainianMark + diff;
 
         user.ukrainianMark = ukrainianMark;
-
         user.historyUkrainianMark.push({
-          points: ratingNum,
-          comment: `оцінка домашньої роботи: ${exercise.course.title}. Урок ${exercise.lessonId}`,
+          points: diff,
+          comment: `${diff === ratingNum ? "оцінка" : "змінена оцінка"} ${ratingNum} за домашню роботу: ${exercise.course.title}. Урок ${exercise.lessonId}`,
           finalValue: ukrainianMark,
         });
 

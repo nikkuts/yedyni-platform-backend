@@ -41,7 +41,7 @@ const exerciseSchema = new Schema({
   rating: {
     type: Number,
     min: 1,
-    max: 10,
+    max: 12,
   },
   comments: {
     type: [
@@ -79,7 +79,7 @@ const addExerciseSchema = Joi.object({
 
 const updateRatingSchema = Joi.object({
   exerciseId: Joi.string().required(),
-  rating: Joi.number().integer().min(1).max(10).required(),
+  rating: Joi.number().integer().min(1).max(12).required(),
 });
 
 const updateExerciseSchema = Joi.object({
