@@ -275,7 +275,7 @@ const addGrammatical = async (req, res) => {
   });
 
   res.status(201).json({
-    message: 'success',
+    contactId: contactId,
   });
 };
 
