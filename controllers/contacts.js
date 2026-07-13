@@ -15,6 +15,7 @@ require('dotenv').config();
 
 const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const BASE_CLIENT_URL = process.env.BASE_CLIENT_URL;
 
 const registerContact = async (req, res) => {
   const { courseId } = req.params;
@@ -275,7 +276,7 @@ const addGrammatical = async (req, res) => {
   });
 
   res.status(201).json({
-    contactId: contactId,
+    registerUrl: `${BASE_CLIENT_URL}/register?contactId=${contactId}`,
   });
 };
 
