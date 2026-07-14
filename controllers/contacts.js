@@ -128,6 +128,21 @@ const getRegisterUrl = async (req, res) => {
 
 };
 
+const getByIdContact = async (req, res) => {
+  const { contactId } = req.params;
+  
+  const contact = await Contact.findById(
+    contactId,
+    "-_id first_name last_name email"
+  )
+
+  if (!contact) {
+    throw HttpError (404, 'Не має даних')
+  }
+
+  return res.status(200).json(contact);
+};
+
 const resendPaymentForm = async (req, res) => {
   const { dealUspacyId, amountDeal } = req.query;
 
@@ -174,7 +189,8 @@ const manualProcessesDeal = async (req, res) => {
 };
 
 const getByIdDeal = async (req, res) => {
-  const {dealId} = req.params;
+  const { dealId } = req.params;
+  
   const deal = await Deal.findById(dealId)
   .populate('course', 'title'); 
 
@@ -319,6 +335,7 @@ module.exports = {
   registerContact: ctrlWrapper(registerContact),
   resendPaymentForm: ctrlWrapper(resendPaymentForm),
   getRegisterUrl: ctrlWrapper(getRegisterUrl),
+  getByIdContact: ctrlWrapper(getByIdContact),
   processesDeal: ctrlWrapper(processesDeal),
   manualProcessesDeal: ctrlWrapper(manualProcessesDeal),
   getByIdDeal: ctrlWrapper(getByIdDeal),

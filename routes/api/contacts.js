@@ -8,13 +8,15 @@ router.post('/register/:courseId', ctrl.registerContact);
 
 router.get("/register-url", ctrl.getRegisterUrl);
 
+router.get("/:contactId", ctrl.getByIdContact);
+
 router.get('/resend-payment', ctrl.resendPaymentForm);
 
 router.post('/process', ctrl.processesDeal);
 
 router.post('/manual-process', ctrl.manualProcessesDeal);
 
-router.get("/:dealId", ctrl.getByIdDeal);
+router.get("/status/:dealId", ctrl.getByIdDeal);
 
 router.post('/transition', ctrl.addTransition);
 
