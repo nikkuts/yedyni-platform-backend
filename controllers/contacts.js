@@ -2,6 +2,7 @@ const Base64 = require('crypto-js/enc-base64');
 const SHA1 = require('crypto-js/sha1');
 const Utf8 = require('crypto-js/enc-utf8');
 const { Course } = require('../models/course');
+const { Contact } = require('../models/contact');
 const { Deal } = require('../models/deal');
 const { Donat } = require('../models/donat');
 const { ctrlWrapper, HttpError } = require('../helpers');
@@ -103,6 +104,30 @@ const registerContact = async (req, res) => {
   return res.redirect(`${course.welcome}?canal=${course.canal}&courseId=${courseId}`);
 };
 
+const getRegisterUrl = async (req, res) => {
+    const { email } = req.query;
+
+    if (!email) {
+        return res.status(400).json({
+            message: "Email is required",
+        });
+    }
+
+    const contact = await Contact.findOne({ email })
+        .sort({ createdAt: -1 });
+
+    if (!contact) {
+        return res.status(404).json({
+            message: "Contact not found",
+        });
+    }
+
+  return res.json({
+      registerUrl: `${BASE_CLIENT_URL}/register?contactId=${contact._id}`
+    });
+
+};
+
 const resendPaymentForm = async (req, res) => {
   const { dealUspacyId, amountDeal } = req.query;
 
@@ -115,58 +140,6 @@ const resendPaymentForm = async (req, res) => {
 
   return res.send(paymentForm);
 };
-
-// const addProukrainian = async (req, res) => {
-//   const { first_name, last_name, phone, promo_code } = req.body;
-//   const email = req.body.email.trim().toLowerCase();
-//   const contactData = {first_name, last_name, email, phone};
-
-//   const course = await Course.findOne({ title: 'Проукраїнська' });
-
-//   const promokod = promo_code && promo_code.trim() === course.promoCode ? promo_code.trim() : null;
-
-//   const amountDeal = promokod ? 
-//     (1 - course.discountPercentage / 100) * course.amount 
-//     : course.amount;
-
-//   const { 
-//     contactId, 
-//     contactUspacyId, 
-//     dealId, 
-//     dealUspacyId, 
-//     arrayRegistration,
-//     redirectUrl,
-//   } = await handleContactDB({contactData, course, promokod});
-
-//   if (redirectUrl) {
-//     return res.redirect(redirectUrl);
-//   }
-
-//   await handleContactUspacy({
-//     contactData,
-//     course,
-//     contactId, 
-//     contactUspacyId, 
-//     dealId, 
-//     dealUspacyId, 
-//     arrayRegistration,
-//     promokod,
-//     amountDeal,
-//   })
-
-//   const paymentForm = await createPaymentForm({
-//     PUBLIC_KEY,
-//     PRIVATE_KEY,
-//     contact: contactData, 
-//     course, 
-//     dealId,
-//     amountDeal,
-//   });
-
-//   res.send(paymentForm);
-
-//   res.redirect('https://yedyni.org/');
-// };
 
 const processesDeal = async (req, res) => {
   const {data, signature} = req.body;
@@ -276,7 +249,7 @@ const addGrammatical = async (req, res) => {
   });
 
   res.status(201).json({
-    registerUrl: `${BASE_CLIENT_URL}/register?contactId=${contactId}`,
+    message: "success",
   });
 };
 
@@ -345,7 +318,7 @@ const editLead = async (req, res) => {
 module.exports = {
   registerContact: ctrlWrapper(registerContact),
   resendPaymentForm: ctrlWrapper(resendPaymentForm),
-  // addProukrainian: ctrlWrapper(addProukrainian),
+  getRegisterUrl: ctrlWrapper(getRegisterUrl),
   processesDeal: ctrlWrapper(processesDeal),
   manualProcessesDeal: ctrlWrapper(manualProcessesDeal),
   getByIdDeal: ctrlWrapper(getByIdDeal),

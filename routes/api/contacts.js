@@ -6,9 +6,9 @@ const router = express.Router();
 
 router.post('/register/:courseId', ctrl.registerContact);
 
-router.get('/resend-payment', ctrl.resendPaymentForm);
+router.get("/register-url", ctrl.getRegisterUrl);
 
-// router.post('/proukrainian', ctrl.addProukrainian);
+router.get('/resend-payment', ctrl.resendPaymentForm);
 
 router.post('/process', ctrl.processesDeal);
 
