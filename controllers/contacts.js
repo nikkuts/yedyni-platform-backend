@@ -19,8 +19,6 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const BASE_CLIENT_URL = process.env.BASE_CLIENT_URL;
 
 const registerContact = async (req, res) => {
-  const { courseId } = req.params;
-  const { first_name, last_name, phone, promo_code, mode } = req.body;
   const token = req.body["cf-turnstile-response"];
 
   if (!token) {
@@ -50,6 +48,9 @@ const registerContact = async (req, res) => {
         message: "Captcha verification failed",
     });
   }
+
+  const { courseId } = req.params;
+  const { first_name, last_name, phone, promo_code, mode } = req.body;
 
   if (!['pay', 'save'].includes(mode)) {
     throw HttpError(400, 'Invalid mode');
@@ -102,6 +103,36 @@ const registerContact = async (req, res) => {
   }
 
   return res.redirect(`${course.welcome}?canal=${course.canal}&courseId=${courseId}`);
+};
+
+const registerContactForm = async (req, res) => {
+  const { courseId } = req.params;
+  const contactData = req.body;
+  contactData.email = contactData.email.trim().toLowerCase();
+
+  const course = await Course.findById(courseId);
+
+  const { 
+    contactId, 
+    contactUspacyId, 
+    dealId, 
+    dealUspacyId, 
+    arrayRegistration
+  } = await handleContactDB({contactData, course});
+
+  await handleContactUspacy({
+    contactData,
+    course,
+    contactId, 
+    contactUspacyId, 
+    dealId, 
+    dealUspacyId, 
+    arrayRegistration,
+  });
+
+  res.status(201).json({
+    message: "success",
+  });
 };
 
 const getRegisterUrl = async (req, res) => {
@@ -240,35 +271,6 @@ const addTransition = async (req, res) => {
   });
 };
 
-const addGrammatical = async (req, res) => {
-  const contactData = req.body;
-  contactData.email = contactData.email.trim().toLowerCase();
-
-  const course = await Course.findOne({ title: 'Граматичний курс' });
-
-  const { 
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration
-  } = await handleContactDB({contactData, course});
-
-  await handleContactUspacy({
-    contactData,
-    course,
-    contactId, 
-    contactUspacyId, 
-    dealId, 
-    dealUspacyId, 
-    arrayRegistration,
-  });
-
-  res.status(201).json({
-    message: "success",
-  });
-};
-
 const addDonat = async (req, res) => {
   const {pay_type, paid} = req.body;
   const amount = parseFloat(paid);
@@ -333,6 +335,7 @@ const editLead = async (req, res) => {
 
 module.exports = {
   registerContact: ctrlWrapper(registerContact),
+  registerContactForm: ctrlWrapper(registerContactForm),
   resendPaymentForm: ctrlWrapper(resendPaymentForm),
   getRegisterUrl: ctrlWrapper(getRegisterUrl),
   getByIdContact: ctrlWrapper(getByIdContact),
@@ -340,7 +343,7 @@ module.exports = {
   manualProcessesDeal: ctrlWrapper(manualProcessesDeal),
   getByIdDeal: ctrlWrapper(getByIdDeal),
   addTransition: ctrlWrapper(addTransition),
-  addGrammatical: ctrlWrapper(addGrammatical),
+  // addGrammatical: ctrlWrapper(addGrammatical),
   addDonat: ctrlWrapper(addDonat),
   processesDonat: ctrlWrapper(processesDonat),
   sendEmailContact: ctrlWrapper(sendEmailContact),

@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.post('/register/:courseId', ctrl.registerContact);
 
+router.post('/register-form/:courseId', ctrl.registerContactForm);
+
 router.get("/register-url", ctrl.getRegisterUrl);
 
 router.get("/:contactId", ctrl.getByIdContact);
@@ -20,7 +22,7 @@ router.get("/status/:dealId", ctrl.getByIdDeal);
 
 router.post('/transition', ctrl.addTransition);
 
-router.post('/grammatical', ctrl.addGrammatical);
+// router.post('/grammatical', ctrl.addGrammatical);
 
 router.post('/donat', ctrl.addDonat);
 
