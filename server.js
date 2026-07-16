@@ -1,9 +1,20 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const http = require('http');
 const app = require('./app');
 const initializeSocket = require('./helpers/socket');
 
-const { DB_HOST, PORT = 3000 } = process.env;
+const { NODE_ENV, DB_HOST, PORT = 3000 } = process.env;
+
+const dns = require("dns");
+
+if (
+  NODE_ENV !== "production" &&
+  dns.getServers().includes("127.0.0.1")
+) {
+  console.warn("Local DNS resolver detected. Switching to Google DNS.");
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+}
 
 mongoose.set('strictQuery', true);
 mongoose.Promise = global.Promise;
