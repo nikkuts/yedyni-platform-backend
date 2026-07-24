@@ -63,6 +63,18 @@ const exerciseSchema = new Schema({
           ref: 'User',
           required: true,
         },
+         fileURL: {
+          type: String,
+          default: '',
+        },
+        fileType: {
+          type: String,
+          default: '',
+        },
+        fileName: {
+          type: String,
+          default: '',
+        },
       }
     ]
   }
@@ -91,17 +103,33 @@ const updateExerciseSchema = Joi.object({
 const deleteFileSchema = Joi.object({
   exerciseId: Joi.string().required(),
   fileURL: Joi.string().required().not().empty(),
+  commentId: Joi.string(),
 });
 
 const addCommentSchema = Joi.object({
   exerciseId: Joi.string().required(),
-  comment: Joi.string().max(3000).required(),
+  comment: Joi.string()
+    .allow("")
+    .max(3000)
+    .required(),
+  fileName: Joi.string(),
 });
 
 const updateCommentSchema = Joi.object({
   exerciseId: Joi.string().required(),
   commentId: Joi.string().required(),
-  comment: Joi.string().max(3000).required(),
+  comment: Joi.string()
+    .allow("")
+    .max(3000)
+    .required(),
+  fileName: Joi.string(),
+  oldFileURL: Joi.string().allow(""),
+});
+
+const deleteCommentSchema = Joi.object({
+  exerciseId: Joi.string().required(),
+  commentId: Joi.string().required(),
+  oldFileURL: Joi.string().allow(""),
 });
 
 const schemas = {
@@ -111,6 +139,7 @@ const schemas = {
   deleteFileSchema,
   addCommentSchema,
   updateCommentSchema,
+  deleteCommentSchema,
 };
 
 const Exercise = model('Exercise', exerciseSchema);

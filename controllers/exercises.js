@@ -212,121 +212,134 @@ const deleteFileAndUpdateExercise = async (req, res) => {
 
 const addComment = async (req, res) => {
   const {_id: author, status} = req.user;
-  const {exerciseId, comment} = req.body;
-  let updatedExercise;
+  const { exerciseId, comment, fileName } = req.body;
+  const { file } = req;
 
-  const exercise = await Exercise.findById(exerciseId, "owner");
+  const exercise = await Exercise.findById(exerciseId);
 
   if (!exercise) {
     throw HttpError(404, "Відсутня домашня робота");
   }
 
-  if (status === "moderator" || status === "admin") {
+  const newComment = {
+    author,
+    comment: comment.trim(),
+  };
 
-    if (exercise.owner.toString() === author.toString()) {
-      updatedExercise = await Exercise.findByIdAndUpdate(
-        exerciseId,
-        {
-          $set: {status: 'inactive'},
-          $push: {
-            comments: {
-              author,
-              comment,
-            }
-          }
-        },
-        { new: true }
-      )
-      .populate("comments.author", "_id first_name last_name");
-    } else {
-      updatedExercise = await Exercise.findByIdAndUpdate(
-        exerciseId,
-        {
-          $set: {status: 'inactive'},
-          $push: {
-            comments: {
-              author,
-              comment,
-              status: 'active',
-            }
-          }
-        },
-        { new: true }
-      )
-      .populate("comments.author", "_id first_name last_name");
-    }
-  } else {
-    updatedExercise = await Exercise.findByIdAndUpdate(
-      exerciseId,
-      {
-        $set: {status: 'active'},
-        $push: {
-          comments: {
-            author,
-            comment,
-          }
-        }
-      },
-      { new: true }
-    )
-    .populate("comments.author", "_id first_name last_name");
+  if (file) {
+    const downloadedFile = await uploadFileToCloudinary(file);
+
+    newComment.fileURL = downloadedFile.secure_url ?? '';
+    newComment.fileType = file.mimetype ?? '';
+    newComment.fileName = fileName ?? '';
   }
+
+  const exerciseStatus =
+    status === "moderator" || status === "admin"
+      ? "inactive"
+      : "active";
+
+  if (status === "moderator" || status === "admin") {
+    newComment.status = "active";
+  }
+
+  const updatedExercise = await Exercise.findByIdAndUpdate(
+    exerciseId,
+    {
+      $set: { status: exerciseStatus },
+      $push: {
+        comments: newComment,
+      },
+    },
+    { new: true }
+  ).populate("comments.author", "_id first_name last_name");
   
-  res.status(201).json(updatedExercise.comments[updatedExercise.comments.length - 1]);
+  return res.status(201).json(
+    updatedExercise.comments[updatedExercise.comments.length - 1]
+  );
 };
 
 const updateComment = async (req, res) => {
   const {_id: author, status} = req.user;
-  const { exerciseId, commentId, comment } = req.body;
-
-  const exercise = await Exercise.findById(exerciseId, "owner");
+  const { exerciseId, commentId, comment, fileName, oldFileURL } = req.body;
+  const { file } = req;
+  
+  const exercise = await Exercise.findOne(
+    {
+        _id: exerciseId,
+        "comments._id": commentId,
+    },
+    {
+        owner: 1,
+        comments: {
+          $elemMatch: {
+              _id: commentId,
+          },
+        },
+    }
+  );
 
   if (!exercise) {
     throw HttpError(404, "Відсутня домашня робота");
   }
 
+  const oldComment = exercise.comments[0];
+
+  const updateFields = {
+    "comments.$.date": Date.now(),
+    "comments.$.comment": comment,
+  };
+
   if (status === "moderator" || status === "admin") {
 
     if (exercise.owner.toString() === author.toString()) {
-      await Exercise.findOneAndUpdate(
-        { _id: exerciseId, 'comments._id': commentId },
-        {
-          $set: {
-            'comments.$.date': Date.now(),
-            'comments.$.comment': comment,
-            status: "inactive"
-          }
-        }
-      );
+        updateFields.status = "inactive";
     } else {
-      await Exercise.findOneAndUpdate(
-        { _id: exerciseId, 'comments._id': commentId },
-        {
-          $set: {
-            'comments.$.date': Date.now(),
-            'comments.$.comment': comment,
-            'comments.$.status': "active",
-            status: "inactive"
-          }
-        }
-      );
+        updateFields["comments.$.status"] = "active";
+        updateFields.status = "inactive";
     }
   } else {
-    await Exercise.findOneAndUpdate(
-      { _id: exerciseId, 'comments._id': commentId },
-      {
-        $set: {
-          'comments.$.date': Date.now(),
-          'comments.$.comment': comment,
-          status: "active"
-        }
-      }
-    );
+      updateFields.status = "active";
   }
 
+  if (oldFileURL) {
+    await deleteFileFromCloudinary(oldFileURL);
+  }
+
+  if (file) {
+    const downloadedFile = await uploadFileToCloudinary(file);
+
+    updateFields["comments.$.fileURL"] = downloadedFile.secure_url;
+    updateFields["comments.$.fileName"] = fileName;
+    updateFields["comments.$.fileType"] = file.mimetype;
+  } else if (oldFileURL) {
+    updateFields["comments.$.fileURL"] = "";
+    updateFields["comments.$.fileName"] = "";
+    updateFields["comments.$.fileType"] = "";
+  }
+
+  await Exercise.findOneAndUpdate(
+    {
+        _id: exerciseId,
+        "comments._id": commentId,
+    },
+    {
+        $set: updateFields,
+    }
+);
+
   const updatedExercise = await Exercise.findOne(
-    { _id: exerciseId, 'comments._id': commentId },
-    { 'comments.$': 1 }
+    {
+      _id: exerciseId,
+      'comments._id': commentId
+    },
+    {
+      comments: {
+        $elemMatch: {
+            _id: commentId,
+        },
+      }
+    }
   )
   .populate("comments.author", "_id first_name last_name");
 
@@ -334,7 +347,7 @@ const updateComment = async (req, res) => {
     throw HttpError(404, "Відсутній коментар");
   }
 
-  res.status(200).json(updatedExercise.comments[0]);
+  return res.status(200).json(updatedExercise.comments[0]);
 };
 
 const updateCommentStatus = async (req, res) => {
@@ -368,24 +381,26 @@ const updateCommentStatus = async (req, res) => {
 };
 
 const deleteComment = async (req, res) => {
-  const { exerciseId, commentId } = req.query;
+  const { exerciseId, commentId, oldFileURL } = req.body;
 
-  try {
-    await Exercise.findByIdAndUpdate(
-      exerciseId,
-      {
-        $pull: {
-          comments: { _id: commentId } 
-        }
+  const exercise = await Exercise.findByIdAndUpdate(
+    exerciseId,
+    {
+      $pull: {
+        comments: { _id: commentId } 
       }
-    );
+    }
+  );
 
-    res.json({ commentId });
+  if (!exercise) {
+    throw HttpError(404, "Відсутня домашня робота");
   }
-  catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Помилка при видаленні коментаря' });
+
+  if (oldFileURL) {
+    await deleteFileFromCloudinary(oldFileURL);
   }
+
+  return res.json({ commentId });
 }
 
 const getNotifications = async (req, res) => {

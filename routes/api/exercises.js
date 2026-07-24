@@ -22,9 +22,9 @@ router.get('/:exerciseId', authenticate, ctrl.getExerciseById);
 
 router.post('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.addExercise);
 
-router.patch('/rating', authenticate, authorizeModerator, validateBody(schemas.updateRatingSchema), ctrl.updateRating);
+router.post('/comment/create', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addCommentSchema), ctrl.addComment);
 
-router.post('/comment', authenticate, validateBody(schemas.addCommentSchema), ctrl.addComment);
+router.patch('/rating', authenticate, authorizeModerator, validateBody(schemas.updateRatingSchema), ctrl.updateRating);
 
 router.patch('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.updateExerciseSchema), ctrl.updateExercise);
 
@@ -32,10 +32,10 @@ router.patch('/homework', authenticate, ctrl.deleteHomeworkAndUpdateExercise);
 
 router.patch('/file', authenticate, validateBody(schemas.deleteFileSchema), ctrl.deleteFileAndUpdateExercise);
 
-router.patch('/comment', authenticate, validateBody(schemas.updateCommentSchema), ctrl.updateComment);
+router.patch('/comment/edit', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.updateCommentSchema), ctrl.updateComment);
 
-router.patch('/status', authenticate, ctrl.updateCommentStatus);
+router.patch('/comment-status', authenticate, ctrl.updateCommentStatus);
 
-router.delete('/comment', authenticate, ctrl.deleteComment);
+router.delete('/comment/delete', validateBody(schemas.deleteCommentSchema),  authenticate, ctrl.deleteComment);
 
 module.exports = router;
