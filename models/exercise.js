@@ -52,7 +52,7 @@ const exerciseSchema = new Schema({
         },
         comment: {
           type: String,
-          required: true,
+          default: '',
         },
         status: {
           type: String,
@@ -82,28 +82,38 @@ const exerciseSchema = new Schema({
 
 exerciseSchema.post('save', handleMongooseError);
 
-const addExerciseSchema = Joi.object({
+const addHomeworkSchema = Joi.object({
   courseId: Joi.string().required(),
   lessonId: Joi.string().required(),
-  homework: Joi.string().max(30000).required(),
-  originalname: Joi.string(),
+  homework: Joi.string()
+    .allow("")
+    .max(30000)
+    .required(),
+  fileName: Joi.string(),
+});
+
+const updateHomeworkSchema = Joi.object({
+  exerciseId: Joi.string().required(),
+  homework: Joi.string()
+    .allow("")
+    .max(30000)
+    .required(),
+  fileName: Joi.string(),
+  oldFileURL: Joi.string().allow(""),
 });
 
 const updateRatingSchema = Joi.object({
   exerciseId: Joi.string().required(),
-  rating: Joi.number().integer().min(1).max(12).required(),
+  rating: Joi.number()
+    .integer()
+    .min(1)
+    .max(12)
+    .required(),
 });
 
-const updateExerciseSchema = Joi.object({
+const deleteHomeworkSchema = Joi.object({
   exerciseId: Joi.string().required(),
-  homework: Joi.string().max(30000).required(),
-  originalname: Joi.string(),
-});
-
-const deleteFileSchema = Joi.object({
-  exerciseId: Joi.string().required(),
-  fileURL: Joi.string().required().not().empty(),
-  commentId: Joi.string(),
+  oldFileURL: Joi.string().allow(""),
 });
 
 const addCommentSchema = Joi.object({
@@ -133,10 +143,10 @@ const deleteCommentSchema = Joi.object({
 });
 
 const schemas = {
-  addExerciseSchema,
+  addHomeworkSchema,
+  updateHomeworkSchema,
   updateRatingSchema,
-  updateExerciseSchema,
-  deleteFileSchema,
+  deleteHomeworkSchema,
   addCommentSchema,
   updateCommentSchema,
   deleteCommentSchema,
@@ -144,4 +154,4 @@ const schemas = {
 
 const Exercise = model('Exercise', exerciseSchema);
 
-module.exports = {Exercise, schemas};
+module.exports = { Exercise, schemas };

@@ -20,21 +20,19 @@ router.get('/notifications', authenticate, ctrl.getNotifications);
 
 router.get('/:exerciseId', authenticate, ctrl.getExerciseById);
 
-router.post('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addExerciseSchema), ctrl.addExercise);
+router.post('/homework/create', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addHomeworkSchema), ctrl.addHomework);
 
 router.post('/comment/create', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.addCommentSchema), ctrl.addComment);
 
-router.patch('/rating', authenticate, authorizeModerator, validateBody(schemas.updateRatingSchema), ctrl.updateRating);
-
-router.patch('/', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.updateExerciseSchema), ctrl.updateExercise);
-
-router.patch('/homework', authenticate, ctrl.deleteHomeworkAndUpdateExercise);
-
-router.patch('/file', authenticate, validateBody(schemas.deleteFileSchema), ctrl.deleteFileAndUpdateExercise);
+router.patch('/homework/edit', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.updateHomeworkSchema), ctrl.updateHomework);
 
 router.patch('/comment/edit', authenticate, upload.single("file"), checkFileSize, validateBody(schemas.updateCommentSchema), ctrl.updateComment);
 
+router.patch('/homework-rating', authenticate, authorizeModerator, validateBody(schemas.updateRatingSchema), ctrl.updateHomeworkRating);
+
 router.patch('/comment-status', authenticate, ctrl.updateCommentStatus);
+
+router.delete('/homework/delete', validateBody(schemas.deleteHomeworkSchema), authenticate, ctrl.deleteHomework);
 
 router.delete('/comment/delete', validateBody(schemas.deleteCommentSchema),  authenticate, ctrl.deleteComment);
 

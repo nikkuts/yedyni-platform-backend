@@ -24,43 +24,41 @@ const getExercise = async (req, res) => {
   return res.status(200).json(result);
 };
 
-const addExercise = async (req, res) => {
+const addHomework = async (req, res) => {
+  const {_id: owner} = req.user;
+  const { courseId, lessonId, homework, fileName } = req.body;
   const { file } = req;
-  const { originalname } = req.body;
-  const { _id: owner } = req.user;
-  const {courseId, lessonId, homework} = req.body;
 
   const exercise = await Exercise.findOne(
-    { owner, course: courseId, lessonId }
+    {
+      course: courseId,
+      lessonId,
+      owner
+    }
   );
 
   if (exercise) {
     throw HttpError(409, "Вправа вказаного уроку вже створена");
   }
 
-  let fileURL;
-  let fileType;
-  let fileName;
+  const newExerciseData = {
+    course: courseId,
+    lessonId,
+    owner,
+    homework: homework.trim(),
+  };
 
   if (file) {
     const downloadedFile = await uploadFileToCloudinary(file);
 
-    fileURL = downloadedFile.secure_url;
-    fileType = file.mimetype;
-    fileName = originalname;
+    newExerciseData.fileURL = downloadedFile.secure_url ?? '';
+    newExerciseData.fileType = file.mimetype ?? '';
+    newExerciseData.fileName = fileName ?? '';
   }
 
-  const newExercise = await Exercise.create({
-    course: courseId,
-    lessonId,
-    homework,
-    fileURL,
-    fileType,
-    fileName,
-    owner,
-  });
-
-  res.status(201).json({
+  const newExercise = await Exercise.create(newExerciseData);
+  
+  return res.status(201).json({
     _id: newExercise._id,
     courseId: newExercise.course,
     lessonId: newExercise.lessonId,
@@ -72,7 +70,49 @@ const addExercise = async (req, res) => {
   });
 };
 
-const updateRating = async (req, res) => {
+const updateHomework = async (req, res) => {
+  const { exerciseId, homework, fileName, oldFileURL } = req.body;
+  const { file } = req;
+
+  const updateExerciseData = { 
+    homework,
+    status: 'active', 
+  };
+
+  if (oldFileURL) {
+    await deleteFileFromCloudinary(oldFileURL);
+  }
+
+  if (file) {
+    const downloadedFile = await uploadFileToCloudinary(file);
+
+    updateExerciseData.fileURL = downloadedFile.secure_url;
+    updateExerciseData.fileName = fileName;
+    updateExerciseData.fileType = file.mimetype;
+  } else if (oldFileURL) {
+    updateExerciseData.fileURL = "";
+    updateExerciseData.fileName = "";
+    updateExerciseData.fileType = "";
+  }
+
+  const result = await Exercise.findByIdAndUpdate(
+    exerciseId,
+    { $set: updateExerciseData },
+    { 
+      new: true,
+      projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
+    }
+  )
+  .populate("comments.author", "_id first_name last_name");
+
+  if (!result) {
+    throw HttpError(404, "Відсутня вправа");
+  }
+
+  res.status(200).json(result);
+};
+
+const updateHomeworkRating = async (req, res) => {
   const { _id: author } = req.user;
   const { exerciseId, rating } = req.body;
 
@@ -137,77 +177,83 @@ const updateRating = async (req, res) => {
   }
 };
 
-const updateExercise = async (req, res) => {
-  const { file } = req;
-  const { originalname } = req.body;
-  const {exerciseId, homework} = req.body;
-  const update = { 
-    homework,
-    status: 'active', 
-  };
+const deleteHomework = async (req, res) => {
+  const { exerciseId, oldFileURL } = req.body;
 
-  if (file) {
-    const downloadedFile = await uploadFileToCloudinary(file);
-    const fileURL = downloadedFile.secure_url;
-    const fileType = file.mimetype;
-    const fileName = originalname;
+  let updatedExercise;
 
-    if (fileURL) {
-      update.fileURL = fileURL;
-      update.fileType = fileType;
-      update.fileName = fileName;
-    }
+  const session = await mongoose.startSession();
+
+  try {
+    await session.withTransaction(async () => {
+      const exercise = await Exercise.findById(exerciseId)
+        .select("course lessonId rating owner")
+        .populate([
+          {
+            path: "course", 
+            select: "-_id title"
+          },
+        ])
+        .session(session);
+
+      if (!exercise) {
+        throw HttpError(404, "Вправу не знайдено");
+      }
+
+      updatedExercise = await Exercise.findByIdAndUpdate(
+        exerciseId,
+        {
+          $set: {
+            homework: '',
+            status: 'inactive',
+            rating: null,
+            fileURL: '',
+            fileType: '',
+            fileName: ''
+          }
+        },
+        {
+          new: true,
+          projection: { status: 0, createdAt: 0, updatedAt: 0 }
+        }
+      )
+        .populate([
+          {
+            path: "comments.author",
+            select: "_id first_name last_name"
+          },
+        ])
+        .session(session);
+
+      const user = await User.findById(exercise.owner)
+        .select("ukrainianMark historyUkrainianMark")
+        .session(session);
+
+      if (!user) {
+        throw HttpError(404, "Користувача не знайдено");
+      }
+
+      if (exercise.rating) {
+        user.ukrainianMark -= exercise.rating;
+
+        user.historyUkrainianMark.push({
+          points: -exercise.rating,
+          comment: `видалена оцінка ${exercise.rating} за домашню роботу: ${exercise.course.title}. Урок ${exercise.lessonId}`,
+          finalValue: user.ukrainianMark,
+        });
+
+        await user.save({ session });
+      }
+    });
+  } finally {
+    await session.endSession();
   }
 
-  const result = await Exercise.findByIdAndUpdate(
-    exerciseId,
-    { $set: update },
-    { 
-      new: true,
-      projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
-    }
-  )
-  .populate("comments.author", "_id first_name last_name");
-
-  if (!result) {
-    throw HttpError(404, "Відсутня вправа");
+  if (oldFileURL) {
+    await deleteFileFromCloudinary(oldFileURL);
   }
 
-  res.status(200).json(result);
-};
-
-const deleteHomeworkAndUpdateExercise = async (req, res) => {
-  const {exerciseId} = req.body;
-
-  const result = await Exercise.findByIdAndUpdate(
-    exerciseId,
-    { $set: {homework: ''} },
-    { 
-      new: true,
-      projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
-    }
-  )
-  .populate("comments.author", "_id first_name last_name");
-
-  res.status(200).json(result);
-};
-
-const deleteFileAndUpdateExercise = async (req, res) => {
-  const {exerciseId, fileURL} = req.body;
-
-  await deleteFileFromCloudinary(fileURL);
-
-  const result = await Exercise.findByIdAndUpdate(
-    exerciseId,
-    { $set: {fileURL: '', fileType: '', fileName: ''} },
-    { 
-      new: true,
-      projection: { status: 0, owner:0, createdAt: 0, updatedAt: 0 } 
-    }
-  )
-  .populate("comments.author", "_id first_name last_name");
-
-  res.status(200).json(result);
+  res.status(200).json(updatedExercise);
 };
 
 const addComment = async (req, res) => {
@@ -505,11 +551,10 @@ const getExerciseById = async (req, res) => {
 
 module.exports = {
     getExercise: ctrlWrapper(getExercise),
-    addExercise: ctrlWrapper(addExercise),
-    updateRating: ctrlWrapper(updateRating),
-    updateExercise: ctrlWrapper(updateExercise),
-    deleteHomeworkAndUpdateExercise: ctrlWrapper(deleteHomeworkAndUpdateExercise),
-    deleteFileAndUpdateExercise: ctrlWrapper(deleteFileAndUpdateExercise),
+    addHomework: ctrlWrapper(addHomework),
+    updateHomework: ctrlWrapper(updateHomework),
+    updateHomeworkRating: ctrlWrapper(updateHomeworkRating),
+    deleteHomework: ctrlWrapper(deleteHomework),
     addComment: ctrlWrapper(addComment),
     updateComment: ctrlWrapper(updateComment),
     updateCommentStatus: ctrlWrapper(updateCommentStatus),

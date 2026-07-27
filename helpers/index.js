@@ -3,6 +3,7 @@ const ctrlWrapper = require('./ctrlWrapper');
 const handleMongooseError = require('./handleMongooseError');
 const sendEmail = require('./sendEmail');
 const handleIndicators = require('./handleIndicators');
+const getMaxFileSize = require('./getMaxFileSize');
 
 module.exports = {
     HttpError,
@@ -10,4 +11,5 @@ module.exports = {
     handleMongooseError,
     sendEmail,
     handleIndicators,
+    getMaxFileSize,
 };
